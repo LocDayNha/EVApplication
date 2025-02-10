@@ -1,11 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Login from "../../src/components/ui/begin/Login";
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Hello, Expo App!</Text>
-    </View>
+    <SafeAreaView>
+      <Login/>
+    </SafeAreaView>
   );
 }
 
