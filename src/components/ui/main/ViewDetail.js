@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     },
     boxMain: {
         marginTop: '-10%',
-        margin: '5%',DonDon
+        margin: '5%',
         padding: '5%',
         backgroundColor: 'white',
         borderWidth: 1,
