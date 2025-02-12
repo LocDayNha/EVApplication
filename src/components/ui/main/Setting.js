@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#C7C6C5',
         margin: '10%',
-       
+        alignItems:'flex-start',
         borderRadius: 10,
     },
     boxContent: {

@@ -57,27 +57,31 @@ const home = () => {
     return (
         <View  >
             {/* Ten nguoi dung */}
-            <View style={[styles.containerUser, { height: '9%' }]}>
-                <View>
+            <View style={styles.containerUser}>
+
+                <View style={{ flexDirection: 'row',marginLeft:'5%',marginRight:'5%',paddingBottom:'5%'}}>
                     <Image style={styles.img} source={require('../../../assets/images/anhso3.jpg')} />
-                </View>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '83%' }}>
-                    <View>
-                        <Text style={styles.titleContainer}>Nguyen Van A</Text>
-                        <Text style={styles.titleContainer}>Welcom Back</Text>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '83%' }}>
+                        <View>
+                            <Text style={styles.titleContainer}>Nguyen Van A</Text>
+                            <Text style={styles.titleContainer}>Welcom Back</Text>
+                        </View>
+                        <TouchableOpacity style={styles.boderIcon}>
+                            <Image style={styles.iconFilter} source={require('../../../assets/icon/icons8-notification-50.png')} />
+                        </TouchableOpacity>
                     </View>
-                    <TouchableOpacity style={styles.boderIcon}>
-                        <Image style={styles.iconFilter} source={require('../../../assets/icon/icons8-notification-50.png')} />
-                    </TouchableOpacity>
+                </View>
+                <View>
+                    <View style={styles.inputSearch}>
+                        <View style={styles.boderSearch}><TextInput style={{ marginLeft: '5%' }} placeholder="Tìm kiếm địa chỉ " /></View>
+                        <TouchableOpacity style={styles.boderIcon}>
+                            <Image style={styles.iconFilter} source={require('../../../assets/icon/icons8-filter-50 (1).png')} />
+                        </TouchableOpacity>
+                    </View>
                 </View>
 
             </View>
-            <View style={styles.inputSearch}>
-                <View style={styles.boderSearch}><TextInput style={{ marginLeft: '5%' }} placeholder="Tìm kiếm địa chỉ " /></View>
-                <TouchableOpacity style={styles.boderIcon}>
-                    <Image style={styles.iconFilter} source={require('../../../assets/icon/icons8-filter-50 (1).png')} />
-                </TouchableOpacity>
-            </View>
+
 
 
             {/* Tram sac gan ban */}
@@ -85,7 +89,7 @@ const home = () => {
                 <View style={styles.container}>
                     <Text style={styles.title}>Tram sac gan ban :</Text>
                 </View>
-                <View style={{ height: '80%' }}>
+                <View style={{ height: '70%' }}>
                     <FlatList
                         data={mergedData}
                         keyExtractor={(item) => item.id}
@@ -132,13 +136,12 @@ const styles = StyleSheet.create({
 
 
     containerUser: {
-        flexDirection: 'row',
         backgroundColor: '#40A19C',
         alignContent: 'center',
-        padding: '5%'
+        paddingTop:'5%',
+        paddingBottom:'5%',
     },
     container: {
-        backgroundColor: 'FFFFF',
         margin: '5%',
         marginBottom: '5%',
         flexDirection: 'row',
@@ -239,7 +242,6 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     inputSearch: {
-        height: 80,
         backgroundColor: '#40A19C',
         flexDirection: 'row',
         justifyContent: 'space-evenly',

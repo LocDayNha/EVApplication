@@ -145,9 +145,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     width: "85%",
     borderRadius: 10,
-    borderColor: COLOR.gray1,
-    marginBottom: "3%", 
+    borderColor: COLOR.gray3,
+    marginBottom: "2%", 
+    marginTop: "2%", 
     justifyContent:"center",
+    padding:'2%'
+    
   },
   viewRatingUser: {
     margin: "2%",

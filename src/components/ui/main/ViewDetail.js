@@ -1,36 +1,68 @@
 import { StyleSheet, Text, View, ScrollView, Image, FlatList } from 'react-native'
 import React from 'react'
+import { TextInputProfile, CustomButton, ItemRating } from '../../item/Item'
+
 
 const ChargingPost = [
-    { id: '0', kw: 60, charger: 5, money: 5000 },
-    { id: '1', kw: 60, charger: 5, money: 5000 },
-    { id: '2', kw: 60, charger: 5, money: 5000 },
-    { id: '3', kw: 60, charger: 5, money: 5000 },
+    { id: '0', kw: 60, charger: 2, money: 10000, namesocket: 'CCS1', imgSocket: require('../../../assets/imageSocket/ccs1.png') },
+    { id: '1', kw: 60, charger: 2, money: 7000, namesocket: 'CCS2', imgSocket: require('../../../assets/imageSocket/ccs2.png') },
+    { id: '2', kw: 60, charger: 1, money: 6000, namesocket: 'J1772', imgSocket: require('../../../assets/imageSocket/j1772.png') },
+    { id: '3', kw: 60, charger: 2, money: 5000, namesocket: 'GB/T (DC)', imgSocket: require('../../../assets/imageSocket/GBT(DC).png') },
 
 ];
 
 const services = [
-    { id: '0', name: 'Đồ ăn' },
-    { id: '1', name: 'Khách Sạn' },
-    { id: '2', name: 'Giữ xe' },
-    { id: '3', name: 'Trạm sạc' },
-    { id: '4', name: 'Nhà vệ sinh' },
+    { id: '0', name: 'Đồ ăn', img: require('../../../assets/imageServices/icons8-hamburger-64.png') },
+    { id: '1', name: 'Nhà nghỉ', img: require('../../../assets/imageServices/icons8-bed-48.png') },
+    { id: '2', name: 'Giữ xe', img: require('../../../assets/imageServices/icons8-parking-64.png') },
+    { id: '3', name: 'Nhà vệ sinh', img: require('../../../assets/imageServices/icons8-wc-48.png') },
 ];
 
-// const imageBrand = [
-//     require('./image/054_the_sinful_spoils_hunter_fiend_by_virgo4th_dg4snis-pre.jpg'),
-//     require('./image/054_the_sinful_spoils_hunter_fiend_by_virgo4th_dg4snis-pre.jpg'),
-//     require('./image/054_the_sinful_spoils_hunter_fiend_by_virgo4th_dg4snis-pre.jpg'),
-//     require('./image/054_the_sinful_spoils_hunter_fiend_by_virgo4th_dg4snis-pre.jpg'),
-//     require('./image/054_the_sinful_spoils_hunter_fiend_by_virgo4th_dg4snis-pre.jpg'),
 
-// ];
+const type = [
+    require('../../../assets/icon/icons8-charging-station-64.png'),
+
+];
 
 // const kwMap = Object.fromEntries(nameKw.map(({ id, Kw }) => [id, Kw.join(', ')]));
 // const mergedData = nameChargingStation.map(station => ({
 //     ...station,
 //     kw: kwMap[station.id] || 'N/A'
 // }));
+
+
+const fakeData = [
+    {
+        _id: "1",
+        user_id: {
+            image: "https://vcdn1-dulich.vnecdn.net/2021/07/16/1-1626437591.jpg?w=460&h=0&q=100&dpr=2&fit=crop&s=i2M2IgCcw574LT-bXFY92g",
+            name: "Nguyễn Văn A",
+        },
+        createAt: "2025-02-12 14:30",
+        content: "Sản phẩm rất tốt, mình rất hài lòng! ",
+    },
+    {
+        _id: "2",
+        user_id: {
+            image: "https://vcdn1-dulich.vnecdn.net/2021/07/16/1-1626437591.jpg?w=460&h=0&q=100&dpr=2&fit=crop&s=i2M2IgCcw574LT-bXFY92g",
+            name: "Nguyễn Văn A",
+        },
+        createAt: "2025-02-12 14:30",
+        content: "Sản phẩm rất tốt, mình rất hài lòng! ",
+    },
+    {
+        _id: "3",
+        user_id: {
+            image: "https://vcdn1-dulich.vnecdn.net/2021/07/16/1-1626437591.jpg?w=460&h=0&q=100&dpr=2&fit=crop&s=i2M2IgCcw574LT-bXFY92g",
+            name: "Nguyễn Văn A",
+        },
+        createAt: "2025-02-12 14:30",
+        content: "Sản phẩm rất tốt, mình rất hài lòng! ",
+    },
+
+];
+
+
 
 
 const viewdetail = () => {
@@ -68,16 +100,18 @@ const viewdetail = () => {
 
             <View style={styles.containerCharging}>
                 <View style={styles.textNameCharging} >
-                    <Text style={{ color: '#40A19C' }} >
-                        Dichj vuj
+                    <Text style={{ color: '#40A19C', fontSize: 20, }} >
+                        Dịch vụ
                     </Text>
                 </View>
                 <View >
                     <FlatList
                         data={services}
+                        scrollEnabled={false}
                         keyExtractor={(item) => item.id}
                         renderItem={({ item }) => (
-                            <View>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', }} >
+                                <Image style={styles.imgServies} source={item.img} />
                                 <Text style={styles.textService}>
                                     {item.name}
                                 </Text>
@@ -89,48 +123,42 @@ const viewdetail = () => {
             </View>
 
 
-            <FlatList
-                data={ChargingPost}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                    <View>
-                        <View style={styles.containerCharging}>
-                            <View style={styles.textNameCharging} >
-                                <Text style={{ color: '#40A19C' }} >
-                                    Trụ sạc
-                                </Text>
+            <View style={styles.containerCharging}>
+                <View style={styles.textNameCharging} >
+                    <Text style={{ color: '#40A19C', fontSize: 20, }} >
+                        Trụ sạc
+                    </Text>
+                </View>
+                <FlatList
+                    data={ChargingPost}
+                    scrollEnabled={false}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item }) => (
+
+                        <View style={styles.viewChargingPost}>
+
+                            <View style={styles.viewImage} >
+                                <Image style={styles.imgSocket} source={item.imgSocket} />
+                                <Text style={styles.textTypeCharing}>{item.namesocket}</Text>
                             </View>
-                            <View style={{ flexDirection: 'row', }}>
-                                <View style={styles.brand}>
-                                    <Image style={styles.imgbrand} source={require('../../../assets/images/anhso2.jpg')} />
-                                    <Image style={styles.imgbrand} source={require('../../../assets/images/anhso2.jpg')} />
-                                    <Image style={styles.imgbrand} source={require('../../../assets/images/anhso2.jpg')} />
-                                    <Image style={styles.imgbrand} source={require('../../../assets/images/anhso2.jpg')} />
+                            <View style={styles.infoCharing}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+                                    <Image style={styles.imginfoCharing} source={require('../../../assets/icon/icons8-flash-50 (1).png')} />
+                                    <Text style={styles.textInfoCharing}> {item.kw}Kw/h </Text>
                                 </View>
-
-
-                                <View style={styles.infoCharing}>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', }}>
-                                        <Image style={styles.imginfoCharing} source={require('../../../assets/images/anhso2.jpg')} />
-                                        <Text style={styles.textInfoCharing}> {item.kw}Kw/h </Text>
-                                    </View>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', }}>
-                                        <Image style={styles.imginfoCharing} source={require('../../../assets/images/anhso2.jpg')} />
-                                        <Text style={styles.textInfoCharing}>{item.charger} Cong </Text>
-                                    </View>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', }}>
-                                        <Image style={styles.imginfoCharing} source={require('../../../assets/images/anhso2.jpg')} />
-                                        <Text style={styles.textInfoCharing}> {item.money}/Kwh </Text>
-                                    </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+                                    <Image style={styles.imginfoCharing} source={require('../../../assets/icon/icons8-socket-60.png')} />
+                                    <Text style={styles.textInfoCharing}> {item.charger} Cổng sạc  </Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+                                    <Image style={styles.imginfoCharing} source={require('../../../assets/icon/icons8-money-50 (1).png')} />
+                                    <Text style={styles.textInfoCharing}> {item.money}/Kwh </Text>
                                 </View>
                             </View>
                         </View>
-
-                    </View>
-
-                )}
-            />
-
+                    )}
+                />
+            </View>
             <View>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }} >
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -138,6 +166,23 @@ const viewdetail = () => {
                         <Text style={{ color: '#40A19C', fontSize: 20 }}>(12)</Text>
                     </View>
                     <Text style={styles.textInfo} >Xem thêm </Text>
+                </View>
+                <View>
+                    <View style={styles.containerRate}>
+                        <View  >
+                            <FlatList
+                                data={fakeData}
+                                scrollEnabled={false}
+                                keyExtractor={(item) => item.id}
+                                renderItem={({ item }) => (
+                                    <View style={styles.listRate}>
+                                        <ItemRating data={item} />
+                                    </View>
+                                )}
+                            />
+                        </View>
+                    </View>
+
                 </View>
             </View>
         </ScrollView>
@@ -153,23 +198,28 @@ const styles = StyleSheet.create({
     containerCharging: {
         margin: '5%',
         marginTop: '10%',
-        backgroundColor: 'white',
+        padding: '5%',
+        backgroundColor: 'E9F6F5',
         borderWidth: 1,
         borderRadius: 10,
-        borderColor: '#40A19C',
+        borderColor: '#C7C6C5',
         elevation: 5,
+    },
+    containerRate: {
+        borderRadius: 10,
+        borderColor: '#C7C6C5',
     },
     textNameCharging: {
         alignItems: 'center',
         width: '40%',
         padding: '5%',
         marginLeft: '10%',
-        marginTop: '-8%',
+        marginTop: '-15%',
         margin: '5%',
         backgroundColor: 'white',
         borderWidth: 1,
         borderRadius: 10,
-        borderColor: '#40A19C',
+        borderColor: '#C7C6C5',
     },
     textName: {
         fontSize: 24,
@@ -203,7 +253,7 @@ const styles = StyleSheet.create({
         margin: '5%'
     },
     imgMain: {
-        height: 300,
+        height: 100,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -214,13 +264,21 @@ const styles = StyleSheet.create({
         alignItems: 'center',
 
     },
+    imgSocket: {
+        width: 80,
+        height: 80,
+    },
+    imgServies: {
+        width: 50,
+        height: 50,
+    },
     boxMain: {
-        marginTop: '-10%',
+        marginTop: '15%',
         margin: '5%',
         padding: '5%',
         backgroundColor: 'white',
         borderWidth: 1,
-        borderColor: '#40A19C',
+        borderColor: '#C7C6C5',
         borderRadius: 20,
         elevation: 5,
     },
@@ -243,23 +301,11 @@ const styles = StyleSheet.create({
         borderRadius: 30,
     },
     infoCharing: {
-        width: '40%',
-        marginTop: '-12%',
-        marginBottom: '-0.5%',
-        marginLeft: '5%',
         justifyContent: 'space-around',
-        backgroundColor: '#40A19C',
-        paddingLeft: '10%',
-        borderRadius: 10,
-        borderBottomLeftRadius: 0,
-        borderTopLeftRadius: 0,
-
-        borderColor: '#40A19C'
+        marginLeft: '10%',
     },
     imginfoCharing: {
-        margin: '5%',
-        marginLeft: '-20%',
-        marginBottom: '10%',
+
         width: 30,
         height: 30,
         borderRadius: 30,
@@ -267,13 +313,37 @@ const styles = StyleSheet.create({
     textInfoCharing: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: 'white',
     },
-    textService:{
-        margin:'5%',
-        marginTop:'0',
+    textService: {
+        marginLeft: '5%',
+        marginTop: '0',
         fontSize: 20,
         fontWeight: 'bold',
-    }
+    },
+    textTypeCharing: {
+        fontSize: 18,
+
+        fontWeight: '500'
+    },
+    viewImage: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    viewChargingPost: {
+        borderRadius: 10,
+        borderWidth: 1,
+        flexDirection: 'row',
+        marginRight: 0,
+        marginLeft: 0,
+        marginBottom: '5%',
+        borderColor: '#C7C6C5',
+        backgroundColor: '#E9F6F5',
+        padding: '5%',
+        elevation: 5,
+    },
+    listRate: {
+        margin: '0%',
+        alignItems:'center'
+    },
 
 })

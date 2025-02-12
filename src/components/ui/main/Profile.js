@@ -1,7 +1,6 @@
 import { StyleSheet, Text, View,ScrollView,Image } from 'react-native'
-import React from 'react'
-
-
+import React, { useState } from 'react'
+import { TextInputProfile,CustomButton } from '../../item/Item'
 
 const Profile = () => {
   return (
@@ -11,6 +10,13 @@ const Profile = () => {
           <Image style={styles.imguser} source={require('../../../assets/images/anhso1.jpg')} />
           <Text style={styles.textNameuser} >Nguyen van a</Text>
         </View>
+      </View>
+      <View  style={{alignItems:'center',justifyContent:'center',height:400}} >
+          <TextInputProfile label={'Tên của bạn'} placeholder={'Nguyen van a'} />
+          <TextInputProfile label={'Tài khoản Email'} placeholder={'nguyenvaa211@gmail.com'} />
+          <TextInputProfile label={'Số điện thoại'} placeholder={'00123456789'} />
+
+         <CustomButton label={'Xác nhận lưu'}/>
       </View>
     </ScrollView>
   )
@@ -34,15 +40,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   imguser: {
-    width: '200',
-    height: '200',
+    width: 200,
+    height: 200,
     borderRadius: 100,
-  },
-  imgIcon: {
-    width: '50',
-    height: '50',
-    borderRadius: 100,
-    marginRight: '5%'
   },
   textNameuser: {
     fontSize: 24,
