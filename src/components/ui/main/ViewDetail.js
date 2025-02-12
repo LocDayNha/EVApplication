@@ -17,14 +17,14 @@ const services = [
     { id: '4', name: 'Nhà vệ sinh' },
 ];
 
-const imageBrand = [
-    require('./image/054_the_sinful_spoils_hunter_fiend_by_virgo4th_dg4snis-pre.jpg'),
-    require('./image/054_the_sinful_spoils_hunter_fiend_by_virgo4th_dg4snis-pre.jpg'),
-    require('./image/054_the_sinful_spoils_hunter_fiend_by_virgo4th_dg4snis-pre.jpg'),
-    require('./image/054_the_sinful_spoils_hunter_fiend_by_virgo4th_dg4snis-pre.jpg'),
-    require('./image/054_the_sinful_spoils_hunter_fiend_by_virgo4th_dg4snis-pre.jpg'),
+// const imageBrand = [
+//     require('./image/054_the_sinful_spoils_hunter_fiend_by_virgo4th_dg4snis-pre.jpg'),
+//     require('./image/054_the_sinful_spoils_hunter_fiend_by_virgo4th_dg4snis-pre.jpg'),
+//     require('./image/054_the_sinful_spoils_hunter_fiend_by_virgo4th_dg4snis-pre.jpg'),
+//     require('./image/054_the_sinful_spoils_hunter_fiend_by_virgo4th_dg4snis-pre.jpg'),
+//     require('./image/054_the_sinful_spoils_hunter_fiend_by_virgo4th_dg4snis-pre.jpg'),
 
-];
+// ];
 
 // const kwMap = Object.fromEntries(nameKw.map(({ id, Kw }) => [id, Kw.join(', ')]));
 // const mergedData = nameChargingStation.map(station => ({
@@ -37,24 +37,24 @@ const viewdetail = () => {
     return (
         <ScrollView style={styles.container}>
             <View style={styles.imgMain} >
-                <Image source={require('./image/anhso2.jpg')} />
+                <Image source={require('../../../assets/images//anhso2.jpg')} />
             </View>
             <View style={styles.boxMain}>
                 <Text style={styles.textName}>Cuu Hang Xang Dau </Text>
                 <View style={styles.detailStation}>
-                    <Image style={styles.imgIconMain} source={require('./image/icons8-location-30.png')} />
+                    <Image style={styles.imgIconMain} source={require('../../../assets/icon/icons8-location-30.png')} />
                     <Text style={styles.textMain}> Đường số 1,Phường 123,Quận 5</Text>
                 </View>
                 <View style={styles.detailStation}>
-                    <Image style={styles.imgIconMain} source={require('./image/icons8-distance-24.png')} />
+                    <Image style={styles.imgIconMain} source={require('../../../assets/icon/icons8-distance-24.png')} />
                     <Text style={styles.textMain}> 3.5Km</Text>
                 </View>
                 <View style={styles.detailStation}>
-                    <Image style={styles.imgIconMain} source={require('./image/icons8-charging-station-64.png')} />
+                    <Image style={styles.imgIconMain} source={require('../../../assets/icon/icons8-charging-station-64.png')} />
                     <Text style={styles.textMain22}> Đang hoạt Động</Text>
                 </View>
                 <View style={styles.detailStation}>
-                    <Image style={styles.imgIconMain} source={require('./image/icons8-time-50.png')} />
+                    <Image style={styles.imgIconMain} source={require('../../../assets/icon/icons8-time-50.png')} />
                     <Text style={styles.textMain}> 00:00 - 12:00</Text>
                 </View>
             </View>
@@ -63,52 +63,6 @@ const viewdetail = () => {
                     <Text style={styles.textInfo}> Thông Tin tổng quan </Text>
                 </View>
             </View>
-
-
-
-
-            <FlatList
-                data={ChargingPost}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                    <View>
-                        <View style={styles.containerCharging}>
-                            <View style={styles.textNameCharging} >
-                                <Text style={{ color: '#40A19C' }} >
-                                    Trụ sạc
-                                </Text>
-                            </View>
-                            <View style={{ flexDirection: 'row', }}>
-                                <View style={styles.brand}>
-                                    <Image style={styles.imgbrand} source={require('./image/anhso2.jpg')} />
-                                    <Image style={styles.imgbrand} source={require('./image/anhso2.jpg')} />
-                                    <Image style={styles.imgbrand} source={require('./image/anhso2.jpg')} />
-                                    <Image style={styles.imgbrand} source={require('./image/anhso2.jpg')} />
-                                </View>
-
-
-                                <View style={styles.infoCharing}>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', }}>
-                                        <Image style={styles.imginfoCharing} source={require('./image/anhso2.jpg')} />
-                                        <Text style={styles.textInfoCharing}> {item.kw}Kw/h </Text>
-                                    </View>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', }}>
-                                        <Image style={styles.imginfoCharing} source={require('./image/anhso2.jpg')} />
-                                        <Text style={styles.textInfoCharing}>{item.charger} Cong </Text>
-                                    </View>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', }}>
-                                        <Image style={styles.imginfoCharing} source={require('./image/anhso2.jpg')} />
-                                        <Text style={styles.textInfoCharing}> {item.money}/Kwh </Text>
-                                    </View>
-                                </View>
-                            </View>
-                        </View>
-
-                    </View>
-
-                )}
-            />
-
 
             {/* Dich Vu  */}
 
@@ -134,6 +88,48 @@ const viewdetail = () => {
                 </View>
             </View>
 
+
+            <FlatList
+                data={ChargingPost}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                    <View>
+                        <View style={styles.containerCharging}>
+                            <View style={styles.textNameCharging} >
+                                <Text style={{ color: '#40A19C' }} >
+                                    Trụ sạc
+                                </Text>
+                            </View>
+                            <View style={{ flexDirection: 'row', }}>
+                                <View style={styles.brand}>
+                                    <Image style={styles.imgbrand} source={require('../../../assets/images/anhso2.jpg')} />
+                                    <Image style={styles.imgbrand} source={require('../../../assets/images/anhso2.jpg')} />
+                                    <Image style={styles.imgbrand} source={require('../../../assets/images/anhso2.jpg')} />
+                                    <Image style={styles.imgbrand} source={require('../../../assets/images/anhso2.jpg')} />
+                                </View>
+
+
+                                <View style={styles.infoCharing}>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+                                        <Image style={styles.imginfoCharing} source={require('../../../assets/images/anhso2.jpg')} />
+                                        <Text style={styles.textInfoCharing}> {item.kw}Kw/h </Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+                                        <Image style={styles.imginfoCharing} source={require('../../../assets/images/anhso2.jpg')} />
+                                        <Text style={styles.textInfoCharing}>{item.charger} Cong </Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+                                        <Image style={styles.imginfoCharing} source={require('../../../assets/images/anhso2.jpg')} />
+                                        <Text style={styles.textInfoCharing}> {item.money}/Kwh </Text>
+                                    </View>
+                                </View>
+                            </View>
+                        </View>
+
+                    </View>
+
+                )}
+            />
 
             <View>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }} >

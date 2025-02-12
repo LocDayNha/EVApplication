@@ -8,7 +8,7 @@ const Profile = () => {
     <ScrollView >
       <View style={styles.user}>
         <View style={styles.viewUser}>
-          <Image style={styles.imguser} source={require('./image/anhso1.jpg')} />
+          <Image style={styles.imguser} source={require('../../../assets/images/anhso1.jpg')} />
           <Text style={styles.textNameuser} >Nguyen van a</Text>
         </View>
       </View>

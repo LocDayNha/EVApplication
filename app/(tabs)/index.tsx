@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeRouter, Routes, Route, Link } from "react-router-native";
 import Login from "../../src/components/ui/begin/Login";
 import Home from "../../src/components/ui/main/Home";
-import HomeOld from "../../src/components/ui/main/HomeOld";
+//import HomeOld from "../../src/components/ui/main/HomeOld";
 import ViewDetail from "../../src/components/ui/main/ViewDetail";
 import Setting from "../../src/components/ui/main/Setting";
 import Profile from "../../src/components/ui/main/Profile";
@@ -33,7 +33,7 @@ export default function App() {
         </View>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/home-old" element={<HomeOld />} />
+          {/* <Route path="/home-old" element={<HomeOld />} /> */}
           <Route path="/view-detail" element={<ViewDetail />} />
           <Route path="/login" element={<Login />} />
           <Route path="/setting" element={<Setting />} />

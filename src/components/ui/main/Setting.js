@@ -9,29 +9,29 @@ const Setting = () => {
         <ScrollView >
             <View style={styles.user}>
                 <View style={styles.viewUser}>
-                    <Image style={styles.imguser} source={require('./image/anhso1.jpg')} />
+                    <Image style={styles.imguser} source={require('../../../assets/images/anhso1.jpg')} />
                     <Text style={styles.textNameuser} >Nguyen van a</Text>
                 </View>
             </View>
             <View style={styles.boxSetting}>
                 <TouchableOpacity style={styles.boxContent} onPress={() => navigate("/profile")}>
-                    <Image style={styles.imgIcon} source={require('./image/iconUser.png')} />
+                    <Image style={styles.imgIcon} source={require('../../../assets/icon//iconUser.png')} />
                     <Text style={styles.textNameSetting}>Thông tin người dùng</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.boxContent}>
-                    <Image style={styles.imgIcon} source={require('./image/iconMail.png')} />
+                    <Image style={styles.imgIcon} source={require('../../../assets/icon/iconMail.png')} />
                     <Text style={styles.textNameSetting}>Liên hệ chúng tôi </Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.boxContent}>
-                    <Image style={styles.imgIcon} source={require('./image/iconDarkMode.png')} />
+                    <Image style={styles.imgIcon} source={require('../../../assets/icon/iconDarkMode.png')} />
                     <Text style={styles.textNameSetting}>Chế độ tối </Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.boxContent}>
-                    <Image style={styles.imgIcon} source={require('./image/iconRate.png')} />
+                    <Image style={styles.imgIcon} source={require('../../../assets/icon/iconRate.png')} />
                     <Text style={styles.textNameSetting}>Đánh giá ứng dụng</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.boxContent}>
-                    <Image style={styles.imgIcon} source={require('./image/IconExit.png')} />
+                    <Image style={styles.imgIcon} source={require('../../../assets/icon/IconExit.png')} />
                     <Text style={styles.textNameSetting}>Thoát</Text>
                 </TouchableOpacity>
                 

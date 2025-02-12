@@ -38,17 +38,16 @@ const services = [
     { id: '4', name: 'Nhà vệ sinh' },
 ];
 
-const imageBrand = [
-    require('./image/054_the_sinful_spoils_hunter_fiend_by_virgo4th_dg4snis-pre.jpg'),
-    require('./image/054_the_sinful_spoils_hunter_fiend_by_virgo4th_dg4snis-pre.jpg'),
-    require('./image/054_the_sinful_spoils_hunter_fiend_by_virgo4th_dg4snis-pre.jpg'),
-    require('./image/054_the_sinful_spoils_hunter_fiend_by_virgo4th_dg4snis-pre.jpg'),
-    require('./image/054_the_sinful_spoils_hunter_fiend_by_virgo4th_dg4snis-pre.jpg'),
-    require('./image/054_the_sinful_spoils_hunter_fiend_by_virgo4th_dg4snis-pre.jpg'),
-    require('./image/054_the_sinful_spoils_hunter_fiend_by_virgo4th_dg4snis-pre.jpg'),
-    require('./image/054_the_sinful_spoils_hunter_fiend_by_virgo4th_dg4snis-pre.jpg'),
-    require('./image/054_the_sinful_spoils_hunter_fiend_by_virgo4th_dg4snis-pre.jpg'),
-];
+// const imageBrand = [
+//     require('../../../assets/image/anhso3.jpg'),
+//     require('../../../assets/image/anhso3.jpg'),
+//     require('../../../assets/image/anhso3.jpg'),
+//     require('../../../assets/image/anhso3.jpg'),
+//     require('../../../assets/image/anhso3.jpg'),
+//     require('../../../assets/image/anhso3.jpg'),
+//     require('../../../assets/image/anhso3.jpg'),
+//     require('../../../assets/image/anhso3.jpg'),
+// ];
 
 const home = () => {
     const [showChargingStations, setShowChargingStations] = useState(true);
@@ -60,7 +59,7 @@ const home = () => {
             {/* Ten nguoi dung */}
             <View style={[styles.containerUser, { height: '9%' }]}>
                 <View>
-                    <Image style={styles.img} source={require('./image/054_the_sinful_spoils_hunter_fiend_by_virgo4th_dg4snis-pre.jpg')} />
+                    <Image style={styles.img} source={require('../../../assets/images/anhso3.jpg')} />
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '83%' }}>
                     <View>
@@ -68,7 +67,7 @@ const home = () => {
                         <Text style={styles.titleContainer}>Welcom Back</Text>
                     </View>
                     <TouchableOpacity style={styles.boderIcon}>
-                        <Image style={styles.iconFilter} source={require('./image/icons8-notification-50.png')} />
+                        <Image style={styles.iconFilter} source={require('../../../assets/icon/icons8-notification-50.png')} />
                     </TouchableOpacity>
                 </View>
 
@@ -76,7 +75,7 @@ const home = () => {
             <View style={styles.inputSearch}>
                 <View style={styles.boderSearch}><TextInput style={{ marginLeft: '5%' }} placeholder="Tìm kiếm địa chỉ " /></View>
                 <TouchableOpacity style={styles.boderIcon}>
-                    <Image style={styles.iconFilter} source={require('./image/icons8-filter-50 (1).png')} />
+                    <Image style={styles.iconFilter} source={require('../../../assets/icon/icons8-filter-50 (1).png')} />
                 </TouchableOpacity>
             </View>
 
@@ -93,14 +92,14 @@ const home = () => {
                         renderItem={({ item }) => (
                             <TouchableOpacity style={styles.listRow} onPress={() => navigate("/view-detail")}>
                                 <View style={styles.viewLocation}>
-                                    <Image style={styles.imgLocation} source={require('./image/icons8-location-50.png')} />
+                                    <Image style={styles.imgLocation} source={require('../../../assets/icon/icons8-location-50.png')} />
                                     <View>
                                         <Text style={styles.textItemName}>{item.name}</Text>
                                         <Text style={styles.textItemLocation}>{item.location}</Text>
                                     </View>
                                 </View>
                                 <View style={styles.viewKw}>
-                                    <Image style={styles.imgFlash} source={require('./image/icons8-flash-50 (1).png')} />
+                                    <Image style={styles.imgFlash} source={require('../../../assets/icon/icons8-flash-50 (1).png')} />
                                     <Text style={styles.textItemKw} >{item.kw}</Text>
                                 </View>
                                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginLeft: '3%', marginRight: '3%' }}>
@@ -110,7 +109,7 @@ const home = () => {
                                             <Text style={{ color: 'white' }}>
                                                 3.5Km
                                             </Text>
-                                            <Image style={styles.imgNext} source={require('./image/icons8-arrow-64.png')} />
+                                            <Image style={styles.imgNext} source={require('../../../assets/icon/icons8-arrow-64.png')} />
                                         </View>
                                     </TouchableOpacity>
                                 </View>
@@ -121,9 +120,6 @@ const home = () => {
                 </View>
 
             </View>
-
-
-
 
         </View>
 
