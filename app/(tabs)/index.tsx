@@ -1,64 +1,66 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { NativeRouter, Routes, Route, Link } from 'react-router-native';
 import Login from "../../src/components/ui/begin/Login";
 import Home from "../../src/components/ui/main/Home";
+import HomeOld from "../../src/components/ui/main/HomeOld";
+import ViewDetail from "../../src/components/ui/main/ViewDetail";
+import Setting from "../../src/components/ui/main/Setting";
+import Profile from "../../src/components/ui/main/Profile";
 import { TextInputBegin, TextInputMain, CustomButton, TextInputProfile, ItemRating } from "../../src/components/item/Item";
 
+
 export default function App() {
-
-  const data = [
-    {
-      "_id": "1",
-      "user_id": {
-        "image": "https://firebasestorage.googleapis.com/v0/b/phoenix-restaurant-401d8.appspot.com/o/dada4ea29dc1fd4732baa59e0fae0b97.jpg?alt=media&token=cdd90126-8993-48e5-aaca-fbfa9013143a",
-        "name": "Nguyễn Trần Trung Quốc"
-      },
-      "star": 4.5,
-      "createAt": "12/02/2025 : 13:13",
-      "content": "This is an example of content for user John Doe.This is an example of content for user John Doe.This is an example of content for user John Doe.This is an example of content for user John Doe."
-    },
-    {
-      "_id": "2",
-      "user_id": {
-        "image": "https://firebasestorage.googleapis.com/v0/b/phoenix-restaurant-401d8.appspot.com/o/dada4ea29dc1fd4732baa59e0fae0b97.jpg?alt=media&token=cdd90126-8993-48e5-aaca-fbfa9013143a",
-        "name": "Jane Smith"
-      },
-      "star": 5,
-      "createAt": "11/02/2025 : 10:45",
-      "content": "Jane's review content goes here."
-    },
-    {
-      "_id": "3",
-      "user_id": {
-        "image": "https://firebasestorage.googleapis.com/v0/b/phoenix-restaurant-401d8.appspot.com/o/dada4ea29dc1fd4732baa59e0fae0b97.jpg?alt=media&token=cdd90126-8993-48e5-aaca-fbfa9013143a",
-        "name": "Michael Johnson"
-      },
-      "star": 3.5,
-      "createAt": "10/02/2025 : 08:30",
-      "content": "Michael shared his thoughts on this topic."
-    }
-  ];
-  
-
-  const [text, setText] = useState("");
-
   return (
-    <FlatList
-    data={data}
-    renderItem={({item}) => <ItemRating data={item} />}
-    keyExtractor={item => item._id}
-    numColumns={1}
-    showsVerticalScrollIndicator={false}
-    />
+    <NativeRouter>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.nav}>
+          <Link to="/" style={styles.navItem}>
+            <Text style={styles.navText}>Home</Text>
+          </Link>
+          <Link to="/home-old" style={styles.navItem}>
+            <Text style={styles.navText}>Home Old</Text>
+          </Link>
+          <Link to="/view-detail" style={styles.navItem}>
+            <Text style={styles.navText}>View Detail</Text>
+          </Link>
+          <Link to="/login" style={styles.navItem}>
+            <Text style={styles.navText}>Login</Text>
+          </Link>
+          <Link to="/setting" style={styles.navItem}>
+            <Text style={styles.navText}>Setting</Text>
+          </Link>
+        </View>
+
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/home-old" element={<HomeOld />} />
+          <Route path="/view-detail" element={<ViewDetail />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/setting" element={<Setting />} />
+          <Route path="/profile" element={<Profile />} />
+        </Routes>
+      </SafeAreaView>
+    </NativeRouter>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+  },
+  nav: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    padding: 10,
+    backgroundColor: "#ddd",
+  },
+  navItem: {
+    padding: 5,
+  },
+  navText: {
+    fontSize: 16,
+    color: "blue",
   },
 });
