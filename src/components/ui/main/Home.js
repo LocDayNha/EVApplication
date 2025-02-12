@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, Image, Button, TouchableOpacity, FlatList, SectionList, ImageBase, TextInput } from 'react-native';
 import React, { useState } from 'react';
+import { useNavigate } from "react-router-native";
 
 const nameChargingStation = [
     { id: '0', name: 'Tram1', location: '123,456' },
@@ -16,6 +17,18 @@ const nameKw = [
     { id: '3', Kw: ['60Kw', '60Kw', '60Kw'] },
     { id: '4', Kw: ['60Kw', '60Kw', '60Kw'] },
 ];
+
+
+
+// const mergedData = nameChargingStation.map(station => {
+//     const kwData = nameKw.find(kw => kw.id === station.id);
+//     return { ...station, kw: kwData ? kwData.Kw.join(', ') : 'N/A' };
+// });
+const kwMap = Object.fromEntries(nameKw.map(({ id, Kw }) => [id, Kw.join(', ')]));
+const mergedData = nameChargingStation.map(station => ({
+    ...station,
+    kw: kwMap[station.id] || 'N/A'
+}));
 
 const services = [
     { id: '0', name: 'Đồ ăn' },
@@ -37,16 +50,11 @@ const imageBrand = [
     require('./image/054_the_sinful_spoils_hunter_fiend_by_virgo4th_dg4snis-pre.jpg'),
 ];
 
-const mergedData = nameChargingStation.map(station => {
-    const kwData = nameKw.find(kw => kw.id === station.id);
-    return { ...station, kw: kwData ? kwData.Kw.join(', ') : 'N/A' };
-});
-
 const home = () => {
     const [showChargingStations, setShowChargingStations] = useState(true);
 
     const [changeColor, setChangeColor] = useState(true);
-
+    const navigate = useNavigate();
     return (
         <View  >
             {/* Ten nguoi dung */}
@@ -83,7 +91,7 @@ const home = () => {
                         data={mergedData}
                         keyExtractor={(item) => item.id}
                         renderItem={({ item }) => (
-                            <View style={styles.listRow}>
+                            <TouchableOpacity style={styles.listRow} onPress={() => navigate("/view-detail")}>
                                 <View style={styles.viewLocation}>
                                     <Image style={styles.imgLocation} source={require('./image/icons8-location-50.png')} />
                                     <View>
@@ -107,7 +115,7 @@ const home = () => {
                                     </TouchableOpacity>
                                 </View>
 
-                            </View>
+                            </TouchableOpacity>
                         )}
                     />
                 </View>
