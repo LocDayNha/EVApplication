@@ -1,5 +1,5 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NativeRouter, Routes, Route, Link } from "react-router-native";
 
@@ -10,9 +10,12 @@ import ViewDetail from "../../src/components/ui/main/ViewDetail";
 import Setting from "../../src/components/ui/main/Setting";
 import Profile from "../../src/components/ui/main/Profile";
 
-
+import { CustomTextInput, CustomButton } from "../../src/components/item/Item";
 
 export default function App() {
+
+  const [text, setText] = useState("");
+
   return (
     <NativeRouter>
       <SafeAreaView style={styles.container}>
@@ -33,7 +36,6 @@ export default function App() {
             <Text style={styles.navText}>Setting</Text>
           </Link>
         </View>
-
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/home-old" element={<HomeOld />} />
