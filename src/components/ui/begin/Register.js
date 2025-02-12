@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, COLOR, Alert } from 'react-native'
-import React, { Component, useState } from 'react'
+import React, { Component, useState, alert } from 'react'
 import Icon from "react-native-vector-icons/FontAwesome";
 
 
-const Login = ({ uri, onChangeText, placeholder, onPress }) => {
+const Register = ({ uri, onChangeText, placeholder, onPress }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
@@ -11,7 +11,7 @@ const Login = ({ uri, onChangeText, placeholder, onPress }) => {
       <View>
         <Text style={styles.logoText}>LOGO</Text>
       </View>
-      <Text style={styles.title}>Đăng nhập tài khoản</Text>
+      <Text style={styles.title}>Đăng ký tài khoản</Text>
       <View>
         <View style={styles.inputContainer}>
           <Image source={require('../../../assets/icon/email.png')} style={styles.img} />
@@ -37,22 +37,34 @@ const Login = ({ uri, onChangeText, placeholder, onPress }) => {
             <Image source={require('../../../assets/icon/eye.png')} style={styles.img} />
           </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={onPress}>
-          <Text style={styles.forgotText}>Quên mật khẩu?</Text>
-        </TouchableOpacity>
+      </View>
+      <View>
+        <View style={styles.inputContainer}>
+          <Image source={require('../../../assets/icon/key.png')} style={styles.img} />
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            placeholderTextColor={"#D9D9D9"}
+            onChangeText={(confirmPassword) => setConfirmPassword(confirmPassword)}
+            secureTextEntry={!showPassword}
+          />
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+            <Image source={require('../../../assets/icon/eye.png')} style={styles.img} />
+          </TouchableOpacity>
+        </View>
       </View>
       <TouchableOpacity style={styles.loginButton} onPress={onPress}>
-        <Text style={styles.loginText}>Đăng nhập</Text>
+        <Text style={styles.loginText} onPress={onPress}>Đăng ký</Text>
       </TouchableOpacity>
       <Text style={styles.registerText}>
-        Bạn chưa có tài khoản? <Text style={styles.registerLink} onPress={onPress}>Đăng ký</Text>
+        Bạn đã có tài khoản? <Text style={styles.registerLink} onPress={onPress}>Đăng nhập</Text>
       </Text>
     </View>
   )
 
 }
 
-export default Login
+export default Register
 
 const styles = StyleSheet.create({
   container: {
@@ -63,18 +75,19 @@ const styles = StyleSheet.create({
   },
   img: {
     marginLeft: "5%",
-    marginBottom: 16,
+
   },
   title: {
     fontSize: 18,
     marginTop: 87,
     marginBottom: 44,
     fontWeight: "bold",
+    fontFamily: "Roboto-Regular"
   },
   inputContainer: {
     width: "100%",
     height: 50,
-    paddingLeft: 16,
+    paddingLeft: 15,
     borderWidth: 1,
     borderColor: "#CCCCCC",
     borderRadius: 10,
@@ -82,7 +95,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   input: {
     flex: 1,
@@ -94,8 +107,8 @@ const styles = StyleSheet.create({
   },
   img: {
     marginLeft: 1,
-    marginRight: 16,
     resizeMode: "contain",
+    marginRight: 16,
     tintColor: "#D9D9D9",
   },
   logoText: {
@@ -112,17 +125,12 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 100,
     alignItems: "center",
-    marginTop: 25
+    marginTop: 35
   },
   loginText: {
     color: "#fff",
     fontSize: 20,
     fontWeight: "semibold",
-  },
-  forgotText: {
-    color: "black",
-    fontWeight: 'bold',
-    marginBottom: 20,
   },
   registerText: {
     marginTop: 25,
