@@ -4,6 +4,7 @@ export const COLOR = {
     secondary: '#E9F6F5',
     gray1: '#EDEDED',
     gray2: '#D9D9D9',
+    gray3:"#979592",
 
 
     title: '#4daad2',
