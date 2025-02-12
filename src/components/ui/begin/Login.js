@@ -1,6 +1,5 @@
 import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, COLOR, Alert } from 'react-native'
 import React, { Component, useState } from 'react'
-import Icon from "react-native-vector-icons/FontAwesome";
 
 
 const Login = ({ uri, onChangeText, placeholder, onPress }) => {
@@ -19,7 +18,7 @@ const Login = ({ uri, onChangeText, placeholder, onPress }) => {
             style={styles.input}
             placeholder="Email"
             placeholderTextColor={"#D9D9D9"}
-            onChangeText={(text) => setEmail(text)}
+            onChangeText={onChangeText}
           />
         </View>
       </View>

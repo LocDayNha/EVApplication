@@ -19,7 +19,7 @@ const Register = ({ uri, onChangeText, placeholder, onPress }) => {
             style={styles.input}
             placeholder="Email"
             placeholderTextColor={"#D9D9D9"}
-            onChangeText={(text) => setEmail(text)}
+            onChangeText={onChangeText}
           />
         </View>
       </View>
@@ -45,7 +45,7 @@ const Register = ({ uri, onChangeText, placeholder, onPress }) => {
             style={styles.input}
             placeholder="Password"
             placeholderTextColor={"#D9D9D9"}
-            onChangeText={(confirmPassword) => setConfirmPassword(confirmPassword)}
+            onChangeText={onChangeText}
             secureTextEntry={!showPassword}
           />
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
