@@ -49,13 +49,30 @@ export function CustomButton({ label, onPress }) {
   );
 }
 
-export function ItemRating({data}) {
+export function ItemRating({ data }) {
   return (
-    <View></View>
+    <View style={styles.viewRatingContainer} key={data._id}>
+      <View style={styles.viewRatingUser}>
+        <View style={{marginRight:"5%"}}>
+          <Image source={{ uri: data.user_id.image }} style={styles.imgUser}></Image>
+        </View>
+        <View>
+          <Text style={styles.textNameUser}>{data.user_id.name}</Text>
+          <View style={{flexDirection:"row"}}>
+            <Text>⭐⭐⭐⭐⭐</Text>
+            <Text style={styles.textTimeRating}>{data.createAt}</Text>
+          </View>
+        </View>
+      </View>
+
+      <View style={styles.viewRatingContent}>
+        <Text style={styles.textRatingContent}>{data.content}</Text> 
+      </View>
+    </View>
   );
 }
 
-export function ItemStation({data}) {
+export function ItemStation({ data }) {
   return (
     <View></View>
   );
@@ -118,6 +135,48 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLOR.gray,
     borderRadius: 15
+  },
+  imgUser: {
+    width: 53,
+    height: 53,
+    borderRadius: 30
+  },
+  viewRatingContainer: {
+    borderWidth: 1,
+    width: "85%",
+    borderRadius: 10,
+    borderColor: COLOR.gray3,
+    marginBottom: "2%", 
+    marginTop: "2%", 
+    justifyContent:"center",
+    padding:'2%'
+    
+  },
+  viewRatingUser: {
+    margin: "2%",
+    flexDirection:'row'
+  },
+  viewRatingContent: {
+    margin: "2%",
+    marginBottom:"4%",
+    width:"95%"
+  },
+  textNameUser:{
+    fontSize: 16,
+    color: COLOR.black,
+    fontWeight: 700,
+    fontFamily: 'Poppins',
+    marginBottom:"2%"
+  },
+  textTimeRating:{
+    fontSize: 14,
+    color: COLOR.gray3,
+    fontFamily: 'Poppins',
+    marginLeft:"2%"
+  },
+  textRatingContent:{
+    fontSize: 20,
+    color: COLOR.black,
+    fontFamily: 'Poppins',
   }
-
 });
