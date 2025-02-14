@@ -33,6 +33,15 @@ const type = [
 
 const fakeData = [
     {
+        _id: "0",
+        user_id: {
+            image: "https://vcdn1-dulich.vnecdn.net/2021/07/16/1-1626437591.jpg?w=460&h=0&q=100&dpr=2&fit=crop&s=i2M2IgCcw574LT-bXFY92g",
+            name: "Nguyễn Văn A",
+        },
+        createAt: "2025-02-12 14:30",
+        content: "Sản phẩm rất tốt, mình rất hài lòng! ",
+    },
+    {
         _id: "1",
         user_id: {
             image: "https://vcdn1-dulich.vnecdn.net/2021/07/16/1-1626437591.jpg?w=460&h=0&q=100&dpr=2&fit=crop&s=i2M2IgCcw574LT-bXFY92g",
@@ -50,15 +59,6 @@ const fakeData = [
         createAt: "2025-02-12 14:30",
         content: "Sản phẩm rất tốt, mình rất hài lòng! ",
     },
-    {
-        _id: "3",
-        user_id: {
-            image: "https://vcdn1-dulich.vnecdn.net/2021/07/16/1-1626437591.jpg?w=460&h=0&q=100&dpr=2&fit=crop&s=i2M2IgCcw574LT-bXFY92g",
-            name: "Nguyễn Văn A",
-        },
-        createAt: "2025-02-12 14:30",
-        content: "Sản phẩm rất tốt, mình rất hài lòng! ",
-    },
 
 ];
 
@@ -69,18 +69,15 @@ const viewdetail = () => {
     return (
         <ScrollView style={styles.container}>
             <View style={styles.imgMain} >
-                <Image source={require('../../../assets/images//anhso2.jpg')} />
+                <Image source={require('../../../assets/images/he-thong-cua-hang-xang-dau.png')} />
             </View>
             <View style={styles.boxMain}>
-                <Text style={styles.textName}>Cuu Hang Xang Dau </Text>
+                <Text style={styles.textName}> Vinfast - Cửa hàng xăng dầu Phú Hưng 3  </Text>
                 <View style={styles.detailStation}>
-                    <Image style={styles.imgIconMain} source={require('../../../assets/icon/icons8-location-30.png')} />
-                    <Text style={styles.textMain}> Đường số 1,Phường 123,Quận 5</Text>
+                    <Image style={styles.imgIconMain} source={require('../../../assets/icon/icons8-location-94.png')} />
+                    <Text style={styles.textMain}> 172/7 phường Linh trung, Thủ đức, Hồ Chí Minh</Text>
                 </View>
-                <View style={styles.detailStation}>
-                    <Image style={styles.imgIconMain} source={require('../../../assets/icon/icons8-distance-24.png')} />
-                    <Text style={styles.textMain}> 3.5Km</Text>
-                </View>
+                
                 <View style={styles.detailStation}>
                     <Image style={styles.imgIconMain} source={require('../../../assets/icon/icons8-charging-station-64.png')} />
                     <Text style={styles.textMain22}> Đang hoạt Động</Text>
@@ -88,6 +85,10 @@ const viewdetail = () => {
                 <View style={styles.detailStation}>
                     <Image style={styles.imgIconMain} source={require('../../../assets/icon/icons8-time-50.png')} />
                     <Text style={styles.textMain}> 00:00 - 12:00</Text>
+                </View>
+                <View style={styles.detailStation}>
+                    <Image style={styles.imgIconMain} source={require('../../../assets/icon/icons8-distance-24.png')} />
+                    <Text style={styles.textMain}> 3.5Km</Text>
                 </View>
             </View>
             <View>
@@ -203,7 +204,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 10,
         borderColor: '#C7C6C5',
-        elevation: 5,
     },
     containerRate: {
         borderRadius: 10,
@@ -223,7 +223,8 @@ const styles = StyleSheet.create({
     },
     textName: {
         fontSize: 24,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        textAlign: 'center',
     },
     textNameService: {
         alignItems: 'center',
@@ -242,6 +243,7 @@ const styles = StyleSheet.create({
     },
     textMain: {
         fontSize: 18,
+        textAlign: 'center',
     },
     textMain22: {
         fontSize: 18,
@@ -273,18 +275,27 @@ const styles = StyleSheet.create({
         height: 50,
     },
     boxMain: {
+        alignItems:'center',
+        
         marginTop: '15%',
         margin: '5%',
         padding: '5%',
         backgroundColor: 'white',
-        borderWidth: 1,
-        borderColor: '#C7C6C5',
         borderRadius: 20,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
         elevation: 5,
     },
     detailStation: {
         flexDirection: 'row',
         margin: '2%',
+        marginRight:'3%',
+        marginLeft:'3%',
     },
     brand: {
         width: '50%',
@@ -331,19 +342,25 @@ const styles = StyleSheet.create({
     },
     viewChargingPost: {
         borderRadius: 10,
-        borderWidth: 1,
         flexDirection: 'row',
-        marginRight: 0,
-        marginLeft: 0,
-        marginBottom: '5%',
-        borderColor: '#C7C6C5',
+        marginRight: '2%',
+        marginLeft: '2%',
+        marginTop: '2%',
+        marginBottom: '3%',
         backgroundColor: '#E9F6F5',
         padding: '5%',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
         elevation: 5,
     },
     listRate: {
         margin: '0%',
-        alignItems:'center'
+        alignItems: 'center'
     },
 
 })

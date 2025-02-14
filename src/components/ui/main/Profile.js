@@ -1,23 +1,25 @@
-import { StyleSheet, Text, View,ScrollView,Image } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, Image } from 'react-native'
 import React, { useState } from 'react'
-import { TextInputProfile,CustomButton } from '../../item/Item'
+import { TextInputProfile, CustomButton } from '../../item/Item'
 
 const Profile = () => {
   return (
     <ScrollView >
       <View style={styles.user}>
         <View style={styles.viewUser}>
-          <Image style={styles.imguser} source={require('../../../assets/images/anhso1.jpg')} />
+          <Image style={styles.imguser} source={require('../../../assets/images/anhchandung.jpg')} />
           <Text style={styles.textNameuser} >Nguyen van a</Text>
         </View>
       </View>
-      <View  style={{alignItems:'center',justifyContent:'center',height:400}} >
+      <View style={styles.boxHome}>
+        <View style={{ alignItems: 'center', justifyContent: 'center', height: 400 }} >
           <TextInputProfile label={'Tên của bạn'} placeholder={'Nguyen van a'} />
           <TextInputProfile label={'Tài khoản Email'} placeholder={'nguyenvaa211@gmail.com'} />
           <TextInputProfile label={'Số điện thoại'} placeholder={'00123456789'} />
-
-         <CustomButton label={'Xác nhận lưu'}/>
+          <CustomButton label={'Xác nhận lưu'} />
+        </View>
       </View>
+
     </ScrollView>
   )
 }
@@ -25,6 +27,12 @@ const Profile = () => {
 export default Profile
 
 const styles = StyleSheet.create({
+  boxHome: {
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    marginTop: '-5%',
+    backgroundColor: 'white'
+  },
   container: {
     backgroundColor: '#EFEFEF',
   },
@@ -33,6 +41,7 @@ const styles = StyleSheet.create({
     height: 300,
     justifyContent: 'center',
     alignItems: 'center',
+
   },
   viewUser: {
     margin: '5%',
@@ -55,8 +64,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#C7C6C5',
     margin: '10%',
-
     borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   boxContent: {
     flexDirection: 'row',
@@ -64,5 +80,6 @@ const styles = StyleSheet.create({
     margin: '5%',
     marginRight: '10%',
     marginLeft: '10%',
+
   },
 })

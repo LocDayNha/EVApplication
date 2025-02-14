@@ -8,6 +8,8 @@ import Home from "../../src/components/ui/main/Home";
 import ViewDetail from "../../src/components/ui/main/ViewDetail";
 import Setting from "../../src/components/ui/main/Setting";
 import Profile from "../../src/components/ui/main/Profile";
+import List from "../../src/components/ui/main/ListStation";
+
 import { TextInputBegin, TextInputMain, CustomButton, TextInputProfile, ItemRating } from "../../src/components/item/Item";
 
 export default function App() {
@@ -18,8 +20,8 @@ export default function App() {
           <Link to="/" style={styles.navItem}>
             <Text style={styles.navText}>Home</Text>
           </Link>
-          <Link to="/home-old" style={styles.navItem}>
-            <Text style={styles.navText}>Home Old</Text>
+          <Link to="/list" style={styles.navItem}>
+            <Text style={styles.navText}>List</Text>
           </Link>
           <Link to="/view-detail" style={styles.navItem}>
             <Text style={styles.navText}>View Detail</Text>
@@ -38,6 +40,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/setting" element={<Setting />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/list" element={<List />} />
         </Routes>
       </SafeAreaView>
     </NativeRouter>

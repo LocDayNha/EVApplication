@@ -1,5 +1,8 @@
 import { StyleSheet, View, Text, TouchableOpacity, TextInput, Image } from "react-native";
 import { COLOR } from "../../assets/Theme/Theme";
+import { useNavigate } from "react-router-native";
+
+
 
 export function TextInputBegin({ uri, onChangeText, placeholder }) {
   return (
@@ -53,12 +56,12 @@ export function ItemRating({ data }) {
   return (
     <View style={styles.viewRatingContainer} key={data._id}>
       <View style={styles.viewRatingUser}>
-        <View style={{marginRight:"5%"}}>
+        <View style={{ marginRight: "5%" }}>
           <Image source={{ uri: data.user_id.image }} style={styles.imgUser}></Image>
         </View>
         <View>
           <Text style={styles.textNameUser}>{data.user_id.name}</Text>
-          <View style={{flexDirection:"row"}}>
+          <View style={{ flexDirection: "row" }}>
             <Text>⭐⭐⭐⭐⭐</Text>
             <Text style={styles.textTimeRating}>{data.createAt}</Text>
           </View>
@@ -66,15 +69,36 @@ export function ItemRating({ data }) {
       </View>
 
       <View style={styles.viewRatingContent}>
-        <Text style={styles.textRatingContent}>{data.content}</Text> 
+        <Text style={styles.textRatingContent}>{data.content}</Text>
       </View>
     </View>
   );
 }
 
 export function ItemStation({ data }) {
+  const navigate = useNavigate();
   return (
-    <View></View>
+    <TouchableOpacity style={styles.listRow} onPress={() => navigate("/view-detail")}>
+      <Image style={styles.imgStation} source={{ uri: data.image }} />
+      <View style={styles.viewInfoStation}>
+        <Text style={styles.textItemName}>{data.brand} - {data.name}</Text>
+        <Text style={styles.textItemLocation}>{data.location}</Text>
+      </View>
+      <View style={styles.viewInfoStation}>
+        <Text style={styles.textItemLocation}>{data.time}</Text>
+      </View>
+      <View style={styles.viewInfoStation2}>
+        <Text style={styles.textItemLocation} >{data.type}</Text>
+        <TouchableOpacity>
+          <View style={styles.viewButtonItem} >
+            <Text style={{ color: 'white' }}>
+              3.5Km
+            </Text>
+            <Image style={styles.imgNext} source={require('../../assets/icon/icons8-arrow-64.png')} />
+          </View>
+        </TouchableOpacity>
+      </View>
+    </TouchableOpacity>
   );
 }
 
@@ -146,37 +170,100 @@ const styles = StyleSheet.create({
     width: "85%",
     borderRadius: 10,
     borderColor: COLOR.gray3,
-    marginBottom: "2%", 
-    marginTop: "2%", 
-    justifyContent:"center",
-    padding:'2%'
-    
+    marginBottom: "2%",
+    marginTop: "2%",
+    justifyContent: "center",
+    padding: '2%'
+
   },
   viewRatingUser: {
     margin: "2%",
-    flexDirection:'row'
+    flexDirection: 'row'
   },
   viewRatingContent: {
     margin: "2%",
-    marginBottom:"4%",
-    width:"95%"
+    marginBottom: "4%",
+    width: "95%"
   },
-  textNameUser:{
+  textNameUser: {
     fontSize: 16,
     color: COLOR.black,
     fontWeight: 700,
     fontFamily: 'Poppins',
-    marginBottom:"2%"
+    marginBottom: "2%"
   },
-  textTimeRating:{
+  textTimeRating: {
     fontSize: 14,
     color: COLOR.gray3,
     fontFamily: 'Poppins',
-    marginLeft:"2%"
+    marginLeft: "2%"
   },
-  textRatingContent:{
+  textRatingContent: {
     fontSize: 20,
     color: COLOR.black,
     fontFamily: 'Poppins',
-  }
+  },
+
+  // item list 
+
+  listRow: {
+    margin: '5%',
+    marginTop: '0%',
+    marginBottom: '4%',
+    borderRadius: 25,
+    backgroundColor: 'white',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  imgStation: {
+    width: 'auto',
+    height: 180,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  textItemName: {
+    marginTop: '1%',
+    color: 'rgb(0, 0, 0)',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  textItemLocation: {
+    color: '#544C4C',
+    fontSize: 18,
+    marginBottom: '0.1%',
+    marginTop: '0.1%',
+  },
+  viewButtonItem: {
+    width: 90,
+    height: 30,
+    flexDirection: 'row',
+    backgroundColor: '#40A19C',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    borderRadius: 30,
+    color: 'white',
+  },
+  imgNext: {
+    width: 30,
+    height: 30,
+  },
+  viewInfoStation: {
+    margin: '5%',
+    marginBottom: 0,
+    marginTop: 0,
+  },
+  viewInfoStation2: {
+    margin: '5%',
+    marginBottom: '3%',
+    marginTop: 0,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row'
+  },
 });
