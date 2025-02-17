@@ -10,6 +10,8 @@ import Home from "../../src/components/ui/main/Home";
 import ViewDetail from "../../src/components/ui/main/ViewDetail";
 import Setting from "../../src/components/ui/main/Setting";
 import Profile from "../../src/components/ui/main/Profile";
+import Verification from "../../src/components/ui/begin/Verification"
+import NewPassword from "../../src/components/ui/begin/NewPassword";
 import { TextInputBegin, TextInputMain, CustomButton, TextInputProfile, ItemRating } from "../../src/components/item/Item";
 
 export default function App() {
@@ -29,6 +31,9 @@ export default function App() {
         <Link to="/login" style={styles.navItem}>
           <Text style={styles.navText}>Login</Text>
         </Link>
+        <Link to="/register" style={styles.navItem}>
+          <Text style={styles.navText}>Register</Text>
+        </Link>
         <Link to="/setting" style={styles.navItem}>
           <Text style={styles.navText}>Setting</Text>
         </Link>
@@ -37,7 +42,8 @@ export default function App() {
         <Route path="/" element={<Home />} />
         {/* <Route path="/home-old" element={<HomeOld />} /> */}
         <Route path="/view-detail" element={<ViewDetail />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Login/>} />
+        <Route path="/register" element={<Register />} />
         <Route path="/setting" element={<Setting />} />
         <Route path="/profile" element={<Profile />} />
       </Routes>

@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, COLOR, Aler
 import React, { Component, useState } from 'react'
 
 
-const Login = ({ uri, onChangeText, placeholder, onPress }) => {
+const Login = ({ uri, onChangeText, placeholder, onPress, navigation }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
@@ -36,8 +36,8 @@ const Login = ({ uri, onChangeText, placeholder, onPress }) => {
             <Image source={require('../../../assets/icon/eye.png')} style={styles.img} />
           </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={onPress}>
-          <Text style={styles.forgotText}>Quên mật khẩu?</Text>
+        <TouchableOpacity>
+          <Text style={styles.forgotText} onPress={onPress}>Quên mật khẩu?</Text>
         </TouchableOpacity>
       </View>
       <TouchableOpacity style={styles.loginButton} onPress={onPress}>
