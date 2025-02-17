@@ -1,6 +1,8 @@
-import { StyleSheet, View, Text, TouchableOpacity, TextInput, Image } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, TextInput, Image, Modal, ScrollView } from "react-native";
 import { COLOR } from "../../assets/Theme/Theme";
 import { useNavigate } from "react-router-native";
+import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
 
 
 
@@ -61,8 +63,8 @@ export function ItemRating({ data }) {
         </View>
         <View>
           <Text style={styles.textNameUser}>{data.user_id.name}</Text>
-          <View style={{ flexDirection: "row" }}>
-            <Text>⭐⭐⭐⭐⭐</Text>
+          <View style={{ flexDirection: "row", }}>
+            <Text>{'⭐'.repeat(data.rating)}</Text>
             <Text style={styles.textTimeRating}>{data.createAt}</Text>
           </View>
         </View>
@@ -76,19 +78,78 @@ export function ItemRating({ data }) {
 }
 
 export function ItemStation({ data }) {
-  const navigate = useNavigate();
+  const navigation = useNavigation();
+  const [modalVisible, setModalVisible] = useState(false);
   return (
-    <TouchableOpacity style={styles.listRow} onPress={() => navigate("/view-detail")}>
+    <View>
+      <TouchableOpacity style={styles.listRow} onPress={() => navigation.navigate("ViewDetail")}>
+        <Image style={styles.imgStation} source={{ uri: data.image }} />
+
+        <View style={styles.viewInfoStation}>
+          <Text style={styles.textItemName} numberOfLines={1} ellipsizeMode='tail'>{data.brand} - {data.name}</Text>
+          <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail'>{data.location}</Text>
+        </View>
+        <View style={styles.viewInfoStation}>
+          <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail'>{data.time}</Text>
+        </View>
+        <View style={styles.viewInfoStation2}>
+          <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail' >{data.type.join("/")}</Text>
+          <TouchableOpacity>
+            <View style={styles.viewButtonItem} >
+              <Text style={{ color: 'white' }}>
+                3.5Km
+              </Text>
+              <Image style={styles.imgNext} source={require('../../assets/icon/icons8-arrow-64.png')} />
+            </View>
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity style={{ position: 'absolute', top: 10, right: 20, }} onPress={() => {
+          setModalVisible(true)
+        }}>
+          <Image style={{ width: 40, height: 40, }} source={require('../../assets/icon/icons8-more-100.png')} />
+        </TouchableOpacity>
+      </TouchableOpacity>
+      <Modal transparent={true} visible={modalVisible} animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Lựa chọn</Text>
+            
+              <TouchableOpacity style={styles.modalTitleSup}>
+                <Text >Cập nhật trạm sạc </Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalTitleSup}>
+                <Text >Cập nhật trạng thái </Text>
+              </TouchableOpacity>
+            {/* nút */}
+            <View style={styles.buttonRow}>
+              <TouchableOpacity onPress={() => {
+                setModalVisible(false)
+              }}
+                style={styles.cancelButton}>
+                <Text style={{ color: '#40A19C' }}>Quay lại </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </View>
+
+  );
+}
+export function ItemStationMain({ data }) {
+  const navigation = useNavigation();
+  return (
+    <TouchableOpacity style={styles.listRow} onPress={() => navigation.navigate("ViewDetail")}>
       <Image style={styles.imgStation} source={{ uri: data.image }} />
       <View style={styles.viewInfoStation}>
-        <Text style={styles.textItemName}>{data.brand} - {data.name}</Text>
-        <Text style={styles.textItemLocation}>{data.location}</Text>
+        <Text style={styles.textItemName} numberOfLines={1} ellipsizeMode='tail'>{data.brand} - {data.name}</Text>
+        <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail'>{data.location}</Text>
       </View>
       <View style={styles.viewInfoStation}>
-        <Text style={styles.textItemLocation}>{data.time}</Text>
+        <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail'>{data.time}</Text>
       </View>
       <View style={styles.viewInfoStation2}>
-        <Text style={styles.textItemLocation} >{data.type}</Text>
+        <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail' >{data.type.join("/")}</Text>
         <TouchableOpacity>
           <View style={styles.viewButtonItem} >
             <Text style={{ color: 'white' }}>
@@ -166,15 +227,21 @@ const styles = StyleSheet.create({
     borderRadius: 30
   },
   viewRatingContainer: {
-    borderWidth: 1,
     width: "85%",
-    borderRadius: 10,
-    borderColor: COLOR.gray3,
     marginBottom: "2%",
     marginTop: "2%",
     justifyContent: "center",
-    padding: '2%'
-
+    padding: '2%',
+    backgroundColor: 'white',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    borderRadius: 10,
   },
   viewRatingUser: {
     margin: "2%",
@@ -265,5 +332,59 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     flexDirection: 'row'
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    width: '70%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    maxHeight: '80%',
+    alignItems:'center',
+    justifyContent:'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center'
+  },
+  modalTitleSup: {
+    fontSize: 16,
+    marginTop: 10,
+    alignItems:'center',
+    justifyContent:'center',
+    margin: '5%',
+    borderBottomWidth: 0.5,
+    width:'50%'
+  },
+  cancelButton: {
+    backgroundColor: 'White',
+    padding: 10,
+    borderRadius: 20,
+    flex: 1,
+    marginRight: 5,
+    alignItems: 'center',
+    borderWidth: 0.5,
+    borderColor: '#40A19C'
+  },
+  applyButton: {
+    backgroundColor: '#40A19C',
+    padding: 10,
+    borderRadius: 20,
+    flex: 1,
+    marginLeft: 5,
+    alignItems: 'center',
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 15,
+    width: '100%',
   },
 });

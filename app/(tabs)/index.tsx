@@ -1,67 +1,29 @@
-import React ,{useState} from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { NativeRouter, Routes, Route, Link } from "react-router-native";
-import Login from "../../src/components/ui/begin/Login";
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
 import Home from "../../src/components/ui/main/Home";
-//import HomeOld from "../../src/components/ui/main/HomeOld";
 import ViewDetail from "../../src/components/ui/main/ViewDetail";
+import Login from "../../src/components/ui/begin/Login";
 import Setting from "../../src/components/ui/main/Setting";
 import Profile from "../../src/components/ui/main/Profile";
 import List from "../../src/components/ui/main/ListStation";
 
-import { TextInputBegin, TextInputMain, CustomButton, TextInputProfile, ItemRating } from "../../src/components/item/Item";
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <NativeRouter>
-      <SafeAreaView style={styles.container}>
-        <View style={styles.nav}>
-          <Link to="/" style={styles.navItem}>
-            <Text style={styles.navText}>Home</Text>
-          </Link>
-          <Link to="/list" style={styles.navItem}>
-            <Text style={styles.navText}>List</Text>
-          </Link>
-          <Link to="/view-detail" style={styles.navItem}>
-            <Text style={styles.navText}>View Detail</Text>
-          </Link>
-          <Link to="/login" style={styles.navItem}>
-            <Text style={styles.navText}>Login</Text>
-          </Link>
-          <Link to="/setting" style={styles.navItem}>
-            <Text style={styles.navText}>Setting</Text>
-          </Link>
-        </View>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          {/* <Route path="/home-old" element={<HomeOld />} /> */}
-          <Route path="/view-detail" element={<ViewDetail />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/setting" element={<Setting />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/list" element={<List />} />
-        </Routes>
-      </SafeAreaView>
-    </NativeRouter>
+  
+      <Stack.Navigator initialRouteName="Home">
+      <Stack.Screen name="Home"  component={Home} options={{ headerShown: false }} />
+      <Stack.Screen name="ViewDetail" component={ViewDetail} options={{ title: "Chi tiết trạm sạc" ,headerStyle: { backgroundColor: "#40A19C" },headerTintColor: "#fff",}}/>
+      <Stack.Screen name="Login" component={Login} options={{ headerShown: false }}/>
+      <Stack.Screen name="Setting" component={Setting} options={{ headerShown: false }}/>
+      <Stack.Screen name="Profile" component={Profile} options={{ title: "Thông tin cá nhân" ,headerStyle: { backgroundColor: "#40A19C" },headerTintColor: "#fff",}}/>
+      <Stack.Screen name="List" component={List} options={{ headerShown: false }}/>
+    </Stack.Navigator>
+   
+    
+
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  nav: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    padding: 10,
-    backgroundColor: "#ddd",
-  },
-  navItem: {
-    padding: 5,
-  },
-  navText: {
-    fontSize: 16,
-    color: "blue",
-  },
-});

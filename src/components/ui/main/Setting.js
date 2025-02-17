@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity } from 'react-native'
 import React from 'react'
-import { useNavigate } from "react-router-native";
+import { useNavigation } from '@react-navigation/native';
 
 
 const Setting = () => {
-    const navigate = useNavigate();
+    const navigation = useNavigation();
     return (
         <ScrollView >
             <View style={styles.user}>
@@ -16,25 +16,25 @@ const Setting = () => {
 
             <View style={styles.boxHome}>
                 <View style={styles.boxSetting}>
-                    <TouchableOpacity style={styles.boxContent} onPress={() => navigate("/profile")}>
-                        <Image style={styles.imgIcon} source={require('../../../assets/icon//iconUser.png')} />
+                    <TouchableOpacity style={styles.boxContent} onPress={() => navigation.navigate("Profile")}>
+                        <Image style={styles.imgIcon} source={require('../../../assets/icon/icons8-user-96.png')} />
                         <Text style={styles.textNameSetting}>Thông tin người dùng</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.boxContent}>
-                        <Image style={styles.imgIcon} source={require('../../../assets/icon/iconMail.png')} />
+                        <Image style={styles.imgIcon} source={require('../../../assets/icon/icons8-mail-96.png')} />
                         <Text style={styles.textNameSetting}>Liên hệ chúng tôi </Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.boxContent}>
-                        <Image style={styles.imgIcon} source={require('../../../assets/icon/iconDarkMode.png')} />
+                        <Image style={styles.imgIcon} source={require('../../../assets/icon/icons8-moon-symbol-96.png')} />
                         <Text style={styles.textNameSetting}>Chế độ tối </Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.boxContent}>
-                        <Image style={styles.imgIcon} source={require('../../../assets/icon/iconRate.png')} />
+                        <Image style={styles.imgIcon} source={require('../../../assets/icon/icons8-star-96.png')} />
                         <Text style={styles.textNameSetting}>Đánh giá ứng dụng</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.boxContent}>
-                        <Image style={styles.imgIcon} source={require('../../../assets/icon/IconExit.png')} />
-                        <Text style={styles.textNameSetting}>Thoát</Text>
+                        <Image style={styles.imgIcon} source={require('../../../assets/icon/icons8-emergency-exit-96.png')} />
+                        <Text style={styles.textNameSetting}>Đăng xuất tài khoản</Text>
                     </TouchableOpacity>
 
                 </View>
@@ -89,9 +89,11 @@ const styles = StyleSheet.create({
     textNameuser: {
         fontSize: 24,
         fontWeight: 'bold',
+        color: 'white'
     },
     textNameSetting: {
         fontSize: 20,
+
     },
     boxSetting: {
         borderWidth: 1,

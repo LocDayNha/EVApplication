@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
   textNameuser: {
     fontSize: 24,
     fontWeight: 'bold',
+    color:'white',
   },
   textNameSetting: {
     fontSize: 20,
