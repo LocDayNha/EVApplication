@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-native";
 
 
 const Setting = () => {
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     return (
         <ScrollView >
             <View style={styles.user}>

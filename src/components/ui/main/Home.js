@@ -53,7 +53,7 @@ const home = () => {
     const [showChargingStations, setShowChargingStations] = useState(true);
 
     const [changeColor, setChangeColor] = useState(true);
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     return (
         <View  >
             {/* Ten nguoi dung */}
