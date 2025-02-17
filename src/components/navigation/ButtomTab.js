@@ -6,6 +6,7 @@ import { COLOR } from "../../assets/Theme/Theme";
 
 import Home from '../ui/main/Home';
 import ViewDetail from '../ui/main/ViewDetail';
+import List from '../ui/main/ListStation'
 import Track from '../ui/main/Track';
 import Trip from '../ui/main/Trip';
 import Setting from '../ui/main/Setting';
@@ -36,7 +37,7 @@ const TabIcon = ({ focused, icon, label }) => (
                 source={icon}
             />
         </ImageBackground>
-        <Text style={{ color: focused ? COLOR.primary : COLOR.gray4, fontSize: 16, fontWeight:'500' }}>
+        <Text style={{ color: focused ? COLOR.primary : COLOR.gray4, fontSize: 16, fontWeight: '500' }}>
             {label}
         </Text>
     </View>
@@ -73,8 +74,8 @@ const Tabbar = () => {
                 }}
             />
             <Tab.Screen
-                name="Track"
-                component={Track}
+                name="List"
+                component={List}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <TabIcon focused={focused} icon={require('../../assets/icon/station.png')} label="Trạm sạc" />
@@ -123,7 +124,7 @@ const ButtomTab = () => {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Screen" component={Screen} />
-            <Stack.Screen name="ViewDetail" component={ViewDetail} />
+            <Stack.Screen name="ViewDetail" component={ViewDetail} options={{ title: "Chi tiết trạm sạc", headerStyle: { backgroundColor: "#40A19C" }, headerTintColor: "#fff", headerShown: true }} />
         </Stack.Navigator>
     );
 };
