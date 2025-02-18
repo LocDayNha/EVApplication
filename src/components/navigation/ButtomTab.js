@@ -11,6 +11,9 @@ import Track from '../ui/main/Track';
 import Trip from '../ui/main/Trip';
 import Setting from '../ui/main/Setting';
 import Profile from '../ui/main/Profile';
+import TestAPILocationVN from '../test/TestAPILocationVN';
+import TestYourLocation from '../test/TestYourLocation';
+import TestOpenGoogleMap from '../test/TestOpenGoogleMap';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -84,7 +87,7 @@ const Tabbar = () => {
             />
             <Tab.Screen
                 name="QR"
-                component={Trip}
+                component={TestYourLocation}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <TabIcon focused={focused} icon={require('../../assets/icon/qr.png')} label="" />
@@ -93,7 +96,7 @@ const Tabbar = () => {
             />
             <Tab.Screen
                 name="Trip"
-                component={Trip}
+                component={TestOpenGoogleMap}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <TabIcon focused={focused} icon={require('../../assets/icon/trip.png')} label="Lộ trình" />
