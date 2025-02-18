@@ -78,8 +78,8 @@ const Tabbar = () => {
                 }}
             />
             <Tab.Screen
-                name="Trip"
-                component={Trip}
+                name="Map"
+                component={TestAPILocationVN}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <TabIcon focused={focused} icon={require('../../assets/icon/station.png')} label="Trạm sạc" />
