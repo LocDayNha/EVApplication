@@ -4,11 +4,11 @@ import { TextInputProfile, CustomButton } from '../../item/Item'
 
 const Profile = () => {
   return (
-    <ScrollView >
+    <ScrollView  style={{backgroundColor:'white'}}>
       <View style={styles.user}>
         <View style={styles.viewUser}>
           <Image style={styles.imguser} source={require('../../../assets/images/anhchandung.jpg')} />
-          <Text style={styles.textNameuser} >Nguyen van a</Text>
+          <Text style={styles.textNameuser} >Tùng</Text>
         </View>
       </View>
       <View style={styles.boxHome}>
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#EFEFEF',
   },
   user: {
-    backgroundColor: '#40A19C',
+    backgroundColor: 'white',
     height: 300,
     justifyContent: 'center',
     alignItems: 'center',
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
   textNameuser: {
     fontSize: 24,
     fontWeight: 'bold',
-    color:'white',
+    // color:'white',
   },
   textNameSetting: {
     fontSize: 20,
