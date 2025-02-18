@@ -63,8 +63,8 @@ export function ItemRating({ data }) {
         </View>
         <View>
           <Text style={styles.textNameUser}>{data.user_id.name}</Text>
-          <View style={{ flexDirection: "row", }}>
-            <Text>{'⭐'.repeat(data.rating)}</Text>
+          <View style={{ flexDirection: "row", alignItems: 'center', justifyContent: 'space-between', width: '80%' }}>
+            <Text >{'⭐'.repeat(data.rating)}</Text>
             <Text style={styles.textTimeRating}>{data.createAt}</Text>
           </View>
         </View>
@@ -94,32 +94,27 @@ export function ItemStation({ data }) {
         </View>
         <View style={styles.viewInfoStation2}>
           <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail' >{data.type.join("/")}</Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => { setModalVisible(true) }}>
             <View style={styles.viewButtonItem} >
               <Text style={{ color: 'white' }}>
-                3.5Km
+                Cập nhật
               </Text>
-              <Image style={styles.imgNext} source={require('../../assets/icon/icons8-arrow-64.png')} />
+              <Image style={styles.imgNext} source={require('../../assets/icon/icons8-edit-64.png')} />
             </View>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={{ position: 'absolute', top: 10, right: 20, }} onPress={() => {
-          setModalVisible(true)
-        }}>
-          <Image style={{ width: 40, height: 40, }} source={require('../../assets/icon/icons8-more-100.png')} />
-        </TouchableOpacity>
       </TouchableOpacity>
       <Modal transparent={true} visible={modalVisible} animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Lựa chọn</Text>
-            
-              <TouchableOpacity style={styles.modalTitleSup}>
-                <Text >Cập nhật trạm sạc </Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.modalTitleSup}>
-                <Text >Cập nhật trạng thái </Text>
-              </TouchableOpacity>
+
+            <TouchableOpacity style={styles.modalTitleSup}>
+              <Text >Cập nhật trạm sạc </Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.modalTitleSup}>
+              <Text >Cập nhật trạng thái </Text>
+            </TouchableOpacity>
             {/* nút */}
             <View style={styles.buttonRow}>
               <TouchableOpacity onPress={() => {
@@ -263,7 +258,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: COLOR.gray3,
     fontFamily: 'Poppins',
-    marginLeft: "2%"
+    marginLeft: "2%",
+    marginTop: '2%',
   },
   textRatingContent: {
     fontSize: 20,
@@ -307,8 +303,8 @@ const styles = StyleSheet.create({
     marginTop: '0.1%',
   },
   viewButtonItem: {
-    width: 90,
-    height: 30,
+    width: 100,
+    height: 40,
     flexDirection: 'row',
     backgroundColor: '#40A19C',
     justifyContent: 'space-evenly',
@@ -345,8 +341,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     maxHeight: '80%',
-    alignItems:'center',
-    justifyContent:'center',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   modalTitle: {
     fontSize: 18,
@@ -357,11 +353,11 @@ const styles = StyleSheet.create({
   modalTitleSup: {
     fontSize: 16,
     marginTop: 10,
-    alignItems:'center',
-    justifyContent:'center',
+    alignItems: 'center',
+    justifyContent: 'center',
     margin: '5%',
     borderBottomWidth: 0.5,
-    width:'50%'
+    width: '50%'
   },
   cancelButton: {
     backgroundColor: 'White',

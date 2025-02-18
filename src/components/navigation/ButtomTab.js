@@ -11,6 +11,8 @@ import Track from '../ui/main/Track';
 import Trip from '../ui/main/Trip';
 import Setting from '../ui/main/Setting';
 import Profile from '../ui/main/Profile';
+import FormStation from '../ui/main/FormStation';
+
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -47,7 +49,7 @@ const SettingScreen = () => {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Setting">
             <Stack.Screen name="Setting" component={Setting} />
-            <Stack.Screen name="Profile" component={Profile} />
+            <Stack.Screen name="Home" component={Home} />
         </Stack.Navigator>
     );
 };
@@ -74,8 +76,8 @@ const Tabbar = () => {
                 }}
             />
             <Tab.Screen
-                name="List"
-                component={List}
+                name="Trip"
+                component={Trip}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <TabIcon focused={focused} icon={require('../../assets/icon/station.png')} label="Trạm sạc" />
@@ -92,7 +94,7 @@ const Tabbar = () => {
                 }}
             />
             <Tab.Screen
-                name="Trip"
+                name="Trip2"
                 component={Trip}
                 options={{
                     tabBarIcon: ({ focused }) => (
@@ -124,7 +126,10 @@ const ButtomTab = () => {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Screen" component={Screen} />
-            <Stack.Screen name="ViewDetail" component={ViewDetail} options={{ title: "Chi tiết trạm sạc", headerStyle: { backgroundColor: "#40A19C" }, headerTintColor: "#fff", headerShown: true }} />
+            <Stack.Screen name="List" component={List} options={{ title: "Trạm sạc của bạn", headerStyle: { backgroundColor: "#40A19C" }, headerTintColor: "#fff", headerShown: true }}/>
+            <Stack.Screen name="Profile" component={Profile} options={{ title: "Thông tin cá nhân", headerStyle: { backgroundColor: "#40A19C" }, headerTintColor: "#fff", headerShown: true }}/>
+            <Stack.Screen name="ViewDetail" component={ViewDetail} options={{ title: "Chi tiết trạm sạc", headerStyle: { backgroundColor: "#40A19C" }, headerTintColor: "#fff", headerShown: true, }} />
+            <Stack.Screen name="FormStation" component={FormStation} options={{ title: "Thêm trạm sạc", headerStyle: { backgroundColor: "#40A19C" }, headerTintColor: "#fff", headerShown: true }} />
         </Stack.Navigator>
     );
 };
