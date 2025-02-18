@@ -1,10 +1,25 @@
 import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, COLOR, Alert } from 'react-native'
 import React, { Component, useState, alert } from 'react'
 import Icon from "react-native-vector-icons/FontAwesome";
+import { useNavigation } from '@react-navigation/native';
+import { useFonts } from 'expo-font';
+import { Roboto_400Regular, Roboto_500Medium } from '@expo-google-fonts/roboto';
+import { Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold} from '@expo-google-fonts/poppins';
+import AppLoading from 'expo-app-loading'
 
 
 const Register = ({ uri, onChangeText, placeholder, onPress }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const navigation = useNavigation();
+
+  let [fontLoaded] = useFonts({
+
+    Roboto_500Medium,
+    Poppins_600SemiBold
+  })
+  if (!fontLoaded) {
+    return <AppLoading />
+  }
 
   return (
     <View style={styles.container}>
@@ -57,7 +72,7 @@ const Register = ({ uri, onChangeText, placeholder, onPress }) => {
         <Text style={styles.loginText} onPress={onPress}>Đăng ký</Text>
       </TouchableOpacity>
       <Text style={styles.registerText}>
-        Bạn đã có tài khoản? <Text style={styles.registerLink} onPress={onPress}>Đăng nhập</Text>
+        Bạn đã có tài khoản? <Text style={styles.registerLink} onPress={() => navigation.navigate('Login')}>Đăng nhập</Text>
       </Text>
     </View>
   )
@@ -68,6 +83,7 @@ export default Register
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     paddingHorizontal: 16,
     backgroundColor: "#fff",
     justifyContent: "center",
@@ -81,8 +97,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginTop: 87,
     marginBottom: 44,
-    fontWeight: "bold",
-    fontFamily: "Roboto-Regular"
+    fontFamily: "Roboto_500Medium"
   },
   inputContainer: {
     width: "100%",
@@ -130,7 +145,7 @@ const styles = StyleSheet.create({
   loginText: {
     color: "#fff",
     fontSize: 20,
-    fontWeight: "semibold",
+    fontFamily: "Poppins_600SemiBold"
   },
   registerText: {
     marginTop: 25,

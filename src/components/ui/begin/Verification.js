@@ -1,7 +1,14 @@
 import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native';
 import React, { useState, useRef } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { useFonts } from 'expo-font';
+import { Roboto_400Regular, Roboto_500Medium } from '@expo-google-fonts/roboto';
+import { Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold} from '@expo-google-fonts/poppins';
+import AppLoading from 'expo-app-loading'
+
 
 const Verification = () => {
+    const navigation = useNavigation();
 
     const [otp, setOtp] = useState(new Array(4).fill(""));
     const inputRefs = useRef([]);
@@ -29,6 +36,7 @@ const Verification = () => {
 
     const handleConfirm = () => {
         console.log("Mã xác thực:", otp.join(""));
+        navigation.navigate('NewPassword');
     };
 
     return (
@@ -52,7 +60,7 @@ const Verification = () => {
             </View>
 
             <TouchableOpacity style={styles.sendButton} onPress={handleConfirm}>
-                <Text style={styles.textSend}>Xác nhận</Text>
+                <Text style={styles.textSend} onPress={() => navigation.navigate('NewPassword')}>Xác nhận</Text>
             </TouchableOpacity>
         </View>
     );
@@ -76,8 +84,8 @@ const styles = StyleSheet.create({
 
     },
     textTitle: {
-        fontSize: 20,
-        fontWeight: "semibold",
+        fontSize: 18,
+        fontFamily: "Poppins_600SemiBold",
         color: "black",
         marginBottom: 30,
         textAlign: "center",
@@ -125,6 +133,6 @@ const styles = StyleSheet.create({
     textSend: {
         color: "#fff",
         fontSize: 20,
-        fontWeight: "semibold",
+        fontFamily: "Poppins_600SemiBold",
     },
 });

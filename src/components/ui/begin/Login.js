@@ -1,9 +1,24 @@
-import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, COLOR, Alert } from 'react-native'
+import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, COLOR, Alert, Platform } from 'react-native'
 import React, { Component, useState } from 'react'
+import { useNavigation } from '@react-navigation/native';
+import { useFonts } from 'expo-font';
+import { Roboto_400Regular, Roboto_500Medium } from '@expo-google-fonts/roboto';
+import { Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold} from '@expo-google-fonts/poppins';
+import AppLoading from 'expo-app-loading'
 
 
-const Login = ({ uri, onChangeText, placeholder, onPress, navigation }) => {
+const Login = ({ uri, onChangeText, placeholder, onPress }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const navigation = useNavigation();
+
+  let [fontLoaded] = useFonts({
+    
+    Roboto_500Medium,
+    Poppins_600SemiBold
+  })
+  if (!fontLoaded) {
+    return <AppLoading/>
+  }
 
   return (
     <View style={styles.container}>
@@ -37,16 +52,18 @@ const Login = ({ uri, onChangeText, placeholder, onPress, navigation }) => {
           </TouchableOpacity>
         </View>
         <TouchableOpacity>
-          <Text style={styles.forgotText} onPress={onPress}>Quên mật khẩu?</Text>
+          <Text style={styles.forgotText} onPress={() => navigation.navigate('ForgotPass')}>Quên mật khẩu?</Text>
         </TouchableOpacity>
       </View>
       <TouchableOpacity style={styles.loginButton} onPress={onPress}>
         <Text style={styles.loginText}>Đăng nhập</Text>
       </TouchableOpacity>
       <Text style={styles.registerText}>
-        Bạn chưa có tài khoản? <Text style={styles.registerLink} onPress={onPress}>Đăng ký</Text>
+        Bạn chưa có tài khoản? <Text style={styles.registerLink} onPress={() => navigation.navigate('Register')}>Đăng ký</Text>
       </Text>
     </View>
+  
+  
   )
 
 }
@@ -55,6 +72,7 @@ export default Login
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     paddingHorizontal: 16,
     backgroundColor: "#fff",
     justifyContent: "center",
@@ -68,7 +86,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginTop: 87,
     marginBottom: 44,
-    fontWeight: "bold",
+    fontFamily: "Roboto_500Medium"
   },
   inputContainer: {
     width: "100%",
@@ -116,11 +134,11 @@ const styles = StyleSheet.create({
   loginText: {
     color: "#fff",
     fontSize: 20,
-    fontWeight: "semibold",
+    fontFamily: "Poppins_600SemiBold"
   },
   forgotText: {
     color: "black",
-    fontWeight: 'bold',
+    fontFamily: 'Poppins_600SemiBold',
     marginBottom: 20,
   },
   registerText: {

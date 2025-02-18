@@ -1,7 +1,23 @@
-import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Platform } from 'react-native'
 import React from 'react'
+import { useNavigation } from '@react-navigation/native';
+import { useFonts } from 'expo-font';
+import { Roboto_400Regular, Roboto_500Medium } from '@expo-google-fonts/roboto';
+import { Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold} from '@expo-google-fonts/poppins';
+import AppLoading from 'expo-app-loading'
 
 const ForgotPass = () => {
+    const navigation = useNavigation();
+
+    let [fontLoaded] = useFonts({
+    
+        Roboto_500Medium,
+        Poppins_600SemiBold
+      })
+      if (!fontLoaded) {
+        return <AppLoading/>
+      }
+
     return (
         <View style={styles.container}>
             <View>
@@ -18,10 +34,11 @@ const ForgotPass = () => {
                     />
                 </View>
             </View>
-            <TouchableOpacity style={styles.sendButton}>
+            <TouchableOpacity style={styles.sendButton} onPress={() => navigation.navigate('Verification')}>
                 <Text style={styles.textSend}>Gửi</Text>
             </TouchableOpacity>
         </View>
+       
     )
 }
 
@@ -33,7 +50,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         justifyContent: "center",
         alignItems: "center",
-        
+        flex: 1
     },
     image: {
         marginTop: 44,
@@ -59,7 +76,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        
+
     },
     input: {
         flex: 1,
@@ -68,7 +85,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         textAlignVertical: "center",
         paddingLeft: 8,
-        
+
     },
     sendButton: {
         backgroundColor: "#3FA79B",
@@ -81,11 +98,11 @@ const styles = StyleSheet.create({
     textSend: {
         color: "#fff",
         fontSize: 20,
-        fontWeight: "semibold",
+        fontFamily: "Poppins_600SemiBold"
     },
     textEmail: {
         color: "black",
-        fontWeight: 'semibold',
+        fontFamily: "Poppins_600SemiBold",
         fontSize: 20,
         marginBottom: 25,
         paddingLeft: 1
