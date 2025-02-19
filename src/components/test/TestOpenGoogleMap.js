@@ -6,7 +6,7 @@ const TestOpenGoogleMap = () => {
     const openGoogleMaps = () => {
         const urlOpenGoogleMap = "https://www.google.com/maps/search/?api=1";
         const urlTestTrack = "https://www.google.com/maps/dir/''/Shi+Coffee+24h/@10.8430407,106.6405993,16.5z/data=!4m13!4m12!1m5!1m1!1s0x317529003803df45:0xbb4411f0a68ce4f0!2m2!1d106.6443!2d10.8413144!1m5!1m1!1s0x31752b979b95778d:0x6365fc1d87b055ee!2m2!1d106.617633!2d10.860742?entry=ttu&g_ep=EgoyMDI1MDIxMi4wIKXMDSoJLDEwMjExNDU1SAFQAw%3D%3D";
-        Linking.openURL(urlOpenGoogleMap).catch(err => Alert.alert("Error", "Failed to open Google Maps"));
+        Linking.openURL(urlTestTrack).catch(err => Alert.alert("Error", "Failed to open Google Maps"));
     };
 
     return (

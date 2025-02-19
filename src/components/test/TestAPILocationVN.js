@@ -10,14 +10,14 @@ const Test = () => {
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
 
-  const [selectedProvince, setSelectedProvince] = useState(null);
-  const [selectedDistrict, setSelectedDistrict] = useState(null);
-  const [selectedWard, setSelectedWard] = useState(null);
+  const [selectedProvince, setSelectedProvince] = useState('');
+  const [selectedDistrict, setSelectedDistrict] = useState('');
+  const [selectedWard, setSelectedWard] = useState('');
 
   const [selectedProvinceName, setSelectedProvinceName] = useState('');
   const [selectedDistrictName, setSelectedDistrictName] = useState('');
   const [selectedWardName, setSelectedWardName] = useState('');
-  
+
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -32,7 +32,11 @@ const Test = () => {
       });
       const data = await response.json();
       setProvinces((data.data || [])
-        .map(item => ({ label: item.ProvinceName, value: item.ProvinceID, name: item.ProvinceName }))
+        .map(item => ({
+          label: item.ProvinceName,
+          value: String(item.ProvinceID),
+          name: item.ProvinceName,
+        }))
         .sort((a, b) => a.label.localeCompare(b.label))
       );
     } catch (error) {
@@ -50,7 +54,11 @@ const Test = () => {
       });
       const data = await response.json();
       setDistricts((data.data || [])
-        .map(item => ({ label: item.DistrictName, value: item.DistrictID, name: item.DistrictName }))
+        .map(item => ({
+          label: item.DistrictName,
+          value: String(item.DistrictID),
+          name: item.DistrictName,
+        }))
         .sort((a, b) => a.label.localeCompare(b.label))
       );
       setSelectedProvince(provinceId);
@@ -71,7 +79,11 @@ const Test = () => {
       });
       const data = await response.json();
       setWards((data.data || [])
-        .map(item => ({ label: item.WardName, value: item.WardCode, name: item.WardName }))
+        .map(item => ({
+          label: item.WardName,
+          value: String(item.WardCode),
+          name: item.WardName,
+        }))
         .sort((a, b) => a.label.localeCompare(b.label))
       );
       setSelectedDistrict(districtId);
@@ -86,55 +98,70 @@ const Test = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Test</Text>
-      {loading && <ActivityIndicator size="large" color="#0000ff" />}
+      <View style={styles.row}>
+        <View style={styles.pickerContainer}>
+          <RNPickerSelect
+            placeholder={{ label: 'Tỉnh/TP...', value: '' }}
+            onValueChange={(value) => {
+              const province = provinces.find(p => p.value === value) || { name: '' };
+              fetchDistricts(value, province.name);
+              setSelectedDistrict('');
+              setSelectedWard('');
+              setSelectedDistrictName('');
+              setSelectedWardName('');
+            }}
+            items={provinces}
+            value={selectedProvince}
+            style={pickerSelectStyles}
+            useNativeAndroidPickerStyle={false}
+          />
+        </View>
 
-      <RNPickerSelect
-        placeholder={{ label: 'Chọn Tỉnh/Thành phố...', value: null }}
-        onValueChange={(value) => {
-          const province = provinces.find(p => p.value === value);
-          fetchDistricts(value, province?.name || '');
-          setSelectedDistrict(null);
-          setSelectedWard(null);
-          setSelectedWardName('');
-        }}
-        items={provinces}
-        value={selectedProvince}
-        style={pickerSelectStyles}
-      />
+        <View style={styles.pickerContainer}>
+          <RNPickerSelect
+            placeholder={{ label: 'Quận/Huyện...', value: '' }}
+            onValueChange={(value) => {
+              const district = districts.find(d => d.value === value) || { name: '' };
+              fetchWards(value, district.name);
+              setSelectedWard('');
+              setSelectedWardName('');
+            }}
+            items={districts}
+            value={selectedDistrict}
+            style={pickerSelectStyles}
+            disabled={!selectedProvince}
+            useNativeAndroidPickerStyle={false}
+            textInputProps={{
+              numberOfLines: 1,    // Hiển thị 1 dòng
+              ellipsizeMode: 'tail', // Cắt bớt nếu quá dài (thêm '...')
+            }}
+          />
+        </View>
 
-      <RNPickerSelect
-        placeholder={{ label: 'Chọn Quận/Huyện...', value: null }}
-        onValueChange={(value) => {
-          const district = districts.find(d => d.value === value);
-          fetchWards(value, district?.name || '');
-          setSelectedWard(null);
-          setSelectedWardName('');
-        }}
-        items={districts}
-        value={selectedDistrict}
-        style={pickerSelectStyles}
-        disabled={!selectedProvince}
-      />
-
-      <RNPickerSelect
-        placeholder={{ label: 'Chọn Xã/Phường...', value: null }}
-        onValueChange={(value) => {
-          const ward = wards.find(w => w.value === value);
-          setSelectedWard(value);
-          setSelectedWardName(ward?.name || '');
-        }}
-        items={wards}
-        value={selectedWard}
-        style={pickerSelectStyles}
-        disabled={!selectedDistrict}
-      />
+        <View style={styles.pickerContainer}>
+          <RNPickerSelect
+            placeholder={{ label: 'Xã/Phường...', value: '' }}
+            onValueChange={(value) => {
+              const ward = wards.find(w => w.value === value) || { name: '' };
+              setSelectedWard(value);
+              setSelectedWardName(ward.name);
+            }}
+            items={wards}
+            value={selectedWard}
+            style={pickerSelectStyles}
+            disabled={!selectedDistrict}
+            useNativeAndroidPickerStyle={false}
+          />
+        </View>
+      </View>
 
       <Text style={styles.result}>
         {selectedProvinceName && selectedDistrictName && selectedWardName
           ? `${selectedProvinceName} - ${selectedDistrictName} - ${selectedWardName}`
           : 'Vui lòng chọn đầy đủ địa chỉ'}
       </Text>
+
+      {loading && <ActivityIndicator size="large" color="#0000ff" />}
     </View>
   );
 };
@@ -143,8 +170,23 @@ export default Test;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 16,
+    marginTop: '5%',
+    justifyContent: 'center',
+    backgroundColor: ''
+  },
+  row: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  pickerContainer: {
+    width: '32%',
+    height:60,
+    margin: '0.5%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'gray',
     justifyContent: 'center',
   },
   title: {
@@ -163,23 +205,16 @@ const styles = StyleSheet.create({
 
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
-    fontSize: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 4,
-    color: '#333',
-    marginVertical: 8,
+    fontSize: 14,
+    height: 0,
+    color: 'black',
+    marginVertical: 30,
+    marginHorizontal: 10,
   },
   inputAndroid: {
-    fontSize: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 4,
-    color: '#333',
-    marginVertical: 8,
+    fontSize: 14,
+    color: 'black',
+    textAlign: 'center',
+    textAlignVertical: 'center',
   },
 });

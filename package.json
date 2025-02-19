@@ -57,7 +57,8 @@
     "react-native-webview": "13.12.5",
     "react-router-native": "^6.29.0",
     "expo-image-picker": "~16.0.6",
-    "expo-camera": "~16.0.16"
+    "expo-camera": "~16.0.16",
+    "expo-location": "~18.0.6"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

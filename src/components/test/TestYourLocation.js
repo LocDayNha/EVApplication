@@ -1,18 +1,48 @@
 import { StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
-import React, { useState } from 'react';
-
-const GOOGLE_MAP_API_KEY = 'AIzaSyADJCV_7LiFmdeMd9TLZe_pLKn8qTDlank';
+import React, { useEffect, useState } from 'react';
+import * as Location from 'expo-location'
 
 const TestYourLocation = () => {
+
+  const [errorMsg, setErrorMsg] = useState('');
+  const [lat, setLat] = useState('');
+  const [lng, setLng] = useState('');
+  const [address, setAddress] = useState('');
+
+  const getYourLocation = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+
+    if (status !== 'granted') {
+      setErrorMsg('Permission to location was not granted');
+    }
+
+    let { coords } = await Location.getCurrentPositionAsync();
+
+    if (coords) {
+      const { latitude, longitude } = coords;
+      let response = await Location.reverseGeocodeAsync({
+        latitude, longitude
+      });
+
+      setLat(latitude);
+      setLng(longitude);
+      setAddress(response[0].formattedAddress);
+    }
+  }
+
+  useEffect(() => {
+    getYourLocation();
+  }, [])
+  
 
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.button}>
         <Text style={styles.buttonText}>Get My Location</Text>
       </TouchableOpacity>
-      <Text style={styles.label}>Address:</Text>
-      <Text style={styles.label}>Lat:</Text>
-      <Text style={styles.label}>Lng:</Text>
+      <Text style={styles.label}>Address: {address}</Text>
+      <Text style={styles.label}>Lat: {lat}</Text>
+      <Text style={styles.label}>Lng: {lng}</Text>
     </View>
   );
 };
