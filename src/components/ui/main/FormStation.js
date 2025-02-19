@@ -172,7 +172,7 @@ const FormStation = () => {
     };
 
 
-   
+
 
 
     // console.log(timeStart)
@@ -227,6 +227,26 @@ const FormStation = () => {
                         setItems={setItemsBrand}
                         placeholder='Chọn hãng xe'
                     />
+                </View>
+
+            </View>
+
+            <View style={styles.viewInput}>
+                <Text style={styles.textTitleInput}> Chọn vị trí</Text>
+                <View style={{ alignItems: 'center' }}>
+                    <TouchableOpacity
+                        // onPress={addService}
+                        style={{
+                            margin: '5%',
+                            padding: '3%',
+                            marginBottom: '2%',
+                            backgroundColor: '#40A19C',
+                            width: '40%',
+                            justifyContent: 'center',
+                            borderRadius: 10,
+                        }}>
+                        <Text style={{ color: 'white', textAlign: 'center' }}>Chọn vị trí</Text>
+                    </TouchableOpacity>
                 </View>
 
             </View>

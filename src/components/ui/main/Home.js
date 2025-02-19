@@ -38,7 +38,12 @@ const typeCharger = [
 const Von = [
     { id: 0, name: 'Tất cả' },
     { id: 1, name: 'DC' },
-    { id: 2, name:  'AC'},
+    { id: 2, name: 'AC' },
+];
+const Vehicle = [
+    { id: 0, name: 'Tất cả' },
+    { id: 1, name: 'Xe máy điện' },
+    { id: 2, name: 'Ô tô điện' },
 ];
 
 const Kw = [
@@ -103,7 +108,7 @@ const Home = () => {
                 </View>
 
 
-            {/* Bộ lọc  */}
+                {/* Bộ lọc  */}
                 <Modal transparent={true} visible={modalVisible} animationType="slide">
                     <View style={styles.modalOverlay}>
                         <View style={styles.modalContent}>
@@ -114,6 +119,22 @@ const Home = () => {
                                 <Text style={styles.modalTitleSup}> Dòng điện </Text>
                                 <FlatList
                                     data={Von}
+                                    scrollEnabled={false}
+                                    keyExtractor={(item) => item.id}
+                                    renderItem={({ item }) => (
+                                        <TouchableOpacity
+                                            style={styles.filterItem}
+                                            onPress={() => setSelectedVon(item.id)}>
+                                            <View style={styles.radioButton}>
+                                                {selectedVon === item.id && <View style={styles.radioInner} />}
+                                            </View>
+                                            <Text style={styles.filterText}>{item.name}</Text>
+                                        </TouchableOpacity>
+                                    )}
+                                />
+                                <Text style={styles.modalTitleSup}> Loại Xe </Text>
+                                <FlatList
+                                    data={Vehicle}
                                     scrollEnabled={false}
                                     keyExtractor={(item) => item.id}
                                     renderItem={({ item }) => (
