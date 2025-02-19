@@ -1,10 +1,12 @@
 import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, COLOR, Alert } from 'react-native'
 import React, { Component, useState } from 'react'
+import { useNavigation } from '@react-navigation/native';
 
 
-const Login = ({ uri, onChangeText, placeholder, onPress, navigation }) => {
+
+const Login = ({ uri, onChangeText, onPress }) => {
   const [showPassword, setShowPassword] = useState(false);
-
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       <View>
@@ -44,7 +46,7 @@ const Login = ({ uri, onChangeText, placeholder, onPress, navigation }) => {
         <Text style={styles.loginText}>Đăng nhập</Text>
       </TouchableOpacity>
       <Text style={styles.registerText}>
-        Bạn chưa có tài khoản? <Text style={styles.registerLink} onPress={onPress}>Đăng ký</Text>
+        Bạn chưa có tài khoản? <Text style={styles.registerLink} onPress={() => navigation.navigate("Register")}>Đăng ký</Text>
       </Text>
     </View>
   )

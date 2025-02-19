@@ -71,7 +71,7 @@ const Setting = () => {
             </View>
 
             <View style={styles.boxSetting}>
-                <TouchableOpacity style={styles.boxContent2}>
+                <TouchableOpacity style={styles.boxContent2} onPress={() => navigation.navigate("Login")}>
                     <Image style={styles.imgIcon} source={require('../../../assets/icon/icons8-emergency-exit-96.png')} />
                     <Text style={styles.textNameSetting}>Đăng xuất tài khoản</Text>
                 </TouchableOpacity>
