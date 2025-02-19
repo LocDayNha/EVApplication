@@ -29,10 +29,6 @@ const services = [
     { id: '1', name: 'Nhà nghỉ', img: require('../../../assets/imageServices/icons8-bed-48.png') },
     { id: '2', name: 'Giữ xe', img: require('../../../assets/imageServices/icons8-parking-64.png') },
     { id: '3', name: 'Wc', img: require('../../../assets/imageServices/icons8-wc-48.png') },
-    { id: '4', name: 'Wc', img: require('../../../assets/imageServices/icons8-wc-48.png') },
-    { id: '5', name: 'Wc', img: require('../../../assets/imageServices/icons8-wc-48.png') },
-    { id: '6', name: 'Wc', img: require('../../../assets/imageServices/icons8-wc-48.png') },
-    { id: '7', name: 'Wc', img: require('../../../assets/imageServices/icons8-wc-48.png') },
 ];
 
 
@@ -142,7 +138,7 @@ const ViewDetail = () => {
 
         <View>
 
-            <ScrollView style={styles.container} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: '20%' }} >
+            <ScrollView style={[styles.container,]} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: '20%' }} >
 
                 <View style={styles.imgMain} >
                     <Image source={require('../../../assets/images/he-thong-cua-hang-xang-dau.png')} />

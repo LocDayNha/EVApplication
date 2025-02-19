@@ -5,11 +5,11 @@ import { ItemStationMain } from '../../item/Item';
 
 
 const nameChargingStation = [
-    { id: '0', name: 'Cửa hàng xăng dầu Thủ Đức ', brand: 'Honda', location: '172/7 phường Linh trung, Thủ đức, Hồ Chí Minh', time: '07:00 - 16:00', type: ['CCS1 ', 'CCS2 '], image: 'https://www.pvoil.com.vn/media/1/he-thong-cua-hang-xang-dau.png' },
-    { id: '1', name: 'Đại lý ủy quyền Hyundai ', brand: 'Hyundai', location: '72/7 phường Linh trung, Thủ đức, Hồ Chí Minh', time: '07:00 - 16:00', type: ['CCS1 ', 'CCS2 '], image: 'https://image.bnews.vn/MediaUpload/Org/2021/03/24/img-bgt-2021-screenshot-563-1616508509-width1280height720.jpg' },
-    { id: '2', name: 'Trạm xạc Vinfast Quận 1  ', brand: 'Vinfast', location: '172/7 phường Linh trung, Thủ đức, Hồ Chí Minh', time: '07:00 - 16:00', type: ['CCS1 ', 'CCS2 '], image: 'https://petrotimesgroup.com/upload/cdn/images/image-20241116092757-1.jpeg' },
-    { id: '3', name: 'Chung cư ABC ', brand: 'Vinfast,Honda', location: '72/7 phường Linh trung, Thủ đức, Hồ Chí Minh', time: '07:00 - 16:00', type: ['CCS1 ', 'CCS2 '], image: 'https://www.viup.vn/media/ckfinder/images/News/1/3/20230314/news_5739/image003.jpg' },
-    { id: '4', name: 'Bãi đỗ xe công ty trạm sạc EV ', brand: 'Vinfast', location: '172/7 phường Linh trung, Thủ đức, Hồ Chí Minh', time: '07:00 - 16:00', type: ['CCS1 ', 'CCS2 '], image: 'https://thicongtrambienap.com/wp-content/uploads/2021/03/tram-sac-xe-dien-2-scaled.jpg' },
+    { id: '0', name: 'Cửa hàng xăng dầu Thủ Đức ', brand: 'Honda', location: '172/7 phường Linh trung, Thủ đức, Hồ Chí Minh', time: '07:00 - 16:00', type: ['CCS1', 'CCS2'], image: 'https://www.pvoil.com.vn/media/1/he-thong-cua-hang-xang-dau.png' },
+    { id: '1', name: 'Đại lý ủy quyền Hyundai ', brand: 'Hyundai', location: '72/7 phường Linh trung, Thủ đức, Hồ Chí Minh', time: '07:00 - 16:00', type: ['CCS1', 'CCS2'], image: 'https://image.bnews.vn/MediaUpload/Org/2021/03/24/img-bgt-2021-screenshot-563-1616508509-width1280height720.jpg' },
+    { id: '2', name: 'Trạm xạc Vinfast Quận 1  ', brand: 'Vinfast', location: '172/7 phường Linh trung, Thủ đức, Hồ Chí Minh', time: '07:00 - 16:00', type: ['CCS1 ', 'CCS2'], image: 'https://petrotimesgroup.com/upload/cdn/images/image-20241116092757-1.jpeg' },
+    { id: '3', name: 'Chung cư ABC ', brand: 'Vinfast,Honda', location: '72/7 phường Linh trung, Thủ đức, Hồ Chí Minh', time: '07:00 - 16:00', type: ['CCS1 ', 'CCS2'], image: 'https://www.viup.vn/media/ckfinder/images/News/1/3/20230314/news_5739/image003.jpg' },
+    { id: '4', name: 'Bãi đỗ xe công ty trạm sạc EV ', brand: 'Vinfast', location: '172/7 phường Linh trung, Thủ đức, Hồ Chí Minh', time: '07:00 - 16:00', type: ['CCS1', 'CCS2'], image: 'https://thicongtrambienap.com/wp-content/uploads/2021/03/tram-sac-xe-dien-2-scaled.jpg' },
 ]
 
 const nameKw = [
@@ -21,29 +21,31 @@ const nameKw = [
 ];
 
 const carBrands = [
-    { id: 0, name: 'Toyota' },
-    { id: 1, name: 'Honda' },
-    { id: 2, name: 'Ford' },
-    { id: 3, name: 'Vinfast' },
+    { id: 0, name: 'Tất cả' },
+    { id: 1, name: 'Toyota' },
+    { id: 2, name: 'Honda' },
+    { id: 3, name: 'Ford' },
+    { id: 4, name: 'Vinfast' },
 ];
 
 const typeCharger = [
     { id: 0, name: 'CCS1' },
     { id: 1, name: 'CCS2' },
-    { id: 2, name: 'GBT' },
+    { id: 2, name: 'GB/T' },
     { id: 3, name: 'J1772' },
 ];
 
 const Von = [
-    { id: 0, name: 'AC' },
+    { id: 0, name: 'Tất cả' },
     { id: 1, name: 'DC' },
-    { id: 2, name: 'Tất cả' },
+    { id: 2, name:  'AC'},
 ];
 
 const Kw = [
-    { id: 0, name: 'Sạc Trung bình' },
-    { id: 1, name: 'Sạc Nhanh' },
-    { id: 2, name: 'Sạc siêu nhanh' },
+    { id: 0, name: 'Tất cả' },
+    { id: 1, name: 'Sạc Thường' },
+    { id: 2, name: 'Sạc Nhanh' },
+    { id: 3, name: 'Sạc siêu nhanh' },
 ];
 
 
@@ -65,13 +67,13 @@ const Home = () => {
     };
 
     // luu id hang xe 
-    const [selectedBrand, setSelectedBrand] = useState(null);
+    const [selectedBrand, setSelectedBrand] = useState(0);
 
     // luu dong dien 
-    const [selectedVon, setSelectedVon] = useState(null);
+    const [selectedVon, setSelectedVon] = useState(0);
 
     // luu cong suat 
-    const [selectedKw, setSelectedKw] = useState(null);
+    const [selectedKw, setSelectedKw] = useState(0);
 
     // du liệu của id
     const [tempSelected, setTempSelected] = useState(null);
@@ -84,8 +86,8 @@ const Home = () => {
                     <TouchableOpacity style={{ flexDirection: 'row', }} onPress={() => navigation.navigate("Profile")} >
                         <Image style={styles.img} source={require('../../../assets/images/anhchandung.jpg')} />
                         <View >
-                            <Text style={styles.titleContainer}>Nguyen Van A</Text>
-                            <Text style={{ color: 'white' }}>Welcom Back</Text>
+                            <Text style={styles.titleContainer}>Tùng</Text>
+                            <Text style={{ color: 'white' }}>Welcom back</Text>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.boderIcon2}>
@@ -181,7 +183,10 @@ const Home = () => {
                             <View style={styles.buttonRow}>
                                 <TouchableOpacity onPress={() => {
                                     setTempSelected(null);
-                                    setModalVisible(false)
+                                    setModalVisible(false);
+                                    setSelectedBrand(0);
+                                    setSelectedKw(0);
+                                    setSelectedVon(0);
                                 }}
                                     style={styles.cancelButton}>
                                     <Text style={styles.cancelText}>Hủy</Text>

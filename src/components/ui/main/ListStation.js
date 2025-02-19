@@ -1,7 +1,8 @@
-import { StyleSheet, Text, View, TouchableOpacity, FlatList, ScrollView, Modal } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, FlatList, ScrollView, Modal, Image } from 'react-native';
 import React, { useState } from 'react';
 import { ItemStation } from '../../item/Item';
 import { useNavigation } from '@react-navigation/native';
+
 
 const Status = [
     { id: '0', name: 'Đang hoạt động', status: 1 },
@@ -22,7 +23,7 @@ const nameChargingStation = [
 const ListStation = () => {
     const [selectedStatus, setSelectedStatus] = useState(1);
     const [modalVisible, setModalVisible] = useState(false);
-
+    const navigation = useNavigation();
     return (
         <View style={{ flex: 1 }}>
             <View style={styles.listStatus}>
@@ -45,8 +46,15 @@ const ListStation = () => {
             </View>
             <View style={styles.container}>
                 <Text style={styles.title}>Trạm sạc của bạn :</Text>
+
             </View>
-            <ScrollView showsVerticalScrollIndicator={false} >
+            <ScrollView showsVerticalScrollIndicator={false}  >
+                <View style={styles.buttonSearchContainer}>
+                    <TouchableOpacity style={styles.buttonSearch} onPress={() => [setModalVisible(true), navigation.navigate('FormStation')]}>
+                        {/* <Image source={require('../../../assets/icon/icons8-add-64.png')} /> */}
+                        <Text style={{ color: '#40A19C' }}>Thêm trạm sạc </Text>
+                    </TouchableOpacity>
+                </View>
                 <View>
                     <View >
                         <FlatList
@@ -68,11 +76,7 @@ const ListStation = () => {
                     </View>
                 </View>
             </ScrollView>
-            <View style={styles.buttonSearchContainer}>
-                <TouchableOpacity style={styles.buttonSearch} onPress={() => setModalVisible(true)}>
-                    <Text style={styles.textSearch}>Add</Text>
-                </TouchableOpacity>
-            </View>
+
         </View>
     );
 };
@@ -82,21 +86,31 @@ export default ListStation;
 const styles = StyleSheet.create({
 
     buttonSearchContainer: {
-        position: 'absolute',
-        bottom: '10%',
-        left: '70%'
+        // position: 'absolute',
+        // bottom: '-90%',
+        // left: '70%'
+        margin: '5%',
+
     },
     buttonSearch: {
-        backgroundColor: '#40A19C',
+        backgroundColor: 'white',
         paddingVertical: 15,
-        paddingHorizontal: 30,
-        borderRadius: 30,
+        paddingHorizontal: 10,
+        borderRadius: 20,
+        alignItems: 'center',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
         elevation: 5,
     },
 
     container: {
         margin: '5%',
-        marginBottom: '5%',
+        marginBottom: '2%',
         marginTop: '0%',
         flexDirection: 'row',
     },
@@ -104,7 +118,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         margin: '5%',
         marginBottom: '2%',
-        
+
     },
     buttonStatus: {
         borderRadius: 25,
