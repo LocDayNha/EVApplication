@@ -13,7 +13,7 @@ import Setting from '../ui/main/Setting';
 import Profile from '../ui/main/Profile';
 import FormStation from '../ui/main/FormStation';
 import TestAPILocationVN from '../test/TestAPILocationVN';
-import TestYourLocation from '../test/TestYourLocation';
+import Location from '../test/Location';
 import TestOpenGoogleMap from '../test/TestOpenGoogleMap';
 import Login from '../ui/begin/Login';
 import Register from'../ui/begin/Register';
@@ -90,7 +90,7 @@ const Tabbar = () => {
             />
             <Tab.Screen
                 name="QR"
-                component={TestYourLocation}
+                component={Location}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <TabIcon focused={focused} icon={require('../../assets/icon/qr.png')} label="" />

@@ -1,75 +1,15 @@
-import { StyleSheet, Text, View, ScrollView, Image, FlatList, TouchableOpacity, Modal, TextInput } from 'react-native'
-import React, { useState } from 'react';
+import { StyleSheet, Text, View, ToastAndroid, ScrollView,Linking, Image, FlatList, TouchableOpacity, Modal, TextInput } from 'react-native'
+import React, { useState, useEffect , useContext} from 'react';
 import { TextInputProfile, CustomButton, ItemRating } from '../../item/Item'
 import { useNavigation } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
-// const YourComponent = () => {
-//     const navigation = useNavigation();
-
-//     return (
-//         <TouchableOpacity style={styles.buttonBack} onPress={() => navigation.goBack()}>
-//             <Image style={styles.imgBack} source={require('../../../assets/icon/icons8-back-64 (2).png')} />
-//         </TouchableOpacity>
-//     );
-// };
-
-
-
-const ChargingPost = [
-    { id: '0', kw: 60, charger: 2, type: 'Sạc siêu nhanh', money: 10000, namesocket: 'CCS1', imgSocket: require('../../../assets/imageSocket/ccs1.png') },
-    { id: '1', kw: 20, charger: 2, type: 'Sạc nhanh', money: 7000, namesocket: 'CCS2', imgSocket: require('../../../assets/imageSocket/ccs2.png') },
-    { id: '2', kw: 1, charger: 1, type: 'Sạc thường', money: 6000, namesocket: 'J1772', imgSocket: require('../../../assets/imageSocket/j1772.png') },
-    { id: '3', kw: 22, charger: 2, type: 'Sạc nhanh', money: 5000, namesocket: 'GB/T (DC)', imgSocket: require('../../../assets/imageSocket/GBT(DC).png') },
-
-];
-
-const services = [
-    { id: '0', name: 'Đồ ăn', img: require('../../../assets/imageServices/icons8-hamburger-64.png') },
-    { id: '1', name: 'Nhà nghỉ', img: require('../../../assets/imageServices/icons8-bed-48.png') },
-    { id: '2', name: 'Giữ xe', img: require('../../../assets/imageServices/icons8-parking-64.png') },
-    { id: '3', name: 'Wc', img: require('../../../assets/imageServices/icons8-wc-48.png') },
-];
-
-
-const fakeData = [
-    {
-        _id: "0",
-        user_id: {
-            image: "https://vcdn1-dulich.vnecdn.net/2021/07/16/1-1626437591.jpg?w=460&h=0&q=100&dpr=2&fit=crop&s=i2M2IgCcw574LT-bXFY92g",
-            name: "Nguyễn Văn A",
-        },
-        createAt: "2025-02-12 14:30",
-        content: "Sản phẩm rất tốt, mình rất hài lòng! ",
-        rating: 5,
-    },
-    {
-        _id: "1",
-        user_id: {
-            image: "https://vcdn1-dulich.vnecdn.net/2021/07/16/1-1626437591.jpg?w=460&h=0&q=100&dpr=2&fit=crop&s=i2M2IgCcw574LT-bXFY92g",
-            name: "Nguyễn Văn A",
-        },
-        createAt: "2025-02-12 14:30",
-        content: "Sản phẩm rất tốt, mình rất hài lòng! ",
-        rating: 3,
-    },
-    {
-        _id: "2",
-        user_id: {
-            image: "https://vcdn1-dulich.vnecdn.net/2021/07/16/1-1626437591.jpg?w=460&h=0&q=100&dpr=2&fit=crop&s=i2M2IgCcw574LT-bXFY92g",
-            name: "Nguyễn Văn A",
-        },
-        createAt: "2025-02-12 14:30",
-        content: "Sản phẩm rất tốt, mình rất hài lòng! ",
-        rating: 4,
-    },
-
-];
-
+import AxiosInstance from '../../axios/AxiosInstance';
+import { AppContext } from '../../axios/AppContext';
 
 const ViewDetail = () => {
-    //chuyen trang
-    const navigation = useNavigation();
+    const route = useRoute();
+    const { id } = route.params;
 
     // gioi han hien thi danh gia
     const [limit, setLimit] = useState(1);
@@ -90,7 +30,6 @@ const ViewDetail = () => {
     const [userNameRating, setUserNameRating] = useState('Nguyen Van B')
     // lay thoi gian thuc te 
     const [savedTime, setSavedTime] = useState(null);
-
     const handlePress = () => {
         const now = new Date();
         const formattedTime = now.toLocaleString('vi-VN', {
@@ -106,7 +45,6 @@ const ViewDetail = () => {
 
 
     const [userRating, setUserRating] = useState([]);
-
     const handleSubmit = () => {
         handlePress(); // Cập nhật thời gian trước khi lưu đánh giá
 
@@ -134,129 +72,195 @@ const ViewDetail = () => {
         setRating(0);
     };
     // console.log(userRating);
-    return (
 
+    // lat lng
+    const { myLat, myLng } = useContext(AppContext);
+    const openGoogleMaps = async () => {
+        try {
+          const linkTrack = await AxiosInstance().post('/station/testGoogleMapTrack', {
+            lat1: myLat, lng1: myLng, lat2: dataStation.lat, lng2: dataStation.lng
+          });
+          if (linkTrack.url) {
+            Linking.openURL(linkTrack.url).catch(err => Alert.alert("Error", "Failed to open Google Maps"));
+          } else {
+            console.log('Không tìm thấy dữ liệu từ /station/testGoogleMapTrack');
+            ToastAndroid.show('Không thể chỉ đường', ToastAndroid.SHORT);
+          }
+        } catch (error) {
+          console.error('Lỗi khi lấy dữ liệu station:', error);
+          ToastAndroid.show('Không thể thực hiện chỉ đường do hẹ thống', ToastAndroid.SHORT);
+        }
+      };
+
+    // Hàm lấy thông tin trạm sạc từ API
+    const [dataStation, setDataStation] = useState(null);
+    const getDataStationById = async () => {
+        try {
+            const dataStation = await AxiosInstance().post('/station/getById', { id: id });
+            if (dataStation.data) {
+                setDataStation(dataStation.data);
+            } else {
+                console.log('Không tìm thấy dữ liệu từ /station/getById');
+                ToastAndroid.show('Không có thông tin trạm sạc', ToastAndroid.SHORT);
+            }
+        } catch (error) {
+            console.error('Lỗi khi lấy dữ liệu station:', error);
+            ToastAndroid.show('Không thể tải danh sách thông tin trạm sạc', ToastAndroid.SHORT);
+        }
+    };
+
+    // Hàm lấy thông tin đánh giá trạm sạc từ API
+    const [dataRating, setDataRating] = useState(null);
+    const getDataRating = async () => {
+        try {
+            const dataRating = await AxiosInstance().post('/rating/getByIdStation', { id: id });
+            if (dataRating.data) {
+                setDataRating(dataRating.data);
+            } else {
+                console.log('Không tìm thấy dữ liệu từ /rating/getByIdStation');
+                ToastAndroid.show('Không có thông tin đánh giá trạm sạc', ToastAndroid.SHORT);
+            }
+        } catch (error) {
+            console.error('Lỗi khi lấy dữ liệu station:', error);
+            ToastAndroid.show('Không thể tải danh sách thông tin đánh giá trạm sạc', ToastAndroid.SHORT);
+        }
+    };
+
+    // Hook effect khởi tạo dữ liệu
+    useEffect(() => {
+        getDataStationById();
+        getDataRating();
+    }, []);
+
+    return (
         <View>
 
             <ScrollView style={[styles.container,]} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: '20%' }} >
 
-                <View style={styles.imgMain} >
-                    <Image source={require('../../../assets/images/he-thong-cua-hang-xang-dau.png')} />
-                </View>
-                <View style={styles.boxMain}>
-                    <Text style={styles.textName}> Vinfast - Cửa hàng xăng dầu Phú Hưng 3  </Text>
-                    <View style={styles.detailStation}>
-                        <Image style={styles.imgIconMain} source={require('../../../assets/icon/icons8-location-94.png')} />
-                        <Text style={styles.textMain}> 172/7 phường Linh trung, Thủ đức, Hồ Chí Minh</Text>
-                    </View>
-
-                    <View style={styles.detailStation}>
-                        <Image style={styles.imgIconMain} source={require('../../../assets/icon/icons8-charging-station-64.png')} />
-                        <Text style={styles.textMain22}> Đang hoạt Động</Text>
-                    </View>
-                    <View style={styles.detailStation}>
-                        <Image style={styles.imgIconMain} source={require('../../../assets/icon/icons8-time-50.png')} />
-                        <Text style={styles.textMain}> 00:00 - 12:00</Text>
-                    </View>
-                </View>
-                {/* Dich Vu  */}
-                <View>
-                    <Text style={styles.textInfoService}> Dịch vụ </Text>
-                </View>
-                <View style={{ margin: '5%' }} >
-                    <FlatList
-                        data={services}
-                        horizontal={true}
-                        showsHorizontalScrollIndicator={false}
-                        keyExtractor={(item) => item.id}
-                        renderItem={({ item }) => (
-                            <View style={styles.viewService} >
-                                <Image style={styles.imgServies} source={item.img} />
-                                <Text style={styles.textService}>
-                                    {item.name}
-                                </Text>
+                {dataStation && (
+                    <>
+                        <View style={styles.imgMain} >
+                            <Image style={{ width: '100%', height: 300 }} source={{ uri: dataStation.image }} />
+                        </View>
+                        <View style={styles.boxMain}>
+                            <Text style={styles.textName}>{dataStation.name}</Text>
+                            <View style={styles.detailStation}>
+                                <Image style={styles.imgIconMain} source={require('../../../assets/icon/icons8-location-94.png')} />
+                                <Text style={styles.textMain}>{dataStation.location}</Text>
                             </View>
 
-                        )}
-                    />
-                </View>
-                {/* ghi chú dịch vụ  */}
-                <View>
-                    <Text style={styles.textNote}>
-                        Ghi chú
-
-                    </Text>
-                    <Text style={styles.textNote}>
-                        Cơm tấm 30K {"\n"}
-                        Cơm chiên 15k {"\n"}
-                        Nước các loại 15k {"\n"}
-                    </Text>
-                </View>
-                {/* trụ sạc  */}
-                <View>
-                    <Text style={styles.textInfoService}> Danh sách trụ sạc </Text>
-                </View>
-                <View style={styles.containerCharging}>
-                    <FlatList
-                        data={ChargingPost}
-                        scrollEnabled={false}
-                        keyExtractor={(item) => item.id}
-                        renderItem={({ item }) => (
-                            <View style={styles.viewChargingPost}>
-                                <Image style={styles.imgSocket} source={item.imgSocket} />
-
-                                <View style={styles.infoCharing2}>
-                                    <Text style={styles.textTypeCharing}>{item.namesocket}</Text>
-                                    <Text style={styles.textInfoCharing}> {item.kw}Kw/h</Text>
-                                    <Text style={styles.textInfoCharing}> {item.money}đ/Kwh</Text>
-                                </View>
-
-                                <View style={styles.infoCharing}>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', }}>
-                                        <Image style={styles.imginfoCharing} source={require('../../../assets/icon/icons8-flash-50 (1).png')} />
-                                        <Text style={[styles.textInfoCharing, { color: '#40A19C' }]}> {item.type}</Text>
-                                    </View>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', }}>
-                                        <Image style={styles.imginfoCharing} source={require('../../../assets/icon/icons8-socket-60.png')} />
-                                        <Text style={[styles.textInfoCharing, { color: '#40A19C' }]}> {item.charger} Cổng sạc</Text>
-                                    </View>
-                                </View>
+                            <View style={styles.detailStation}>
+                                <Image style={styles.imgIconMain} source={require('../../../assets/icon/icons8-charging-station-64.png')} />
+                                <Text style={styles.textMain22}> Đang hoạt Động</Text>
                             </View>
-                        )}
-                    />
-                </View>
+                            <View style={styles.detailStation}>
+                                <Image style={styles.imgIconMain} source={require('../../../assets/icon/icons8-time-50.png')} />
+                                <Text style={styles.textMain}>{dataStation.time}</Text>
+                            </View>
+                        </View>
+                        {/* Dich Vu  */}
+                        <View>
+                            <Text style={styles.textInfoService}> Dịch vụ </Text>
+                        </View>
+                        <View style={{ margin: '5%' }} >
+                            <FlatList
+                                data={dataStation.service.map(item => item.service_id)}
+                                horizontal={true}
+                                showsHorizontalScrollIndicator={false}
+                                keyExtractor={(item) => item._id}
+                                renderItem={({ item }) => (
+                                    <View style={styles.viewService} >
+                                        <Image style={styles.imgServies} source={{ uri: item.image }} />
+                                        <Text style={styles.textService}>
+                                            {item.name}
+                                        </Text>
+                                    </View>
+
+                                )}
+                            />
+                        </View>
+                        {/* ghi chú dịch vụ  */}
+                        <View>
+                            <Text style={styles.textNote}>Ghi chú</Text>
+                            <Text style={styles.textNote}>{dataStation.note}</Text>
+                        </View>
+                        {/* trụ sạc  */}
+                        <View>
+                            <Text style={styles.textInfoService}> Danh sách trụ sạc </Text>
+                        </View>
+                        <View style={styles.containerCharging}>
+                            <FlatList
+                                data={dataStation.specification.map(item => item.specification_id)}
+                                scrollEnabled={false}
+                                keyExtractor={(item) => item._id}
+                                renderItem={({ item }) => (
+                                    <View style={styles.viewChargingPost}>
+                                        <Image style={styles.imgSocket} source={{ uri: item.port_id.image }} />
+
+                                        <View style={styles.infoCharing2}>
+                                            <Text style={styles.textTypeCharing}>{item.port_id.name}</Text>
+                                            <Text style={styles.textInfoCharing}>{item.kw} Kw/h</Text>
+                                            <Text style={styles.textInfoCharing}>{item.price.toLocaleString("vi-VN")} đ/Kwh</Text>
+                                        </View>
+
+                                        <View style={styles.infoCharing}>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+                                                <Image style={styles.imginfoCharing} source={require('../../../assets/icon/icons8-flash-50 (1).png')} />
+                                                <Text style={[styles.textInfoCharing, { color: '#40A19C' }]}>  {item.kw < 20
+                                                    ? 'Sạc thường'
+                                                    : item.kw < 50
+                                                        ? 'Sạc nhanh'
+                                                        : 'Sạc siêu nhanh'}</Text>
+                                            </View>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+                                                <Image style={styles.imginfoCharing} source={require('../../../assets/icon/icons8-socket-60.png')} />
+                                                <Text style={[styles.textInfoCharing, { color: '#40A19C' }]}> {item.slot} Cổng sạc</Text>
+                                            </View>
+                                        </View>
+                                    </View>
+                                )}
+                            />
+                        </View>
+
+                    </>
+                )}
 
                 {/* đánh giá  */}
-                <View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }} >
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Text style={styles.textInfo}> Đánh giá </Text>
-                            <Text style={{ color: '#40A19C', fontSize: 20 }}>({countRate(fakeData)})</Text>
-                        </View>
 
-                    </View>
-                    <View>
-                        <View style={styles.containerRate}>
-                            <View  >
-                                <FlatList
-                                    data={fakeData.slice(0, limit)}
-                                    scrollEnabled={false}
-                                    keyExtractor={(item) => item._id}
-                                    renderItem={({ item }) => (
-                                        <View style={styles.listRate} >
-                                            <ItemRating data={item} />
-                                        </View>
-                                    )}
-                                />
+                {dataRating && (
+                    <>
+                        <View>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }} >
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Text style={styles.textInfo}> Đánh giá </Text>
+                                    <Text style={{ color: '#40A19C', fontSize: 20 }}>({countRate(dataRating)})</Text>
+                                </View>
+
                             </View>
-                            {limit < fakeData.length && (
-                                <TouchableOpacity style={{ alignItems: 'center' }} onPress={() => setLimit(limit + 1)}>
-                                    <Text style={styles.textInfo}>Xem thêm</Text>
-                                </TouchableOpacity>
-                            )}
+                            <View>
+                                <View style={styles.containerRate}>
+                                    <View  >
+                                        <FlatList
+                                            data={dataRating.slice(0, limit)}
+                                            scrollEnabled={false}
+                                            keyExtractor={(item) => item._id}
+                                            renderItem={({ item }) => (
+                                                <View style={styles.listRate} >
+                                                    <ItemRating data={item} />
+                                                </View>
+                                            )}
+                                        />
+                                    </View>
+                                    {limit < dataRating.length && (
+                                        <TouchableOpacity style={{ alignItems: 'center' }} onPress={() => setLimit(limit + 2)}>
+                                            <Text style={styles.textInfo}>Xem thêm</Text>
+                                        </TouchableOpacity>
+                                    )}
+                                </View>
+                            </View>
                         </View>
-                    </View>
-                </View>
+                    </>
+                )}
 
                 <Modal transparent={true} visible={modalVisible} animationType="slide">
                     <View style={styles.modalOverlay}>
@@ -317,7 +321,7 @@ const ViewDetail = () => {
                 <TouchableOpacity style={styles.buttonBottom} onPress={() => setModalVisible(true)}>
                     <Text style={[styles.textBottom, { color: '#40A19C' }]} >Đánh giá</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.buttonBottom, { backgroundColor: '#40A19C' }]}>
+                <TouchableOpacity onPress={openGoogleMaps} style={[styles.buttonBottom, { backgroundColor: '#40A19C' }]}>
                     <Text style={[styles.textBottom, { color: 'white' }]}>Đến ngay</Text>
                 </TouchableOpacity>
             </View>
@@ -513,11 +517,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         margin: 0,
-        marginRight: 20,
-        marginLeft: 10,
+        marginRight: '5%',
+        marginLeft: '5%',
         marginTop: '10%',
         marginBottom: '10%',
-        padding: 10,
+        padding: '10%',
     },
 
     containerBottom: {

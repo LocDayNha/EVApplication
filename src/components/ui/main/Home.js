@@ -1,44 +1,29 @@
-import { StyleSheet, Modal, Text, View, Image, Button, TouchableOpacity, FlatList, SectionList, ImageBase, TextInput, ScrollView } from 'react-native';
-import React, { useState } from 'react';
+import { StyleSheet, Modal, Text, View, Image, Linking, ToastAndroid, Button, TouchableOpacity, FlatList, SectionList, ImageBase, TextInput, ScrollView } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { ItemStationMain } from '../../item/Item';
-
-
-const nameChargingStation = [
-    { id: '0', name: 'Cửa hàng xăng dầu Thủ Đức ', brand: 'Honda', location: '172/7 phường Linh trung, Thủ đức, Hồ Chí Minh', time: '07:00 - 16:00', type: ['CCS1', 'CCS2'], image: 'https://www.pvoil.com.vn/media/1/he-thong-cua-hang-xang-dau.png' },
-    { id: '1', name: 'Đại lý ủy quyền Hyundai ', brand: 'Hyundai', location: '72/7 phường Linh trung, Thủ đức, Hồ Chí Minh', time: '07:00 - 16:00', type: ['CCS1', 'CCS2'], image: 'https://image.bnews.vn/MediaUpload/Org/2021/03/24/img-bgt-2021-screenshot-563-1616508509-width1280height720.jpg' },
-    { id: '2', name: 'Trạm xạc Vinfast Quận 1  ', brand: 'Vinfast', location: '172/7 phường Linh trung, Thủ đức, Hồ Chí Minh', time: '07:00 - 16:00', type: ['CCS1 ', 'CCS2'], image: 'https://petrotimesgroup.com/upload/cdn/images/image-20241116092757-1.jpeg' },
-    { id: '3', name: 'Chung cư ABC ', brand: 'Vinfast,Honda', location: '72/7 phường Linh trung, Thủ đức, Hồ Chí Minh', time: '07:00 - 16:00', type: ['CCS1 ', 'CCS2'], image: 'https://www.viup.vn/media/ckfinder/images/News/1/3/20230314/news_5739/image003.jpg' },
-    { id: '4', name: 'Bãi đỗ xe công ty trạm sạc EV ', brand: 'Vinfast', location: '172/7 phường Linh trung, Thủ đức, Hồ Chí Minh', time: '07:00 - 16:00', type: ['CCS1', 'CCS2'], image: 'https://thicongtrambienap.com/wp-content/uploads/2021/03/tram-sac-xe-dien-2-scaled.jpg' },
-]
-
-const nameKw = [
-    { id: '0', Kw: ['60Kw', '20Kw', '60Kw'] },
-    { id: '1', Kw: ['60Kw', '60Kw', '60Kw'] },
-    { id: '2', Kw: ['60Kw', '60Kw', '60Kw'] },
-    { id: '3', Kw: ['60Kw', '60Kw', '60Kw'] },
-    { id: '4', Kw: ['60Kw', '60Kw', '60Kw'] },
-];
+import AxiosInstance from '../../axios/AxiosInstance';
+import * as Location from 'expo-location';
+import { AppContext } from '../../axios/AppContext';
 
 const carBrands = [
     { id: 0, name: 'Tất cả' },
-    { id: 1, name: 'Toyota' },
+    { id: 1, name: 'Vinfast' },
     { id: 2, name: 'Honda' },
     { id: 3, name: 'Ford' },
-    { id: 4, name: 'Vinfast' },
 ];
-
 const typeCharger = [
-    { id: 0, name: 'CCS1' },
-    { id: 1, name: 'CCS2' },
+    { id: 0, name: 'J1772' },
+    { id: 1, name: 'Mennekes' },
     { id: 2, name: 'GB/T' },
-    { id: 3, name: 'J1772' },
+    { id: 3, name: 'CHAdeMO' },
+    { id: 4, name: 'CCS1' },
+    { id: 5, name: 'CCS2' },
 ];
-
 const Von = [
     { id: 0, name: 'Tất cả' },
-    { id: 1, name: 'DC' },
-    { id: 2, name: 'AC' },
+    { id: 1, name: 'AC' },
+    { id: 2, name: 'DC' },
 ];
 const Vehicle = [
     { id: 0, name: 'Tất cả' },
@@ -55,14 +40,18 @@ const Kw = [
 
 
 
-const Home = () => {
+const Home = (props) => {
 
-    const navigation = useNavigation();
+    const { navigation } = props;
 
     const [modalVisible, setModalVisible] = useState(false); // an hien bo loc 
 
     // luu id cua loai sac 
+    const [selectedVon, setSelectedVon] = useState('Tất cả');
     const [selectedChargerType, setSelectedChargerType] = useState([]);
+    const [selectedKw, setSelectedKw] = useState('Tất cả');
+    const [selectedVehicle, setSelectedVehicle] = useState('Tất cả');
+    const [selectedBrand, setSelectedBrand] = useState('Tất cả');
     const toggleSelection = (id) => {
         if (selectedChargerType.includes(id)) {
             setSelectedChargerType(selectedChargerType.filter((item) => item !== id));
@@ -71,18 +60,100 @@ const Home = () => {
         }
     };
 
-    // luu id hang xe 
-    const [selectedBrand, setSelectedBrand] = useState(0);
+    //Lấy địa chỉ và định vị
+    const [errorMsg, setErrorMsg] = useState('');
+    const [address, setAddress] = useState('');
+    const { myLat, setMyLat, myLng, setMyLng } = useContext(AppContext);
+    const getYourLocation = async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
 
-    // luu dong dien 
-    const [selectedVon, setSelectedVon] = useState(0);
+        if (status !== 'granted') {
+            setErrorMsg('Permission to location was not granted');
+        }
 
-    // luu cong suat 
-    const [selectedKw, setSelectedKw] = useState(0);
+        let { coords } = await Location.getCurrentPositionAsync();
 
-    // du liệu của id
-    const [tempSelected, setTempSelected] = useState(null);
-    // console.log(tempSelected)
+        if (coords) {
+            const { latitude, longitude } = coords;
+            let response = await Location.reverseGeocodeAsync({
+                latitude, longitude
+            });
+            setMyLat(latitude);
+            setMyLng(longitude);
+            setAddress(response[0].formattedAddress);
+        }
+    }
+
+    // Hàm lấy thông tin trạm sạc từ API
+    const [dataStation, setDataStation] = useState(null);
+    const getDataStation = async () => {
+        try {
+            const dataStation = await AxiosInstance().get('/station/get');
+            if (dataStation.data && dataStation.data.length > 0) {
+                setDataStation(dataStation.data);
+            } else {
+                console.log('Không tìm thấy dữ liệu từ /station/get');
+                ToastAndroid.show('Không có thông tin trạm sạc', ToastAndroid.SHORT);
+            }
+        } catch (error) {
+            console.error('Lỗi khi lấy dữ liệu station:', error);
+            ToastAndroid.show('Không thể tải danh sách thông tin trạm sạc', ToastAndroid.SHORT);
+        }
+    };
+
+    const getDataStationByOption = async () => {
+        try {
+            const dataStation = await AxiosInstance().post('/station/getByOption',
+                {
+                    vehicle: selectedVehicle, brand: selectedBrand, electric: selectedVon,
+                    port: selectedChargerType, output: selectedKw
+                }
+            );
+
+            if (dataStation.data) {
+                setDataStation(dataStation.data);
+                setModalVisible(false);
+            } else {
+                console.log('Không tìm thấy dữ liệu từ /station/getByOption');
+                ToastAndroid.show('Không có thông tin trạm sạc', ToastAndroid.SHORT);
+            }
+        } catch (error) {
+            console.error('Lỗi khi lấy dữ liệu station:', error);
+            ToastAndroid.show('Không thể tải danh sách thông tin trạm sạc', ToastAndroid.SHORT);
+        }
+    }
+
+    const [addressInput, setAddressInput] = useState(null);
+    const getDataStationByAddress = async () => {
+        try {
+            if (!addressInput || addressInput.trim() === '') {
+                console.log('Vui lòng nhập địa chỉ cần tìm');
+                ToastAndroid.show('Vui lòng nhập địa chỉ cần tìm', ToastAndroid.SHORT);
+            } else {
+                const dataStation = await AxiosInstance().post('/station/getByAddress',
+                    {
+                        address: addressInput,
+                    }
+                );
+                if (dataStation.filteredStations && dataStation.filteredStations.length > 0) {
+                    setDataStation(dataStation.filteredStations);
+                } else {
+                    console.log('Không tìm thấy dữ liệu từ /station/getByAddress');
+                    ToastAndroid.show('Không có thông tin trạm sạc', ToastAndroid.SHORT);
+                }
+            }
+        } catch (error) {
+            console.error('Lỗi khi lấy dữ liệu station:', error);
+            ToastAndroid.show('Không thể tải danh sách thông tin trạm sạc', ToastAndroid.SHORT);
+        }
+    }
+
+    // Hook effect khởi tạo dữ liệu
+    useEffect(() => {
+        getDataStation();
+        getYourLocation();
+    }, []);
+
     return (
         <ScrollView showsVerticalScrollIndicator={false}>
             {/* Ten nguoi dung */}
@@ -95,13 +166,15 @@ const Home = () => {
                             <Text style={{ color: 'white' }}>Welcom back</Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.boderIcon2}>
+                    <TouchableOpacity onPress={getDataStationByAddress} style={styles.boderIcon2}>
                         <Image style={styles.iconFilter} source={require('../../../assets/icon/icons8-notification-50 (2).png')} />
                     </TouchableOpacity>
                 </View>
                 <Text style={{ color: 'white', marginLeft: '10%', marginTop: '2%' }}>Vị trí của bạn </Text>
                 <View style={styles.inputSearch}>
-                    <View style={styles.boderSearch}><TextInput style={{ marginLeft: '5%' }} placeholder="172/7 phường Linh trung, Thủ đức, Hồ Chí Minh" /></View>
+                    <View style={styles.boderSearch}>
+                        <TextInput onChangeText={setAddressInput} style={{ marginLeft: '5%' }} placeholder="172/7 phường Linh trung, Thủ đức, Hồ Chí Minh" />
+                    </View>
                     <TouchableOpacity style={styles.boderIcon} onPress={() => setModalVisible(true)}>
                         <Image style={styles.iconFilter} source={require('../../../assets/icon/icons8-filter-50 (1).png')} />
                     </TouchableOpacity>
@@ -114,6 +187,7 @@ const Home = () => {
                         <View style={styles.modalContent}>
 
                             <Text style={styles.modalTitle}>Bộ lọc </Text>
+
                             <ScrollView showsVerticalScrollIndicator={false} >
                                 {/* danh sách bộ lọc  */}
                                 <Text style={styles.modalTitleSup}> Dòng điện </Text>
@@ -124,30 +198,15 @@ const Home = () => {
                                     renderItem={({ item }) => (
                                         <TouchableOpacity
                                             style={styles.filterItem}
-                                            onPress={() => setSelectedVon(item.id)}>
+                                            onPress={() => setSelectedVon(item.name)}>
                                             <View style={styles.radioButton}>
-                                                {selectedVon === item.id && <View style={styles.radioInner} />}
+                                                {selectedVon === item.name && <View style={styles.radioInner} />}
                                             </View>
                                             <Text style={styles.filterText}>{item.name}</Text>
                                         </TouchableOpacity>
                                     )}
                                 />
-                                <Text style={styles.modalTitleSup}> Loại Xe </Text>
-                                <FlatList
-                                    data={Vehicle}
-                                    scrollEnabled={false}
-                                    keyExtractor={(item) => item.id}
-                                    renderItem={({ item }) => (
-                                        <TouchableOpacity
-                                            style={styles.filterItem}
-                                            onPress={() => setSelectedVon(item.id)}>
-                                            <View style={styles.radioButton}>
-                                                {selectedVon === item.id && <View style={styles.radioInner} />}
-                                            </View>
-                                            <Text style={styles.filterText}>{item.name}</Text>
-                                        </TouchableOpacity>
-                                    )}
-                                />
+
                                 <Text style={styles.modalTitleSup}> Loại đầu sạc </Text>
                                 <FlatList
                                     data={typeCharger}
@@ -157,9 +216,9 @@ const Home = () => {
                                         return (
                                             <TouchableOpacity
                                                 style={styles.filterItem}
-                                                onPress={() => toggleSelection(item.id)}>
-                                                <View style={[styles.checkbox, selectedChargerType.includes(item.id) && styles.checkedBox]}>
-                                                    {selectedChargerType.includes(item.id) && <Text style={styles.checkmark}>✓</Text>}
+                                                onPress={() => toggleSelection(item.name)}>
+                                                <View style={[styles.checkbox, selectedChargerType.includes(item.name) && styles.checkedBox]}>
+                                                    {selectedChargerType.includes(item.name) && <Text style={styles.checkmark}>✓</Text>}
                                                 </View>
                                                 <Text style={styles.filterText}>{item.name}</Text>
                                             </TouchableOpacity>
@@ -167,6 +226,7 @@ const Home = () => {
                                         );
                                     }}
                                 />
+
                                 <Text style={styles.modalTitleSup}> Công suất  </Text>
                                 <FlatList
                                     data={Kw}
@@ -175,14 +235,32 @@ const Home = () => {
                                     renderItem={({ item }) => (
                                         <TouchableOpacity
                                             style={styles.filterItem}
-                                            onPress={() => setSelectedKw(item.id)}>
+                                            onPress={() => setSelectedKw(item.name)}>
                                             <View style={styles.radioButton}>
-                                                {selectedKw === item.id && <View style={styles.radioInner} />}
+                                                {selectedKw === item.name && <View style={styles.radioInner} />}
                                             </View>
                                             <Text style={styles.filterText}>{item.name}</Text>
                                         </TouchableOpacity>
                                     )}
                                 />
+
+                                <Text style={styles.modalTitleSup}> Loại Xe </Text>
+                                <FlatList
+                                    data={Vehicle}
+                                    scrollEnabled={false}
+                                    keyExtractor={(item) => item.id}
+                                    renderItem={({ item }) => (
+                                        <TouchableOpacity
+                                            style={styles.filterItem}
+                                            onPress={() => setSelectedVehicle(item.name)}>
+                                            <View style={styles.radioButton}>
+                                                {selectedVehicle === item.name && <View style={styles.radioInner} />}
+                                            </View>
+                                            <Text style={styles.filterText}>{item.name}</Text>
+                                        </TouchableOpacity>
+                                    )}
+                                />
+
                                 <Text style={styles.modalTitleSup}> Hãng xe  </Text>
                                 <FlatList
                                     data={carBrands}
@@ -191,19 +269,19 @@ const Home = () => {
                                     renderItem={({ item }) => (
                                         <TouchableOpacity
                                             style={styles.filterItem}
-                                            onPress={() => setSelectedBrand(item.id)}>
+                                            onPress={() => setSelectedBrand(item.name)}>
                                             <View style={styles.radioButton}>
-                                                {selectedBrand === item.id && <View style={styles.radioInner} />}
+                                                {selectedBrand === item.name && <View style={styles.radioInner} />}
                                             </View>
                                             <Text style={styles.filterText}>{item.name}</Text>
                                         </TouchableOpacity>
                                     )}
                                 />
+
                             </ScrollView >
                             {/* nút */}
                             <View style={styles.buttonRow}>
                                 <TouchableOpacity onPress={() => {
-                                    setTempSelected(null);
                                     setModalVisible(false);
                                     setSelectedBrand(0);
                                     setSelectedKw(0);
@@ -213,15 +291,7 @@ const Home = () => {
                                     <Text style={styles.cancelText}>Hủy</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
-                                    onPress={() => {
-                                        setTempSelected({
-                                            selectedBrand,
-                                            selectedVon,
-                                            selectedKw,
-                                            selectedChargerType,
-                                        });
-                                        setModalVisible(false);
-                                    }}
+                                    onPress={getDataStationByOption}
                                     style={styles.applyButton}>
                                     <Text style={styles.applyText}>Áp dụng</Text>
                                 </TouchableOpacity>
@@ -240,10 +310,10 @@ const Home = () => {
                 </View>
                 <View >
                     <FlatList
-                        data={nameChargingStation}
+                        data={dataStation}
                         scrollEnabled={false}
                         showsVerticalScrollIndicator={false}
-                        keyExtractor={(item) => item.id}
+                        keyExtractor={(item) => item._id}
                         renderItem={({ item }) => (
                             <ItemStationMain data={item} />
                         )}

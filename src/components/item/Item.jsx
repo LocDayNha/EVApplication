@@ -1,10 +1,10 @@
-import { StyleSheet, View, Text, TouchableOpacity, TextInput, Image, Modal, ScrollView } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity,Linking,ToastAndroid, TextInput, Image, Modal, ScrollView } from "react-native";
 import { COLOR } from "../../assets/Theme/Theme";
 import { useNavigate } from "react-router-native";
 import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
-
-
+import React, { useState, useContext } from 'react';
+import { AppContext } from '../axios/AppContext';
+import AxiosInstance from "../axios/AxiosInstance";
 
 export function TextInputBegin({ uri, onChangeText, placeholder }) {
   return (
@@ -64,7 +64,7 @@ export function ItemRating({ data }) {
         <View>
           <Text style={styles.textNameUser}>{data.user_id.name}</Text>
           <View style={{ flexDirection: "row", alignItems: 'center', justifyContent: 'space-between', width: '80%' }}>
-            <Text >{'⭐'.repeat(data.rating)}</Text>
+            <Text >{'⭐'.repeat(data.star)}</Text>
             <Text style={styles.textTimeRating}>{data.createAt}</Text>
           </View>
         </View>
@@ -131,21 +131,61 @@ export function ItemStation({ data }) {
 
   );
 }
-export function ItemStationMain({ data }) {
+export function ItemStationMain(props) {
+  const { data } = props;
   const navigation = useNavigation();
+  const { myLat, myLng } = useContext(AppContext);
+
+  const clickViewDetail = () => {
+    navigation.navigate('ViewDetail', { id: data._id });
+  };
+
+  const openGoogleMaps = async () => {
+    try {
+      const linkTrack = await AxiosInstance().post('/station/testGoogleMapTrack', {
+        lat1: myLat, lng1: myLng, lat2: data.lat, lng2: data.lng
+      });
+      if (linkTrack.url) {
+        Linking.openURL(linkTrack.url).catch(err => Alert.alert("Error", "Failed to open Google Maps"));
+      } else {
+        console.log('Không tìm thấy dữ liệu từ /station/testGoogleMapTrack');
+        ToastAndroid.show('Không thể chỉ đường', ToastAndroid.SHORT);
+      }
+    } catch (error) {
+      console.error('Lỗi khi lấy dữ liệu station:', error);
+      ToastAndroid.show('Không thể thực hiện chỉ đường do hẹ thống', ToastAndroid.SHORT);
+    }
+  };
+
   return (
-    <TouchableOpacity style={styles.listRow} onPress={() => navigation.navigate("ViewDetail")}>
+    <TouchableOpacity style={styles.listRow} key={data._id} onPress={clickViewDetail}>
       <Image style={styles.imgStation} source={{ uri: data.image }} />
       <View style={styles.viewInfoStation}>
-        <Text style={styles.textItemName} numberOfLines={1} ellipsizeMode='tail'>{data.brand} - {data.name}</Text>
+        <Text style={styles.textItemName} numberOfLines={1} ellipsizeMode='tail'>{data.brand_id.name} - {data.name}</Text>
         <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail'>{data.location}</Text>
       </View>
       <View style={styles.viewInfoStation}>
         <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail'>{data.time}</Text>
       </View>
       <View style={styles.viewInfoStation2}>
-        <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail' >{data.type.join("/")}</Text>
-        <TouchableOpacity>
+
+        {(() => {
+          const portTypes = data?.specification
+            ?.map((item) => item?.specification_id?.port_id?.type)
+            .filter((type) => type === "AC" || type === "DC"); // Lọc chỉ lấy AC hoặc DC
+
+          const uniquePortTypes = [...new Set(portTypes)]; // Loại bỏ giá trị trùng lặp
+
+          const displayText = uniquePortTypes.length === 2 ? "AC/DC" : uniquePortTypes[0] || "N/A";
+
+          return (
+            <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode="tail">
+              {displayText}
+            </Text>
+          );
+        })()}
+
+        <TouchableOpacity onPress={openGoogleMaps}>
           <View style={styles.viewButtonItem} >
             <Text style={{ color: 'white' }}>
               3.5Km

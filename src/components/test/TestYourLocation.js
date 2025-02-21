@@ -23,7 +23,8 @@ const TestYourLocation = () => {
       let response = await Location.reverseGeocodeAsync({
         latitude, longitude
       });
-
+      console.log('latitude:', latitude);
+      console.log('longitude:', longitude);
       setLat(latitude);
       setLng(longitude);
       setAddress(response[0].formattedAddress);
@@ -33,7 +34,7 @@ const TestYourLocation = () => {
   useEffect(() => {
     getYourLocation();
   }, [])
-  
+
 
   return (
     <View style={styles.container}>
