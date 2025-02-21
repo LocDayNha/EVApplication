@@ -28,7 +28,9 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Allow EV Application to use your location."
         }
-      ]
+      ],
+      "expo-asset",
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true

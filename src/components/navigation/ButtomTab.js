@@ -4,8 +4,15 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { COLOR } from "../../assets/Theme/Theme";
 
+import Login from '../ui/begin/Login';
+import Register from '../ui/begin/Register';
 import Home from '../ui/main/Home';
+import ForgotPass from '../ui/begin/ForgotPass';
 import ViewDetail from '../ui/main/ViewDetail';
+import SplashScreen from '../ui/begin/SplashScreen';
+import Verification from '../ui/begin/Verification';
+import CompleteCreate from '../ui/begin/CompleteCreate';
+import NewPassword from '../ui/begin/NewPassword';
 import List from '../ui/main/ListStation'
 import Track from '../ui/main/Track';
 import Trip from '../ui/main/Trip';
@@ -54,6 +61,7 @@ const TabIcon = ({ focused, icon, label }) => (
 const SettingScreen = () => {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Setting">
+            
             <Stack.Screen name="Setting" component={Setting} />
             <Stack.Screen name="Home" component={Home} />
         </Stack.Navigator>
@@ -131,6 +139,13 @@ const Screen = () => {
 const ButtomTab = () => {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="SplashSceen" component={SplashScreen} />
+            <Stack.Screen name="Login" component={Login} />
+            <Stack.Screen name="Register" component={Register} />
+            <Stack.Screen name="ForgotPass" component={ForgotPass} />
+            <Stack.Screen name="Verification" component={Verification} />
+            <Stack.Screen name="NewPassword" component={NewPassword} />
+            <Stack.Screen name="CompleteCreate" component={CompleteCreate} />
             <Stack.Screen name="Screen" component={Screen} />
             <Stack.Screen name="Login" component={Login} />
            
