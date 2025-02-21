@@ -110,7 +110,7 @@ const Home = (props) => {
                 }
             );
 
-            if (dataStation.data) {
+            if (dataStation.data && dataStation.data.length > 0) {
                 setDataStation(dataStation.data);
                 setModalVisible(false);
             } else {

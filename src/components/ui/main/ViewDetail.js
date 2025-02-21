@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, ToastAndroid, ScrollView,Linking, Image, FlatList, TouchableOpacity, Modal, TextInput } from 'react-native'
-import React, { useState, useEffect , useContext} from 'react';
+import { StyleSheet, Text, View, ToastAndroid, ScrollView, Linking, Image, FlatList, TouchableOpacity, Modal, TextInput } from 'react-native'
+import React, { useState, useEffect, useContext } from 'react';
 import { TextInputProfile, CustomButton, ItemRating } from '../../item/Item'
 import { useNavigation } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
@@ -10,6 +10,7 @@ import { AppContext } from '../../axios/AppContext';
 const ViewDetail = () => {
     const route = useRoute();
     const { id } = route.params;
+    const navigation = useNavigation();
 
     // gioi han hien thi danh gia
     const [limit, setLimit] = useState(1);
@@ -18,79 +19,26 @@ const ViewDetail = () => {
         return Rate.length;
     };
 
-    // an hien viet danh gia
     const [modalVisible, setModalVisible] = useState(false);
-    // du lieu viet danh gia
-    const [textContent, setTextContent] = useState('');
-    // do dai nhap ky tu
-    const maxLength = 100;
-    // so sao danh gia
-    const [rating, setRating] = useState(0);
-    // ten nguoi dung 
-    const [userNameRating, setUserNameRating] = useState('Nguyen Van B')
-    // lay thoi gian thuc te 
-    const [savedTime, setSavedTime] = useState(null);
-    const handlePress = () => {
-        const now = new Date();
-        const formattedTime = now.toLocaleString('vi-VN', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-        });
-        setSavedTime(formattedTime);
-    };
-
-
-    const [userRating, setUserRating] = useState([]);
-    const handleSubmit = () => {
-        handlePress(); // Cập nhật thời gian trước khi lưu đánh giá
-
-        if (textContent.trim() === '' || rating === 0) {
-            alert('Vui lòng nhập đánh giá và chọn số sao!');
-            return;
-        }
-
-        const newRating = {
-            userNameRating,
-            textContent,
-            rating,
-            savedTime: new Date().toLocaleString('vi-VN', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-            }),
-        };
-
-        setUserRating([...userRating, newRating]); // Cập nhật danh sách đánh giá
-        setTextContent('');
-        setRating(0);
-    };
-    // console.log(userRating);
 
     // lat lng
-    const { myLat, myLng } = useContext(AppContext);
+    const { myLat, myLng, idUser, infoUser } = useContext(AppContext);
     const openGoogleMaps = async () => {
         try {
-          const linkTrack = await AxiosInstance().post('/station/testGoogleMapTrack', {
-            lat1: myLat, lng1: myLng, lat2: dataStation.lat, lng2: dataStation.lng
-          });
-          if (linkTrack.url) {
-            Linking.openURL(linkTrack.url).catch(err => Alert.alert("Error", "Failed to open Google Maps"));
-          } else {
-            console.log('Không tìm thấy dữ liệu từ /station/testGoogleMapTrack');
-            ToastAndroid.show('Không thể chỉ đường', ToastAndroid.SHORT);
-          }
+            const linkTrack = await AxiosInstance().post('/station/testGoogleMapTrack', {
+                lat1: myLat, lng1: myLng, lat2: dataStation.lat, lng2: dataStation.lng
+            });
+            if (linkTrack.url) {
+                Linking.openURL(linkTrack.url).catch(err => Alert.alert("Error", "Failed to open Google Maps"));
+            } else {
+                console.log('Không tìm thấy dữ liệu từ /station/testGoogleMapTrack');
+                ToastAndroid.show('Không thể chỉ đường', ToastAndroid.SHORT);
+            }
         } catch (error) {
-          console.error('Lỗi khi lấy dữ liệu station:', error);
-          ToastAndroid.show('Không thể thực hiện chỉ đường do hẹ thống', ToastAndroid.SHORT);
+            console.error('Lỗi khi lấy dữ liệu station:', error);
+            ToastAndroid.show('Không thể thực hiện chỉ đường do hẹ thống', ToastAndroid.SHORT);
         }
-      };
+    };
 
     // Hàm lấy thông tin trạm sạc từ API
     const [dataStation, setDataStation] = useState(null);
@@ -125,6 +73,43 @@ const ViewDetail = () => {
             ToastAndroid.show('Không thể tải danh sách thông tin đánh giá trạm sạc', ToastAndroid.SHORT);
         }
     };
+
+    const clickRating = () => {
+        if (!infoUser || !idUser) {
+            ToastAndroid.show('Cần đăng nhập để đánh giá', ToastAndroid.SHORT);
+            navigation.navigate('Login');
+        } else {
+            setModalVisible(true);
+        }
+    }
+
+    // rating
+    const [textContent, setTextContent] = useState(null);
+    const [starRating, setStarRating] = useState(0);
+    const submitRating = async () => {
+        if (!textContent || starRating <= 0 || textContent.trim() === '') {
+            ToastAndroid.show('Vui lòng không để trống', ToastAndroid.SHORT);
+        } else {
+            try {
+                const dataRating = await AxiosInstance().post('/rating/addNew',
+                    {
+                        user_id: idUser, station_id: id, content: textContent, star: starRating
+                    }
+                );
+                if (dataRating && dataRating.addNew) {
+                    getDataRating();
+                    setModalVisible(false);
+                    ToastAndroid.show('Đánh giá thành công', ToastAndroid.SHORT);
+                } else {
+                    console.log('Đánh giá thất bại /rating/addNew');
+                    ToastAndroid.show('Đánh giá không thành cong', ToastAndroid.SHORT);
+                }
+            } catch (error) {
+                console.error('Lỗi khi lấy dữ liệu rating:', error);
+                ToastAndroid.show('Lỗi hệ thống', ToastAndroid.SHORT);
+            }
+        }
+    }
 
     // Hook effect khởi tạo dữ liệu
     useEffect(() => {
@@ -270,11 +255,11 @@ const ViewDetail = () => {
                             <ScrollView showsVerticalScrollIndicator={false} >
                                 <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 20 }}>
                                     {[1, 2, 3, 4, 5].map((star) => (
-                                        <TouchableOpacity key={star} onPress={() => setRating(star)}>
+                                        <TouchableOpacity key={star} onPress={() => setStarRating(star)}>
                                             <Icon
-                                                name={star <= rating ? 'star' : 'star-o'}
+                                                name={star <= starRating ? 'star' : 'star-o'}
                                                 size={40}
-                                                color={star <= rating ? 'gold' : 'gray'}
+                                                color={star <= starRating ? 'gold' : 'gray'}
                                                 style={{ marginHorizontal: 5 }}
                                             />
                                         </TouchableOpacity>
@@ -285,7 +270,7 @@ const ViewDetail = () => {
                                     placeholder="Nhập nội dung..."
                                     value={textContent}
                                     onChangeText={(value) => {
-                                        if (value.length <= maxLength) {
+                                        if (value.length <= 100) {
                                             setTextContent(value);
                                         }
                                     }}
@@ -296,17 +281,14 @@ const ViewDetail = () => {
                             <View style={styles.buttonRow}>
                                 <TouchableOpacity onPress={() => {
                                     setTextContent('')
-                                    setRating(0)
+                                    setStarRating(0)
                                     setModalVisible(false)
                                 }}
                                     style={styles.cancelButton}>
                                     <Text style={{ color: '#40A19C' }}>Quay lại </Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
-                                    onPress={() => {
-                                        handleSubmit();
-                                        setModalVisible(false);
-                                    }}
+                                    onPress={submitRating}
                                     style={styles.applyButton}>
                                     <Text style={{ color: 'white' }}>Đánh giá</Text>
                                 </TouchableOpacity>
@@ -318,7 +300,7 @@ const ViewDetail = () => {
             </ScrollView>
             {/* Bottom tab */}
             <View style={styles.containerBottom}>
-                <TouchableOpacity style={styles.buttonBottom} onPress={() => setModalVisible(true)}>
+                <TouchableOpacity style={styles.buttonBottom} onPress={clickRating}>
                     <Text style={[styles.textBottom, { color: '#40A19C' }]} >Đánh giá</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={openGoogleMaps} style={[styles.buttonBottom, { backgroundColor: '#40A19C' }]}>

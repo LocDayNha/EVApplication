@@ -38,7 +38,7 @@ const Login = () => {
         { email: email, password: password }
       );
 
-      if (response && response.returnData.data) {
+      if (response && response.returnData.data && response.returnData.data.user.isVerified) {
         const { token, user } = response.returnData.data;
 
         if (!token || !user) {
@@ -51,6 +51,9 @@ const Login = () => {
         setIdUser(user._id);
         navigateToMain();
 
+      } else if (response && response.returnData.data && response.returnData.data.user.isVerified === false) {
+        ToastAndroid.show('Cần xác nhận tài khoản', ToastAndroid.SHORT);
+        navigation.navigate('Verification', { email: email, name: 'Login' })
       } else {
         ToastAndroid.show('Thông tin đăng nhập sai', ToastAndroid.SHORT);
       }
@@ -114,12 +117,12 @@ export default Login
 
 const styles = StyleSheet.create({
   container: {
-    width:'100%',
+    width: '100%',
     paddingHorizontal: 16,
     backgroundColor: "#fff",
     justifyContent: "center",
     alignItems: "center",
-    height:'100%',
+    height: '100%',
   },
   img: {
     marginLeft: "5%",

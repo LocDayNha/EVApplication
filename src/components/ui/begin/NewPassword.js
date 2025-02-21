@@ -1,22 +1,49 @@
-import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Image, ToastAndroid, TextInput, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Roboto_400Regular, Roboto_500Medium } from '@expo-google-fonts/roboto';
-import { Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold} from '@expo-google-fonts/poppins';
-import AppLoading from 'expo-app-loading'
+import { Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
+import AppLoading from 'expo-app-loading';
+import AxiosInstance from '../../axios/AxiosInstance';
 
 const NewPassword = () => {
+    const route = useRoute();
+    const { email } = route.params;
     const navigation = useNavigation();
     const [showPassword, setShowPassword] = useState(false);
 
     let [fontLoaded] = useFonts({
         Roboto_500Medium,
         Poppins_600SemiBold
-      })
-      if (!fontLoaded) {
-        return <AppLoading/>
-      }
+    })
+    if (!fontLoaded) {
+        return <AppLoading />
+    }
+
+    const [password, setPassword] = useState(null);
+    const [password2, setPassword2] = useState(null);
+    const SetNewPassword = async () => {
+        try {
+            const response = await AxiosInstance().post('/user/forgotpass',
+                {
+                    email: email, password: password, password2: password2
+                }
+            );
+            if (response) {
+                navigation.navigate('CompleteCreate');
+                console.log('Cập nhật mật khẩu thành công')
+            } else {
+                ToastAndroid.show('Cập nhật mật khẩu thất bại!', ToastAndroid.SHORT);
+            }
+        } catch (error) {
+            ToastAndroid.show(
+                error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại',
+                ToastAndroid.SHORT,
+            );
+        }
+    }
 
     return (
         <View style={styles.container}>
@@ -32,6 +59,7 @@ const NewPassword = () => {
                         placeholder="Password"
                         placeholderTextColor={"#D9D9D9"}
                         secureTextEntry={!showPassword}
+                        onChangeText={setPassword}
                     />
                     <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
                         <Image source={require('../../../assets/icon/eye.png')} style={styles.img} />
@@ -44,13 +72,14 @@ const NewPassword = () => {
                         placeholder="Password"
                         placeholderTextColor={"#D9D9D9"}
                         secureTextEntry={!showPassword}
+                        onChangeText={setPassword2}
                     />
                     <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
                         <Image source={require('../../../assets/icon/eye.png')} style={styles.img} />
                     </TouchableOpacity>
                 </View>
             </View>
-            <TouchableOpacity style={styles.sendButton} onPress={() => navigation.navigate('CompleteCreate')}>
+            <TouchableOpacity style={styles.sendButton} onPress={SetNewPassword}>
                 <Text style={styles.textSend}>Hoàn thành</Text>
             </TouchableOpacity>
         </View>
@@ -65,7 +94,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         alignItems: "center",
         justifyContent: "center",
-        
+
     },
     image: {
         marginTop: 0,

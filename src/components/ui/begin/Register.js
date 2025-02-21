@@ -1,11 +1,12 @@
-import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, COLOR, Alert } from 'react-native'
+import { StyleSheet, Text, View, Image, TextInput, ToastAndroid, TouchableOpacity, COLOR, Alert } from 'react-native'
 import React, { Component, useState, alert } from 'react'
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Roboto_400Regular, Roboto_500Medium } from '@expo-google-fonts/roboto';
-import { Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold} from '@expo-google-fonts/poppins';
-import AppLoading from 'expo-app-loading'
+import { Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
+import AppLoading from 'expo-app-loading';
+import AxiosInstance from '../../axios/AxiosInstance';
 
 
 const Register = () => {
@@ -21,6 +22,35 @@ const Register = () => {
     return <AppLoading />
   }
 
+  const navigateToVerify = () => {
+    navigation.navigate('Verification');
+  }
+
+  // register
+  const [email, setEmail] = useState(null);
+  const [password, setPassword] = useState(null);
+  const [password2, setPassword2] = useState(null);
+
+  const Register = async () => {
+    try {
+      const response = await AxiosInstance().post('/user/register',
+        {
+          email: email, password: password, password2: password2
+        }
+      );
+      if (response && response.status) {
+        navigation.navigate('Verification', { email: email, name: 'Register' });
+      } else {
+        ToastAndroid.show('Đăng ký thất bại!', ToastAndroid.SHORT);
+      }
+    } catch (error) {
+      ToastAndroid.show(
+        error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại',
+        ToastAndroid.SHORT,
+      );
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View>
@@ -34,7 +64,7 @@ const Register = () => {
             style={styles.input}
             placeholder="Email"
             placeholderTextColor={"#D9D9D9"}
-            // onChangeText={}
+            onChangeText={setEmail}
           />
         </View>
       </View>
@@ -45,7 +75,7 @@ const Register = () => {
             style={styles.input}
             placeholder="Password"
             placeholderTextColor={"#D9D9D9"}
-            // onChangeText={}
+            onChangeText={setPassword}
             secureTextEntry={!showPassword}
           />
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
@@ -60,7 +90,7 @@ const Register = () => {
             style={styles.input}
             placeholder="Re-Password"
             placeholderTextColor={"#D9D9D9"}
-            // onChangeText={}
+            onChangeText={setPassword2}
             secureTextEntry={!showPassword}
           />
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
@@ -68,7 +98,7 @@ const Register = () => {
           </TouchableOpacity>
         </View>
       </View>
-      <TouchableOpacity style={styles.loginButton}>
+      <TouchableOpacity style={styles.loginButton} onPress={Register}>
         <Text style={styles.loginText}>Đăng ký</Text>
       </TouchableOpacity>
       <Text style={styles.registerText}>

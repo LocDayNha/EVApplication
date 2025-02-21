@@ -1,13 +1,17 @@
-import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native';
-import React, { useState, useRef } from 'react';
+import { StyleSheet, Text, View, Image, TextInput, ToastAndroid, TouchableOpacity } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Roboto_400Regular, Roboto_500Medium } from '@expo-google-fonts/roboto';
-import { Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold} from '@expo-google-fonts/poppins';
-import AppLoading from 'expo-app-loading'
+import { Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
+import AppLoading from 'expo-app-loading';
+import AxiosInstance from '../../axios/AxiosInstance';
 
 
 const Verification = () => {
+    const route = useRoute();
+    const { email, name } = route.params;
     const navigation = useNavigation();
 
     const [otp, setOtp] = useState(new Array(4).fill(""));
@@ -31,13 +35,62 @@ const Verification = () => {
             newOtp[index - 1] = "";
             setOtp(newOtp);
             inputRefs.current[index - 1]?.focus();
+
         }
     };
 
-    const handleConfirm = () => {
-        console.log("Mã xác thực:", otp.join(""));
-        navigation.navigate('NewPassword');
+    // sent code verify
+    const [codeResult, setCodeResult] = useState(null);
+    const SentCode = async () => {
+        try {
+            const code = await AxiosInstance().post('/user/sent-code',
+                {
+                    email: email
+                }
+            );
+            if (code && code.verifyCode) {
+                setCodeResult(parseInt(code.verifyCode, 10));
+                ToastAndroid.show('Kiểm tra mã xác nhận ở Email', ToastAndroid.SHORT);
+                console.log('Gửi mã xác nhận thành công:', code.verifyCode)
+            } else {
+                ToastAndroid.show('Đăng ký thất bại!', ToastAndroid.SHORT);
+            }
+        } catch (error) {
+            ToastAndroid.show('Có lỗi xảy ra, vui lòng thử lại', ToastAndroid.SHORT);
+        }
+    }
+
+    // checking code
+    const handleConfirm = async () => {
+        const otpCode = otp.join("");
+        const otpNumber = parseInt(otpCode, 10);
+        try {
+            const response = await AxiosInstance().post('/user/verify',
+                {
+                    codeInput: otpNumber,
+                    codeResult: codeResult,
+                    email: email
+                }
+            );
+            if (response && name === 'Register') {
+                console.log('Xác nhận thành công');
+                navigation.navigate('CompleteCreate');
+            } else if (response && name === 'Login') {
+                console.log('Xác nhận thành công');
+                navigation.navigate('CompleteCreate');
+            } else {
+                console.log('Xác nhận thành công');
+                navigation.navigate('NewPassword', { email: email });
+            }
+        } catch (error) {
+            ToastAndroid.show('Có lỗi xảy ra, vui lòng thử lại', ToastAndroid.SHORT);
+        }
     };
+
+    useEffect(() => {
+        SentCode();
+    }, [])
+
 
     return (
         <View style={styles.container}>
@@ -60,7 +113,7 @@ const Verification = () => {
             </View>
 
             <TouchableOpacity style={styles.sendButton} onPress={handleConfirm}>
-                <Text style={styles.textSend} onPress={() => navigation.navigate('NewPassword')}>Xác nhận</Text>
+                <Text style={styles.textSend}>Xác nhận</Text>
             </TouchableOpacity>
         </View>
     );
@@ -70,11 +123,12 @@ export default Verification;
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        width: '100%',
+        height: '100%',
         backgroundColor: "#fff",
         alignItems: "center",
-        marginBottom: 20,
-        paddingHorizontal: 20
+        justifyContent: 'center',
+        padding: "5%"
     },
     image: {
         marginTop: 0,

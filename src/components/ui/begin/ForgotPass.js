@@ -1,22 +1,28 @@
 import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Platform } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Roboto_400Regular, Roboto_500Medium } from '@expo-google-fonts/roboto';
-import { Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold} from '@expo-google-fonts/poppins';
+import { Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
 import AppLoading from 'expo-app-loading'
 
 const ForgotPass = () => {
     const navigation = useNavigation();
 
     let [fontLoaded] = useFonts({
-    
+
         Roboto_500Medium,
         Poppins_600SemiBold
-      })
-      if (!fontLoaded) {
-        return <AppLoading/>
-      }
+    })
+    if (!fontLoaded) {
+        return <AppLoading />
+    }
+
+    const [email, setEmail] = useState(null);
+
+    const SenCode = () => {
+        navigation.navigate('Verification', { email: email, name: 'ForgotPass' })
+    }
 
     return (
         <View style={styles.container}>
@@ -31,14 +37,15 @@ const ForgotPass = () => {
                         style={styles.input}
                         placeholder="Email"
                         placeholderTextColor={"#D9D9D9"}
+                        onChangeText={setEmail}
                     />
                 </View>
             </View>
-            <TouchableOpacity style={styles.sendButton} onPress={() => navigation.navigate('Verification')}>
+            <TouchableOpacity style={styles.sendButton} onPress={SenCode}>
                 <Text style={styles.textSend}>Gửi</Text>
             </TouchableOpacity>
         </View>
-       
+
     )
 }
 
