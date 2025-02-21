@@ -10,11 +10,13 @@ import List from '../ui/main/ListStation'
 import Track from '../ui/main/Track';
 import Trip from '../ui/main/Trip';
 import Setting from '../ui/main/Setting';
+import Schedule from '../ui/main/Schedule';
 import Profile from '../ui/main/Profile';
 import FormStation from '../ui/main/FormStation';
 import TestAPILocationVN from '../test/TestAPILocationVN';
 import TestYourLocation from '../test/TestYourLocation';
 import TestOpenGoogleMap from '../test/TestOpenGoogleMap';
+import TestGoogleMap from '../test/TestGoogleMap';
 import Login from '../ui/begin/Login';
 import Register from'../ui/begin/Register';
 
@@ -75,7 +77,7 @@ const Tabbar = () => {
                 component={Home}
                 options={{
                     tabBarIcon: ({ focused }) => (
-                        <TabIcon focused={focused} icon={require('../../assets/icon/location.png')} label="Vị trí" />
+                        <TabIcon focused={focused} icon={require('../../assets/icon/station.png')} label="Trạm sạc" />
                     ),
                 }}
             />
@@ -84,13 +86,13 @@ const Tabbar = () => {
                 component={TestAPILocationVN}
                 options={{
                     tabBarIcon: ({ focused }) => (
-                        <TabIcon focused={focused} icon={require('../../assets/icon/station.png')} label="Trạm sạc" />
+                        <TabIcon focused={focused} icon={require('../../assets/icon/location.png')} label="Bản đồ" />
                     ),
                 }}
             />
             <Tab.Screen
                 name="QR"
-                component={TestYourLocation}
+                component={TestGoogleMap}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <TabIcon focused={focused} icon={require('../../assets/icon/qr.png')} label="" />
@@ -98,8 +100,8 @@ const Tabbar = () => {
                 }}
             />
             <Tab.Screen
-                name="Trip"
-                component={TestOpenGoogleMap}
+                name="Schedule"
+                component={Schedule}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <TabIcon focused={focused} icon={require('../../assets/icon/trip.png')} label="Lộ trình" />
@@ -131,6 +133,7 @@ const ButtomTab = () => {
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Screen" component={Screen} />
             <Stack.Screen name="Login" component={Login} />
+           
             <Stack.Screen name="Register" component={Register} />
             <Stack.Screen name="List" component={List} options={{ title: "Trạm sạc của bạn", headerStyle: { backgroundColor: "#40A19C" }, headerTintColor: "#fff", headerShown: true }}/>
             <Stack.Screen name="Profile" component={Profile} options={{ title: "Thông tin cá nhân", headerStyle: { backgroundColor: "#40A19C" }, headerTintColor: "#fff", headerShown: true }}/>
