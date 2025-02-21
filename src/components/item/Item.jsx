@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, TouchableOpacity,Linking,ToastAndroid, TextInput, Image, Modal, ScrollView } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, Linking, ToastAndroid, TextInput, Image, Modal, ScrollView } from "react-native";
 import { COLOR } from "../../assets/Theme/Theme";
 import { useNavigate } from "react-router-native";
 import { useNavigation } from '@react-navigation/native';
@@ -32,7 +32,7 @@ export function TextInputMain({ value, onChangeText, placeholder }) {
   );
 }
 
-export function TextInputProfile({ label, value, onChangeText, placeholder }) {
+export function TextInputProfile({ label, value, onChangeText, placeholder, editable }) {
   return (
     <View style={styles.viewInputProfile}>
       <Text style={styles.textProfile}>{label}</Text>
@@ -41,6 +41,7 @@ export function TextInputProfile({ label, value, onChangeText, placeholder }) {
         placeholder={placeholder}
         value={value}
         onChangeText={onChangeText}
+        editable={editable}
       />
     </View>
   );

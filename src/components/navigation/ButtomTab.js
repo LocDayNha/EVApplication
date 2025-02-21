@@ -24,8 +24,6 @@ import TestAPILocationVN from '../test/TestAPILocationVN';
 import Location from '../test/Location';
 import TestOpenGoogleMap from '../test/TestOpenGoogleMap';
 import TestGoogleMap from '../test/TestGoogleMap';
-import Login from '../ui/begin/Login';
-import Register from'../ui/begin/Register';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -61,7 +59,7 @@ const TabIcon = ({ focused, icon, label }) => (
 const SettingScreen = () => {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Setting">
-            
+
             <Stack.Screen name="Setting" component={Setting} />
             <Stack.Screen name="Home" component={Home} />
         </Stack.Navigator>
@@ -140,20 +138,19 @@ const ButtomTab = () => {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="SplashSceen" component={SplashScreen} />
+            <Stack.Screen name="Screen" component={Screen} />
+
+            <Stack.Screen name="List" component={List} options={{ title: "Trạm sạc của bạn", headerStyle: { backgroundColor: "#40A19C" }, headerTintColor: "#fff", headerShown: true }} />
+            <Stack.Screen name="Profile" component={Profile} options={{ title: "Thông tin cá nhân", headerStyle: { backgroundColor: "#40A19C" }, headerTintColor: "#fff", headerShown: true }} />
+            <Stack.Screen name="ViewDetail" component={ViewDetail} options={{ title: "Chi tiết trạm sạc", headerStyle: { backgroundColor: "#40A19C" }, headerTintColor: "#fff", headerShown: true, }} />
+            <Stack.Screen name="FormStation" component={FormStation} options={{ title: "Thêm trạm sạc", headerStyle: { backgroundColor: "#40A19C" }, headerTintColor: "#fff", headerShown: true }} />
+
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="Register" component={Register} />
             <Stack.Screen name="ForgotPass" component={ForgotPass} />
             <Stack.Screen name="Verification" component={Verification} />
             <Stack.Screen name="NewPassword" component={NewPassword} />
             <Stack.Screen name="CompleteCreate" component={CompleteCreate} />
-            <Stack.Screen name="Screen" component={Screen} />
-            <Stack.Screen name="Login" component={Login} />
-           
-            <Stack.Screen name="Register" component={Register} />
-            <Stack.Screen name="List" component={List} options={{ title: "Trạm sạc của bạn", headerStyle: { backgroundColor: "#40A19C" }, headerTintColor: "#fff", headerShown: true }}/>
-            <Stack.Screen name="Profile" component={Profile} options={{ title: "Thông tin cá nhân", headerStyle: { backgroundColor: "#40A19C" }, headerTintColor: "#fff", headerShown: true }}/>
-            <Stack.Screen name="ViewDetail" component={ViewDetail} options={{ title: "Chi tiết trạm sạc", headerStyle: { backgroundColor: "#40A19C" }, headerTintColor: "#fff", headerShown: true, }} />
-            <Stack.Screen name="FormStation" component={FormStation} options={{ title: "Thêm trạm sạc", headerStyle: { backgroundColor: "#40A19C" }, headerTintColor: "#fff", headerShown: true }} />
         </Stack.Navigator>
     );
 };

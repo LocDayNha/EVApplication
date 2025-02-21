@@ -1,24 +1,66 @@
-import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, COLOR, Alert, Platform } from 'react-native'
-import React, { Component, useState } from 'react'
+import { StyleSheet, Text, View, Image, ToastAndroid, TextInput, TouchableOpacity, COLOR, Alert, Platform } from 'react-native'
+import React, { Component, useContext, useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Roboto_400Regular, Roboto_500Medium } from '@expo-google-fonts/roboto';
-import { Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold} from '@expo-google-fonts/poppins';
-import AppLoading from 'expo-app-loading'
+import { Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import AppLoading from 'expo-app-loading';
+import AxiosInstance from '../../axios/AxiosInstance';
+import { AppContext } from '../../axios/AppContext';
 
-
-const Login = ({ uri, onChangeText, placeholder, onPress }) => {
+const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigation = useNavigation();
 
   let [fontLoaded] = useFonts({
-    
+
     Roboto_500Medium,
     Poppins_600SemiBold
   })
   if (!fontLoaded) {
-    return <AppLoading/>
+    return <AppLoading />
   }
+
+  const navigateToMain = () => {
+    navigation.navigate('Screen');
+  }
+
+  // login
+  const { setIsLogin, setInfoUser, setIdUser, infoUser, idUser } = useContext(AppContext);
+
+  const [email, setEmail] = useState(null);
+  const [password, setPassword] = useState(null);
+  // const [rePassword, setRePassword] = useState(null);
+  const onLogin = async () => {
+    try {
+      const response = await AxiosInstance().post('/user/login',
+        { email: email, password: password }
+      );
+
+      if (response && response.returnData.data) {
+        const { token, user } = response.returnData.data;
+
+        if (!token || !user) {
+          throw new Error("Dữ liệu phản hồi không hợp lệ");
+        }
+
+        await AsyncStorage.setItem('token', token);
+        setIsLogin(true);
+        setInfoUser(user);
+        setIdUser(user._id);
+        navigateToMain();
+
+      } else {
+        ToastAndroid.show('Thông tin đăng nhập sai', ToastAndroid.SHORT);
+      }
+    } catch (error) {
+      ToastAndroid.show(
+        error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại',
+        ToastAndroid.SHORT,
+      );
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -33,7 +75,7 @@ const Login = ({ uri, onChangeText, placeholder, onPress }) => {
             style={styles.input}
             placeholder="Email"
             placeholderTextColor={"#D9D9D9"}
-            onChangeText={onChangeText}
+            onChangeText={setEmail}
           />
         </View>
       </View>
@@ -44,7 +86,7 @@ const Login = ({ uri, onChangeText, placeholder, onPress }) => {
             style={styles.input}
             placeholder="Password"
             placeholderTextColor={"#D9D9D9"}
-            onChangeText={onChangeText}
+            onChangeText={setPassword}
             secureTextEntry={!showPassword}
           />
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
@@ -55,15 +97,15 @@ const Login = ({ uri, onChangeText, placeholder, onPress }) => {
           <Text style={styles.forgotText} onPress={() => navigation.navigate('ForgotPass')}>Quên mật khẩu?</Text>
         </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.loginButton} onPress={onPress}>
+      <TouchableOpacity style={styles.loginButton} onPress={onLogin}>
         <Text style={styles.loginText}>Đăng nhập</Text>
       </TouchableOpacity>
       <Text style={styles.registerText}>
         Bạn chưa có tài khoản? <Text style={styles.registerLink} onPress={() => navigation.navigate('Register')}>Đăng ký</Text>
       </Text>
     </View>
-  
-  
+
+
   )
 
 }
@@ -72,11 +114,12 @@ export default Login
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    width:'100%',
     paddingHorizontal: 16,
     backgroundColor: "#fff",
     justifyContent: "center",
     alignItems: "center",
+    height:'100%',
   },
   img: {
     marginLeft: "5%",

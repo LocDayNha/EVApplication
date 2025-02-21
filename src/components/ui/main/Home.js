@@ -155,7 +155,7 @@ const Home = (props) => {
     }, []);
 
     return (
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView showsVerticalScrollIndicator={false} style={{flex:1, height:'100%'}}>
             {/* Ten nguoi dung */}
             <View style={styles.containerUser}>
                 <View style={styles.inputSearch}>

@@ -10,11 +10,10 @@ const CompleteCreate = () => {
             <View>
                 <Text style={styles.textTitle}>Đã thay đổi mật khẩu{"\n"}thành công</Text>
             </View>
-            <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('NewPassword')}>
+            <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Login')}>
                 <Text style={styles.textBack}>Quay lại</Text>
             </TouchableOpacity>
         </View>
-
     )
 }
 

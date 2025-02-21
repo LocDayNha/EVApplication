@@ -8,7 +8,7 @@ import { Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold} from '@expo-g
 import AppLoading from 'expo-app-loading'
 
 
-const Register = ({ uri, onChangeText, placeholder, onPress }) => {
+const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigation = useNavigation();
 
@@ -34,7 +34,7 @@ const Register = ({ uri, onChangeText, placeholder, onPress }) => {
             style={styles.input}
             placeholder="Email"
             placeholderTextColor={"#D9D9D9"}
-            onChangeText={onChangeText}
+            // onChangeText={}
           />
         </View>
       </View>
@@ -45,7 +45,7 @@ const Register = ({ uri, onChangeText, placeholder, onPress }) => {
             style={styles.input}
             placeholder="Password"
             placeholderTextColor={"#D9D9D9"}
-            onChangeText={onChangeText}
+            // onChangeText={}
             secureTextEntry={!showPassword}
           />
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
@@ -58,9 +58,9 @@ const Register = ({ uri, onChangeText, placeholder, onPress }) => {
           <Image source={require('../../../assets/icon/key.png')} style={styles.img} />
           <TextInput
             style={styles.input}
-            placeholder="Password"
+            placeholder="Re-Password"
             placeholderTextColor={"#D9D9D9"}
-            onChangeText={onChangeText}
+            // onChangeText={}
             secureTextEntry={!showPassword}
           />
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
@@ -68,8 +68,8 @@ const Register = ({ uri, onChangeText, placeholder, onPress }) => {
           </TouchableOpacity>
         </View>
       </View>
-      <TouchableOpacity style={styles.loginButton} onPress={onPress}>
-        <Text style={styles.loginText} onPress={onPress}>Đăng ký</Text>
+      <TouchableOpacity style={styles.loginButton}>
+        <Text style={styles.loginText}>Đăng ký</Text>
       </TouchableOpacity>
       <Text style={styles.registerText}>
         Bạn đã có tài khoản? <Text style={styles.registerLink} onPress={() => navigation.navigate('Login')}>Đăng nhập</Text>

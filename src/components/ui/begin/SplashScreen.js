@@ -4,7 +4,7 @@ import React, {useEffect} from 'react'
 const SplashScreen = ({navigation}) => {
     useEffect(() => {
         setTimeout(() => {
-          navigation.replace('Login'); 
+          navigation.replace('Screen'); 
         }, 2000); // chuyển trang sau 2 giây
       }, []);
     return (

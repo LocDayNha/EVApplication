@@ -1,21 +1,31 @@
-import { StyleSheet, Text, View, ScrollView, Image } from 'react-native'
-import React, { useState } from 'react'
-import { TextInputProfile, CustomButton } from '../../item/Item'
+import { StyleSheet, Text, View, ScrollView, Image } from 'react-native';
+import React, { useState, useContext, useEffect } from 'react';
+import { TextInputProfile, CustomButton } from '../../item/Item';
+import { AppContext } from '../../axios/AppContext';
 
 const Profile = () => {
+
+  const { infoUser, idUser } = useContext(AppContext);
+  const { name, email, phoneNumber, image } = infoUser;
+
+  const [nameUser, setNameUser] = useState(null);
+  const [emailUser, setEmailUser] = useState(null);
+  const [phoneNumberUser, setPhoneNumberUser] = useState(null);
+  const [imageUser, setImageUser] = useState(null);
+
   return (
-    <ScrollView  style={{backgroundColor:'white'}}>
+    <ScrollView style={{ backgroundColor: 'white' }}>
       <View style={styles.user}>
         <View style={styles.viewUser}>
-          <Image style={styles.imguser} source={require('../../../assets/images/anhchandung.jpg')} />
-          <Text style={styles.textNameuser} >Tùng</Text>
+          <Image style={styles.imguser} source={{ uri: image }} />
+          <Text style={styles.textNameuser} >{name}</Text>
         </View>
       </View>
       <View style={styles.boxHome}>
         <View style={{ alignItems: 'center', justifyContent: 'center', height: 400 }} >
-          <TextInputProfile label={'Tên của bạn'} placeholder={'Nguyen van a'} />
-          <TextInputProfile label={'Tài khoản Email'} placeholder={'nguyenvaa211@gmail.com'} />
-          <TextInputProfile label={'Số điện thoại'} placeholder={'00123456789'} />
+          <TextInputProfile label={'Tên của bạn'} onChangeText={setNameUser} value={name} />
+          <TextInputProfile label={'Tài khoản Email'} onChangeText={setEmailUser} value={email} editable={false}/>
+          <TextInputProfile label={'Số điện thoại'} onChangeText={setPhoneNumberUser} value={phoneNumber} />
           <CustomButton label={'Xác nhận lưu'} />
         </View>
       </View>
@@ -38,7 +48,7 @@ const styles = StyleSheet.create({
   },
   user: {
     backgroundColor: 'white',
-    height: 300,
+    height: 250,
     justifyContent: 'center',
     alignItems: 'center',
 
@@ -49,13 +59,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   imguser: {
-    width: 200,
-    height: 200,
+    width: 150,
+    height: 150,
     borderRadius: 100,
   },
   textNameuser: {
     fontSize: 24,
     fontWeight: 'bold',
+    marginTop: '5%'
     // color:'white',
   },
   textNameSetting: {
