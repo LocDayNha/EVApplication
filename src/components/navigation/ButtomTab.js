@@ -16,6 +16,7 @@ import NewPassword from '../ui/begin/NewPassword';
 import List from '../ui/main/ListStation'
 import Track from '../ui/main/Track';
 import Trip from '../ui/main/Trip';
+import MapStation from '../ui/main/MapStation';
 import Setting from '../ui/main/Setting';
 import Schedule from '../ui/main/Schedule';
 import Profile from '../ui/main/Profile';
@@ -24,8 +25,6 @@ import TestAPILocationVN from '../test/TestAPILocationVN';
 import Location from '../test/Location';
 import TestOpenGoogleMap from '../test/TestOpenGoogleMap';
 import TestGoogleMap from '../test/TestGoogleMap';
-import Login from '../ui/begin/Login';
-import Register from'../ui/begin/Register';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -91,7 +90,7 @@ const Tabbar = () => {
             />
             <Tab.Screen
                 name="Map"
-                component={TestAPILocationVN}
+                component={MapStation}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <TabIcon focused={focused} icon={require('../../assets/icon/location.png')} label="Bản đồ" />
@@ -139,6 +138,7 @@ const Screen = () => {
 const ButtomTab = () => {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
+             <Stack.Screen name="Screen" component={Screen} />
             <Stack.Screen name="SplashSceen" component={SplashScreen} />
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="Register" component={Register} />
@@ -146,10 +146,7 @@ const ButtomTab = () => {
             <Stack.Screen name="Verification" component={Verification} />
             <Stack.Screen name="NewPassword" component={NewPassword} />
             <Stack.Screen name="CompleteCreate" component={CompleteCreate} />
-            <Stack.Screen name="Screen" component={Screen} />
-            <Stack.Screen name="Login" component={Login} />
            
-            <Stack.Screen name="Register" component={Register} />
             <Stack.Screen name="List" component={List} options={{ title: "Trạm sạc của bạn", headerStyle: { backgroundColor: "#40A19C" }, headerTintColor: "#fff", headerShown: true }}/>
             <Stack.Screen name="Profile" component={Profile} options={{ title: "Thông tin cá nhân", headerStyle: { backgroundColor: "#40A19C" }, headerTintColor: "#fff", headerShown: true }}/>
             <Stack.Screen name="ViewDetail" component={ViewDetail} options={{ title: "Chi tiết trạm sạc", headerStyle: { backgroundColor: "#40A19C" }, headerTintColor: "#fff", headerShown: true, }} />

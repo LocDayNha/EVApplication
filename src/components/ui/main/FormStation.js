@@ -1,76 +1,44 @@
 import { StyleSheet, Text, View, ScrollView, Image, Modal, Alert, FlatList, TextInput, ActivityIndicator, TouchableOpacity, Button } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { COLOR } from "../../../assets/Theme/Theme";
-import ModalDropdown from 'react-native-modal-dropdown';
-import { TextInputProfile } from '../../item/Item';
-import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import * as ImagePicker from 'expo-image-picker';
 import RNPickerSelect from 'react-native-picker-select';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
+import MapView, { Marker, Callout } from 'react-native-maps';
+import * as Location from 'expo-location';
+import { ItemBoxLocation, ItemCheckBox, ItemInputCharging, ItemRadioButton } from '../../item/Item';
 
 const API_BASE = 'https://online-gateway.ghn.vn/shiip/public-api/master-data';
 const TOKEN = '46f53dba-ecf6-11ef-a268-9e63d516feb9';
 
 const FormStation = () => {
-    // ẩn hiện lisst modal
-    const [modalVisibleBrand, setModalVisibleBrand] = useState(false);
-    const [modalVisibleVehicle, setModalVisibleVehicle] = useState(false);
-    const [modalVisibleSocket, setModalVisibleSocket] = useState(false);
 
-    // giá trị 
-    const [editIndex, setEditIndex] = useState(null);
-
-    const [selectedProvinceName, setSelectedProvinceName] = useState('');
-    const [selectedDistrictName, setSelectedDistrictName] = useState('');
-    const [selectedWardName, setSelectedWardName] = useState('');
-    const [locationDetail, setLoactionDetail] = useState('');
-    const [nameStation, setNameStation] = useState('');
-    const [valuePower, setValuePower] = useState('');
-    const [valuePorts, setValuePorts] = useState('');
-    const [valuePrice, setValuePrice] = useState('');
-    const [selectedBrandId, setSelectedBrandId] = useState(-1);
-    const [valueVehicleId, setValueVehicleId] = useState(-1);
-    const [valueTypeId, setValueTypeId] = useState(-1);
-    const [selectedService, setSelectedService] = useState([]);
-    const [saveForm, setSaveForm] = useState([]);
-    // chọn dịch vụ 
-    const service = [
+    // Danh sách dịch vụ
+    const typeService = [
         { id: 0, name: 'Đồ ăn' },
         { id: 1, name: 'Đồ uống' },
-        { id: 2, name: 'Wc' },
+        { id: 2, name: 'WC' },
         { id: 3, name: 'Đỗ Xe' },
     ];
-    const toggleSelection = (id) => {
-        if (selectedService.includes(id)) {
-            setSelectedService(selectedService.filter((item) => item !== id));
-        } else {
-            setSelectedService([...selectedService, id]);
-        }
-    };
-    console.log(selectedService)
-    
-    const [selectedBrand, setSelectedBrand] = useState('Chọn hãng xe');
-    const carBrands = [
-        { id: 0, name: 'Tất cả' },
+
+    // Danh sách hãng xe
+    const typeBrands = [
         { id: 1, name: 'Toyota' },
         { id: 2, name: 'Honda' },
         { id: 3, name: 'Ford' },
         { id: 4, name: 'Vinfast' },
+        { id: 5, name: 'Hyundai' },
+        { id: 6, name: 'Tesla' },
     ];
-    // an hien bo loc 
-    // chọn phương tiện 
-    const [valueVehicle, setValueVehicle] = useState('Chọn phương tiện');
 
+    // Danh sách phương tiện
     const typeVehicle = [
         { id: 0, name: 'Tất cả' },
         { id: 1, name: 'Xe máy' },
         { id: 2, name: 'Ô tô' },
     ];
-    // chon loaij sacj
-    const [valueType, setValueType] = useState('Chọn loại sạc');
 
+    // Danh sách loại sạc
     const typeSocket = [
         { id: 0, name: 'CCS1' },
         { id: 1, name: 'CCS2' },
@@ -78,81 +46,164 @@ const FormStation = () => {
         { id: 3, name: 'Ổ điện' },
         { id: 4, name: 'Chademo' },
     ];
-    // luuw tru sac
+    //modal
+    const [modalVisibleMap, setModalVisibleMap] = useState(false);
+
+    // ban do 
+    const initialLocation = { latitude: 14.0583, longitude: 108.2772 };
+    const [myLocation, setMyLocation] = useState(null);
+    const [selectedLocation, setSelectedLocation] = useState(null);
+    const mapRef = useRef(null);
+
+
+    const handleMapPress = (event) => {
+        const { latitude, longitude } = event.nativeEvent.coordinate;
+        console.log("Vị trí đã chọn:", latitude, longitude);
+        setSelectedLocation({ latitude, longitude });
+    };
+
+    const _getLocation = useCallback(async () => {
+        try {
+            let { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                console.warn('Permission to access location was denied');
+                return;
+            }
+            let location = await Location.getCurrentPositionAsync({});
+            console.log("Vị trí hiện tại:", location.coords);
+            setMyLocation(location.coords);
+            focusOnLocation(location.coords);
+        } catch (err) {
+            console.warn("Lỗi lấy vị trí:", err);
+        }
+    }, []);
+
+    const focusOnLocation = (coords) => {
+        if (mapRef.current && coords) {
+            const newRegion = {
+                latitude: coords.latitude,
+                longitude: coords.longitude,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+            };
+            mapRef.current.animateToRegion(newRegion, 1000);
+        }
+    };
+
+
+    // gia tri form
+    const [editIndex, setEditIndex] = useState(null);
+    const [locationDetail, setLoactionDetail] = useState('');
+    const [nameStation, setNameStation] = useState('');
+    const [valuePower, setValuePower] = useState('');
+    const [valuePorts, setValuePorts] = useState('');
+    const [valuePrice, setValuePrice] = useState('');
+    const [valueNote, setValueNote] = useState('');
+    const [chargingDetails, setChargingDetails] = useState([]);
+
+
+    // địa điểm 
+    const [location, setLocation] = useState({
+        provinceName: '',
+        districtName: '',
+        wardName: ''
+    });
+    const handleLocationSelect = (selectedLocation) => {
+        setLocation(selectedLocation);
+    };
+
+    // dịch vụ 
+    const [selectedServices, setSelectedServices] = useState([]);
+    const handleServiceSelect = (selected) => {
+        setSelectedServices(selected);
+    };
+
+    // thương hiệu
+    const [selectedBrand, setSelectedBrand] = useState(null);
+    const handleBrandSelect = (brandId) => {
+        setSelectedBrand(brandId);
+    };
+
+    // phương tiện
+    const [selectedVehical, setSelectedVehical] = useState(null);
+    const handleVehicalSelect = (VehicalId) => {
+        setSelectedVehical(VehicalId);
+    };
+    const [selectedSocket, setSelectedSocket] = useState(null);
+    //dau sac 
+    const handleSocketSelect = (ScoketId) => {
+        setSelectedSocket(ScoketId);
+    };
 
 
 
+    const [invisible, setInvisible] = useState(false);
+    //luu tram sac
     const addOrUpdateDetail = () => {
+        const newDetail = { power: valuePower, ports: valuePorts, price: valuePrice, vehicle: selectedVehical, type: selectedSocket };
 
-        // validationCharing();
-        const newDetail = { power: valuePower, ports: valuePorts, price: valuePrice, vehicle: valueVehicle, type: valueType };
         if (editIndex !== null) {
-            const updatedList = [...saveForm];
+            const updatedList = [...chargingDetails];
             updatedList[editIndex] = newDetail;
-            setSaveForm(updatedList);
+            setChargingDetails(updatedList);
             setEditIndex(null);
         } else {
-            setSaveForm([...saveForm, newDetail]);
+            setChargingDetails([...chargingDetails, newDetail]);
         }
         clearForm();
         setInvisible(true);
     };
+
     const editDetail = (index) => {
-        const item = saveForm[index];
+        const item = chargingDetails[index];
         setValuePower(item.power);
         setValuePorts(item.ports);
         setValuePrice(item.price);
-        setValueVehicle(item.vehicle);
-        setValueType(item.type);
+        setSelectedVehical(item.vehicle);
+        setSelectedSocket(item.type);
         setEditIndex(index);
         setInvisible(false);
     };
-    // xoa tru sac
+
     const deleteDetail = (index) => {
-        setSaveForm(saveForm.filter((_, i) => i !== index));
+        setChargingDetails(chargingDetails.filter((_, i) => i !== index));
     };
+
     const clearForm = () => {
         setValuePower('');
         setValuePorts('');
         setValuePrice('');
-        setValueVehicle('Chọn phương tiện');
-        setValueType("Chọn loại sạc");
+        setSelectedVehical(null);
+        setSelectedSocket(null);
     };
-    // console.log(saveForm)
-    // aanr button khi chinh sua
-    const [invisible, setInvisible] = useState(false);
-    // chọn thời gian 
-    const [timeStart, setTimeStart,] = useState('Thời gian bắt đầu');
-    const [timeEnd, setTimeEnd,] = useState('Thời gian kết thúc');
+
+    //thoi gian
+    const [timeStart, setTimeStart] = useState('00:00');
+    const [timeEnd, setTimeEnd] = useState('00:00');
     const [isTimeStartVisible, setTimeStartVisibility] = useState(false);
     const [isTimeEndVisible, setTimeEndVisibility] = useState(false);
-    const showTimeStartPicker = () => {
-        setTimeStartVisibility(true);
-    };
-    const hideTimeStartPicker = () => {
-        setTimeStartVisibility(false);
-    };
-    const showTimeEndPicker = () => {
-        setTimeEndVisibility(true);
-    };
-    const hideTimeEndPicker = () => {
-        setTimeEndVisibility(false);
-    };
+
+    const showTimeStartPicker = () => setTimeStartVisibility(true);
+    const hideTimeStartPicker = () => setTimeStartVisibility(false);
+    const showTimeEndPicker = () => setTimeEndVisibility(true);
+    const hideTimeEndPicker = () => setTimeEndVisibility(false);
+
     const handleConfirmTimeStart = (date) => {
         const dt = new Date(date);
-        const timeStart = dt.toLocaleTimeString();
-        setTimeStart(timeStart);
+        setTimeStart(dt.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" }));
         hideTimeStartPicker();
     };
+
     const handleConfirmTimeEnd = (date) => {
         const dt = new Date(date);
-        const timeEnd = dt.toLocaleTimeString();
-        setTimeEnd(timeEnd);
+        setTimeEnd(dt.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" }));
         hideTimeEndPicker();
     };
-    // phần thêm ảnh 
+
+    //anh
     const [image, setImage] = useState(null);
-    const [checkImage, setCheckImage] = useState(true); // ẩn hiện chũ thêm ảnh 
+    const [checkImage, setCheckImage] = useState(true);
+
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ['images'],
@@ -160,321 +211,175 @@ const FormStation = () => {
             aspect: [4, 3],
             quality: 1,
         });
-        // console.log(result);
+
         if (!result.canceled) {
             setImage(result.assets[0].uri);
             setCheckImage(false);
         }
     };
-    // phần lấy địa chỉ 
-    const [provinces, setProvinces] = useState([]);
-    const [districts, setDistricts] = useState([]);
-    const [wards, setWards] = useState([]);
 
-    const [selectedProvince, setSelectedProvince] = useState('');
-    const [selectedDistrict, setSelectedDistrict] = useState('');
-    const [selectedWard, setSelectedWard] = useState('');
+    // kiêm tra number
+    const onChangeTextKw = (value) => { if (+value || value == '') setValuePower(value.trim()); };
+    const onChangeTextChager = (value) => { if (+value || value == '') setValuePorts(value.trim()); };
+    const onChangeTextPrice = (value) => { if (+value || value == '') setValuePrice(value.trim()); };
 
+    const [checkImg, setCheckImg] = useState(false);
+    const [checkNameStation, setCheckNameStation] = useState(false);
+    const [checkBrand, setCheckBrand] = useState(false);
+    const [checkTime, setCheckTime] = useState(false);
+    const [checkLocation, setCheckLocation] = useState(false);
+    const [checkKw, setCheckKw] = useState(false);
+    const [checkCharger, setCheckCharger] = useState(false);
+    const [checkPrice, setCheckPrice] = useState(false);
+    const [checkVehicle, setCheckVehicle] = useState(false);
+    const [checkSocket, setCheckSocket] = useState(false);
+    const [checkCharging, setCheckCharging] = useState(false);
 
+    // Kiểm tra thông tin trạm sạc
+    const validateStation = () => {
+        let isValid = true;
 
-    const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        fetchProvinces();
-    }, []);
-    const fetchProvinces = async () => {
-        setLoading(true);
-        try {
-            const response = await fetch(`${API_BASE}/province`, {
-                headers: { Token: TOKEN }
-            });
-            const data = await response.json();
-            setProvinces((data.data || [])
-                .map(item => ({
-                    label: item.ProvinceName,
-                    value: String(item.ProvinceID),
-                    name: item.ProvinceName,
-                }))
-                .sort((a, b) => a.label.localeCompare(b.label))
-            );
-        } catch (error) {
-            console.error('Error fetching provinces:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-    const fetchDistricts = async (provinceId, provinceName) => {
-        setLoading(true);
-        try {
-            const response = await fetch(`${API_BASE}/district?province_id=${provinceId}`, {
-                headers: { Token: TOKEN }
-            });
-            const data = await response.json();
-            setDistricts((data.data || [])
-                .map(item => ({
-                    label: item.DistrictName,
-                    value: String(item.DistrictID),
-                    name: item.DistrictName,
-                }))
-                .sort((a, b) => a.label.localeCompare(b.label))
-            );
-            setSelectedProvince(provinceId);
-            setSelectedProvinceName(provinceName);
-        } catch (error) {
-            console.error('Error fetching districts:', error);
-            setDistricts([]);
-        } finally {
-            setLoading(false);
-        }
-    };
-    const fetchWards = async (districtId, districtName) => {
-        setLoading(true);
-        try {
-            const response = await fetch(`${API_BASE}/ward?district_id=${districtId}`, {
-                headers: { Token: TOKEN }
-            });
-            const data = await response.json();
-            setWards((data.data || [])
-                .map(item => ({
-                    label: item.WardName,
-                    value: String(item.WardCode),
-                    name: item.WardName,
-                }))
-                .sort((a, b) => a.label.localeCompare(b.label))
-            );
-            setSelectedDistrict(districtId);
-            setSelectedDistrictName(districtName);
-        } catch (error) {
-            console.error('Error fetching wards:', error);
-            setWards([]);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // set gia tri 
-    const onChangeTextKw = (valuePower) => {
-        if (+valuePower || valuePower == '') {
-            setValuePower(valuePower.trim());
-        }
-    };
-    const onChangeTextChager = (valuePorts) => {
-        if (+valuePorts || valuePorts == '') {
-            setValuePorts(valuePorts.trim());
-        }
-    };
-    const onChangeTextPrice = (valuePrice) => {
-        if (+valuePrice || valuePrice == '') {
-            setValuePrice(valuePrice.trim());
-        }
-    };
-
-    const [checkImg, setCheckImg] = useState(false)
-    const [checkNameStation, setCheckNameStation] = useState(false)
-    const [checkBrand, setCheckBrand] = useState(false)
-    const [checkTime, setCheckTime] = useState(false)
-    const [checkLocation, setCheckLoacation] = useState(false)
-    const [checkKw, setCheckKw] = useState(false)
-    const [checkPort, setCheckPort] = useState(false)
-    const [checkPrice, setCheckPrice] = useState(false)
-    const [checkVehicle, setCheckVehicle] = useState(false)
-    const [checkChager, setCheckChager] = useState(false)
-    const [checkCharing, setCheckCharing] = useState(false)
-
-
-    const Validation = () => {
-
-        if (image == null) {
+        if (!image) {
             setCheckImg(true);
+            isValid = false;
+        } else setCheckImg(false);
+
+        if (nameStation.length < 10 || nameStation.length > 50) {
+            setCheckNameStation(true);
+            isValid = false;
+        } else setCheckNameStation(false);
+
+        if (!selectedBrand) {
+            setCheckBrand(true);
+            isValid = false;
+        } else setCheckBrand(false);
+
+        if (timeStart === '00:00' || timeEnd === '00:00') {
+            setCheckTime(true);
+            isValid = false;
+        } else setCheckTime(false);
+
+        if (!location.provinceName || !location.districtName || !location.wardName || locationDetail.trim() === '' || myLocation === null) {
+            setCheckLocation(true);
+            isValid = false;
+        } else setCheckLocation(false);
+
+        if (chargingDetails.length === 0) {
+            setCheckCharging(true);
+            isValid = false;
         } else {
-            setCheckImg(false);
-            if (nameStation.length >= 50 || nameStation.length <= 10) {
-                setCheckNameStation(true)
-            } else {
-                setCheckNameStation(false);
-                if (selectedBrandId == -1) {
-                    setCheckBrand(true)
-                } else {
-                    setCheckBrand(false)
-                    if (timeStart == 'Thời gian bắt đầu' || timeEnd == 'Thời gian kết thúc') {
-                        setCheckTime(true)
-                    } else {
-                        setCheckTime(false)
-                        if(selectedProvinceName == '' || selectedDistrictName == '' || selectedWardName == '' || locationDetail.trim() == '' ){
-                            setCheckLoacation(true)
-                        }else{
-                            setCheckLoacation(false)
-                            if (saveForm.length == 0) {
-                                setCheckCharing(true)
-                            } else {
-                                setCheckCharing(false)
-                                console.log('luu tat ca')
-                            }
-                        }
-                    }
-                }
-            }
+            setCheckCharging(false);
+            isValid = false;
         }
 
+        return isValid;
+    };
 
-        // (image == null ? setCheckImg(true) : setCheckImg(false));
-        // (nameStation.length >= 50 || nameStation.length <= 10 ? setCheckNameStation(true) : setCheckNameStation(false));
-        // (selectedBrandId == -1 ? setCheckBrand(true) : setCheckBrand(false));
-        // (timeStart == 'Thời gian bắt đầu' || timeEnd == 'Thời gian kết thúc' ? setCheckTime(true) : setCheckTime(false));
-        // (selectedProvinceName == '' || selectedDistrictName == '' || selectedWardName == '' || locationDetail.trim() == '' ? setCheckLoacation(true) : setCheckLoacation(false));
-        // if (saveForm.length == 0) {
-        //     setCheckCharing(true)
-        // } else {
-        //     setCheckCharing(true)
-        // }
+    // Kiểm tra thông tin bộ sạc
+    const validateCharger = () => {
+        let isValid = true;
 
-    }
-    const validationCharing = () => {
-
-        if (valuePower.trim() === '') {
+        if (!valuePower.trim()) {
             setCheckKw(true);
-        } else {
-            setCheckKw(false);
-            if (valuePorts.trim() == '') {
-                setCheckPort(true)
-            } else {
-                setCheckPort(false)
-                if (valuePrice.trim() == '') {
-                    setCheckPrice(true)
-                }
-                else {
-                    setCheckPrice(false)
-                    if (valueVehicleId == -1) {
-                        setCheckVehicle(true)
-                    } else {
-                        setCheckVehicle(false)
-                        if (valueTypeId == -1) {
-                            setCheckChager(true)
-                        } else {
-                            setCheckChager(false);
-                            addOrUpdateDetail();
-                        }
-                    }
-                }
-            }
+            isValid = false;
+        } else setCheckKw(false);
+
+        if (!valuePorts.trim()) {
+            setCheckCharger(true);
+            isValid = false;
+        } else setCheckCharger(false);
+
+        if (!valuePrice.trim()) {
+            setCheckPrice(true);
+            isValid = false;
+        } else setCheckPrice(false);
+
+        if (!selectedVehical) {
+            setCheckVehicle(true);
+            isValid = false;
+        } else setCheckVehicle(false);
+
+        if (!selectedSocket) {
+            setCheckSocket(true);
+            isValid = false;
+        } else setCheckSocket(false);
+
+        if (isValid) {
+            addOrUpdateDetail();
         }
 
-        // if (valuePower.trim() === '') {
-        //     setCheckKw(true);
-        // } else if (valuePorts.trim() == '') {
-        //     setCheckPort(true)
-        // } else if (valuePrice.trim() == '') {
-        //     setCheckPrice(true)
-        // } else if (valueVehicleId == -1) {
-        //     setCheckVehicle(true)
-        // } else if (valueTypeId == -1) {
-        //     setCheckChager(true)
-        // }
-        // else {
-        //     setCheckKw(false);
-        //     setCheckPort(false);
-        //     setCheckPrice(false);
-        //     setCheckVehicle(false);
-        //     setCheckChager(false);
-        //     addOrUpdateDetail();
-        // }
+        return isValid;
+    };
 
-
-        // (valuePower.trim() == '' ? setCheckKw(true) : setCheckKw(false));
-        // (valuePorts.trim() == '' ? setCheckPort(true) : setCheckPort(false));
-        // (valuePrice.trim() == '' ? setCheckPrice(true) : setCheckPrice(false));
-        // (valueVehicleId == -1 ? setCheckVehicle(true) : setCheckVehicle(false));
-        // (valueTypeId == -1 ? setCheckChager(true) : setCheckChager(false));
-
-        // if (checkKw) {
-        //     AlertError()
-        // } else {
-        //     addOrUpdateDetail()
-        // }
-
-    }
-
-    const AlertError = () =>
-        Alert.alert('Cảnh báo', 'Chưa nhập đầy đủ thông tin', [
-            { text: 'OK', onPress: () => console.log('OK Pressed') },
-        ]);
+    // Gọi để kiểm tra tất cả
+    const handleValidation = () => {
+        if (validateStation()) {
+            console.log("Lưu tất cả thông tin!");
+        }
+    };
 
     return (
         <ScrollView style={styles.container}>
             {/* thêm ảnhảnh */}
             <View style={styles.viewInput}>
-                <Text style={styles.textTitleInput}>Thêm ảnh</Text>
                 <View style={{ alignItems: 'center' }}>
                     <TouchableOpacity onPress={pickImage}
                         style={{
                             flex: 1,
                             justifyContent: 'center',
                             alignItems: 'center',
-                            width: 200,
-                            height: 200,
+                            width: '90%',
+                            height: 170,
                             borderStyle: 'dashed',
                             borderWidth: 3,
                             margin: '5%',
                             marginBottom: '0%',
                             borderColor: '#40A19C',
+                            borderRadius: 30
                         }} >
                         {
                             checkImage ? <Text style={{ fontSize: 18, fontWeight: '500', color: '#40A19C' }}> Thêm hình ảnh </Text> : null
                         }
-                        {image && <Image source={{ uri: image }} style={{ width: 200, height: 200, }} />}
+                        {image && <Image source={{ uri: image }} style={{ width: '110%', height: 170, borderRadius: 30, }} />}
                     </TouchableOpacity>
-                    {checkImg ?
-                        <Text style={{ fontSize: 18, fontWeight: '500', color: 'red' }}> Vui lòng chọn ảnh</Text>
-                        : null
-                    }
                 </View>
-
             </View>
             {/* thêm tên trạm sạc  */}
             <View style={styles.viewInput}>
-                <Text style={styles.textTitleInput}>Tên trạm sạc</Text>
+                <Text style={[styles.textTitleInput,]}>Tên trạm sạc</Text>
                 <View
                     style={{
                         justifyContent: 'center',
                         alignItems: 'center',
-                        marginTop: '5%',
-                        flexDirection: 'row',
+                        paddingHorizontal: '2%'
                     }}>
                     <TextInput onChangeText={setNameStation} style={styles.textInput} placeholder={'Nhập tên'} />
-                    <TouchableOpacity
-                        onPress={() => { setModalVisibleBrand(true) }}
-                        style={styles.buttonType1}>
-                        <Text style={{ textAlign: 'center' }}>{selectedBrand}</Text>
-                    </TouchableOpacity>
-                </View>
-                <View style={{}}>
-                    {checkNameStation ?
-                        <Text style={{ fontSize: 18, fontWeight: '500', color: 'red' }}>Tên trạm sạc phải nhiều hơn 10 và ít hơn 50 kí tự !</Text>
-                        : null
-                    }
-                    {checkBrand ?
-                        <Text style={{ fontSize: 18, fontWeight: '500', color: 'red' }}>Chưa chọn hãng xe !</Text>
-                        : null
-                    }
-                </View>
 
-
+                </View>
+                {checkNameStation && <Text style={styles.errorText}>Tên trạm phải từ 10-50 ký tự</Text>}
             </View>
             {/* thời gian hoạt động  */}
             <View style={styles.viewInput}>
-                <Text style={styles.textTitleInput}>Thời gian hoạt động </Text>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', margin: '5%', marginBottom: '0%' }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <Text style={styles.textTitleInput}>Thời gian bắt đầu </Text>
+                    <Text style={styles.textTitleInput}>Thời gian kết thúc</Text>
+                </View>
+
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: '0%' }}>
                     <TouchableOpacity
                         onPress={() => showTimeStartPicker()}
-                        style={[styles.buttonType1, { width: '40%' }]}>
-                        <Text> {timeStart}</Text>
+                        style={[styles.buttonType1, { width: '40%', flexDirection: 'row', justifyContent: 'space-evenly' }]}>
+                        <Text style={{ fontSize: 20 }}> {timeStart}</Text>
+                        <Image style={{ width: 30, height: 30 }} source={require('../../../assets/icon/icons8-time-24.png')} />
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={() => showTimeEndPicker()}
-                        style={[styles.buttonType1, { width: '40%' }]}>
-                        <Text> {timeEnd}</Text>
+                        style={[styles.buttonType1, { width: '40%', flexDirection: 'row', justifyContent: 'space-evenly' }]}>
+                        <Text style={{ fontSize: 20 }}> {timeEnd}</Text>
+                        <Image style={{ width: 30, height: 30 }} source={require('../../../assets/icon/icons8-time-24.png')} />
                     </TouchableOpacity>
                 </View>
+                {checkTime && <Text style={styles.errorText}>Vui lòng chọn thời gian hợp lệ</Text>}
 
                 <DateTimePickerModal
                     isVisible={isTimeStartVisible}
@@ -488,165 +393,62 @@ const FormStation = () => {
                     onConfirm={handleConfirmTimeEnd}
                     onCancel={hideTimeEndPicker}
                 />
-                {checkTime ?
-                    <Text style={{ fontSize: 18, fontWeight: '500', color: 'red' }}>Vui lòng chọn thời gian hoạt động</Text>
-                    : null
-                }
             </View>
             {/* vị trí trạm sạc  */}
             <View style={styles.viewInput}>
                 <Text style={styles.textTitleInput}> Chọn vị trí</Text>
-                <View style={{ alignItems: 'center' }}>
-                    <View style={styles.row}>
-                        <View style={styles.pickerContainer}>
-                            <RNPickerSelect
-                                placeholder={{ label: 'Tỉnh/TP...', value: '' }}
-                                onValueChange={(value) => {
-                                    const province = provinces.find(p => p.value === value) || { name: '' };
-                                    fetchDistricts(value, province.name);
-                                    setSelectedDistrict('');
-                                    setSelectedWard('');
-                                    setSelectedDistrictName('');
-                                    setSelectedWardName('');
-                                }}
-                                items={provinces}
-                                value={selectedProvince}
-                                style={pickerSelectStyles}
-                                useNativeAndroidPickerStyle={false}
-                            />
-                        </View>
-                        <View style={styles.pickerContainer}>
-                            <RNPickerSelect
-                                placeholder={{ label: 'Quận/Huyện...', value: '' }}
-                                onValueChange={(value) => {
-                                    const district = districts.find(d => d.value === value) || { name: '' };
-                                    fetchWards(value, district.name);
-                                    setSelectedWard('');
-                                    setSelectedWardName('');
-                                }}
-                                items={districts}
-                                value={selectedDistrict}
-                                style={pickerSelectStyles}
-                                disabled={!selectedProvince}
-                                useNativeAndroidPickerStyle={false}
-                                textInputProps={{
-                                    numberOfLines: 1,    // Hiển thị 1 dòng
-                                    ellipsizeMode: 'tail', // Cắt bớt nếu quá dài (thêm '...')
-                                }}
-                            />
-                        </View>
-                        <View style={styles.pickerContainer}>
-                            <RNPickerSelect
-                                placeholder={{ label: 'Xã/Phường...', value: '' }}
-                                onValueChange={(value) => {
-                                    const ward = wards.find(w => w.value === value) || { name: '' };
-                                    setSelectedWard(value);
-                                    setSelectedWardName(ward.name);
-                                }}
-                                items={wards} S
-                                value={selectedWard}
-                                style={pickerSelectStyles}
-                                disabled={!selectedDistrict}
-                                useNativeAndroidPickerStyle={false}
-                            />
-                        </View>
-                    </View>
+                <ItemBoxLocation onSelect={handleLocationSelect} />
 
-                </View>
                 <View style={{
                     justifyContent: 'center',
                     alignItems: 'center',
                     flexDirection: 'row',
                 }} >
-                    <TextInput style={styles.textInput} onChangeText={setLoactionDetail} placeholder={'Nhập vị trí chi tiết'} />
+                    <TextInput style={[styles.textInput, { width: '55%' }]} onChangeText={setLoactionDetail} placeholder={'Nhập vị trí chi tiết'} />
                     <TouchableOpacity
-                        // onPress={addService}
-                        style={styles.buttonType1}>
-                        <Text style={{ textAlign: 'center' }}>Chọn vị trí</Text>
+                        onPress={() => setModalVisibleMap(true)}
+                        style={styles.buttonType2}>
+                        <Text style={{ textAlign: 'center', color: '#40A19C' }}>Chọn vị trí</Text>
                     </TouchableOpacity>
                 </View>
-                {checkLocation ?
-                    <Text style={{ fontSize: 18, fontWeight: '500', color: 'red' }}>Vui lòng nhập đầy đủ thông tin </Text>
-                    : null
-                }
+                {checkLocation && <Text style={styles.errorText}>Vui lòng nhập đầy đủ thông tin</Text>}
+            </View>
+            {/* hãng trạm sạc  */}
+            <View style={styles.viewInput}>
+                <View style={styles.listStatus}>
+                    <Text style={styles.textTitleInput}>Hãng trạm sạc</Text>
+                    <ItemRadioButton data={typeBrands} onSelect={handleBrandSelect} />
+                </View>
+                {checkBrand && <Text style={styles.errorText}>Vui lòng chọn hãng trạm sạc</Text>}
+            </View>
+            {/* dịch vụ */}
+            <View style={styles.viewInput}>
+                <Text style={styles.textTitleInput}>Dịch vụ</Text>
+                <ItemCheckBox data={typeService} onSelect={handleServiceSelect} />
             </View>
             {/* chi tiết trụ sạc  */}
             <View style={styles.viewInput}>
                 <Text style={styles.textTitleInput}>Chi tiết trụ sạc</Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: '5%' }}>
-                    <View style={{ width: '30%', alignItems: 'center' }}>
-                        <TextInput
-                            style={styles.textInputCharger}
-                            placeholder={'Công suất'}
-                            value={valuePower}
-                            onChangeText={onChangeTextKw}
-                            keyboardType="numeric"
-                        />
-                        {checkKw ?
-                            <Text style={{ fontSize: 16, color: 'red' }}>Nhập công xuất</Text>
-                            : null
-                        }
-                    </View>
-                    <View style={{ width: '30%', alignItems: 'center' }}>
-                        <TextInput
-                            style={styles.textInputCharger}
-                            placeholder={'Số cổng'}
-                            value={valuePorts}
-                            onChangeText={onChangeTextChager}
-                            keyboardType="numeric"
-                        />
-                        {checkPort ?
-                            <Text style={{ fontSize: 16, color: 'red' }}>Nhập số cổng !</Text>
-                            : null
-                        }
-                    </View>
+                    <ItemInputCharging onChangeText={onChangeTextKw} placeholder={'Kw'} value={valuePower} note={'Kw'} />
+                    <ItemInputCharging onChangeText={onChangeTextChager} placeholder={'Đầu'} value={valuePorts} note={'Cổng'} />
+                    <ItemInputCharging onChangeText={onChangeTextPrice} placeholder={'Giá'} value={valuePrice} note={'Vnd'} />
 
-                    <View style={{ width: '30%', alignItems: 'center' }}>
-
-                        <TextInput
-                            style={styles.textInputCharger}
-                            placeholder={'Giá tiền (Vnd)'}
-                            value={valuePrice}
-                            onChangeText={onChangeTextPrice}
-                            keyboardType="numeric"
-                        />
-                        {checkPrice ?
-                            <Text style={{ fontSize: 16, color: 'red' }}>Nhập giá tiền !</Text>
-                            : null
-                        }
-                    </View>
                 </View>
-
-
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
-                    <View style={{ width: '40%', alignItems: 'center' }}>
-                        <TouchableOpacity
-                            onPress={() => { setModalVisibleVehicle(true) }}
-                            style={[styles.buttonType1, { width: '100%' }]}>
-                            <Text style={{ extAlign: 'center' }}>{valueVehicle}</Text>
-                        </TouchableOpacity>
-                        {checkVehicle ?
-                            <Text style={{ fontSize: 16, color: 'red' }}>Chọn phương tiện !</Text>
-                            : null
-                        }
+                {(checkKw || checkCharger || checkPrice) && <Text style={styles.errorText}>Vui lòng nhập đầy đủ thông tin</Text>}
+                <View style={{}}>
+                    <View>
+                        <ItemRadioButton data={typeVehicle} onSelect={handleVehicalSelect} selectedValue={selectedVehical} />
+                        {checkVehicle && <Text style={styles.errorText} >Vui lòng chọn phương tiện</Text>}
                     </View>
-                    <View style={{ width: '40%', alignItems: 'center' }}>
-                        <TouchableOpacity
-                            onPress={() => { setModalVisibleSocket(true) }}
-                            style={[styles.buttonType1, { width: '100%' }]}>
-                            <Text style={{ extAlign: 'center' }}>{valueType}</Text>
-                        </TouchableOpacity>
-                        {checkChager ?
-                            <Text style={{ fontSize: 16, color: 'red' }}>Chọn loại sạc !</Text>
-                            : null
-                        }
+                    <View>
+                        <ItemRadioButton data={typeSocket} onSelect={handleSocketSelect} selectedValue={selectedSocket}/>
+                        {checkSocket && <Text style={styles.errorText}>Vui lòng chọn loại sạc</Text>}
                     </View>
-
-
                 </View>
                 <View style={{ alignItems: 'center' }}>
                     <TouchableOpacity
-                        onPress={validationCharing}
+                        onPress={validateCharger}
                         style={{
                             margin: '5%',
                             padding: '3%',
@@ -663,79 +465,61 @@ const FormStation = () => {
                             {editIndex !== null ? "Cập nhật" : "Lưu trụ sạc"}
                         </Text>
                     </TouchableOpacity>
+                   
                 </View>
+                {checkCharging && <Text style={styles.errorText}>Cần tối thiểu một trụ sạc</Text>}
                 <FlatList
-                    data={saveForm}
+                    data={chargingDetails}
                     scrollEnabled={false}
                     renderItem={({ item, index }) => (
-                        <View style={styles.listItem}>
-                            <View
-                                style={{
-                                    flexDirection: 'row',
-                                    justifyContent: 'space-between',
-                                    borderRadius: 10,
-                                    backgroundColor: COLOR.gray2,
-                                    padding: '2%',
-                                    margin: '1%',
-                                }}>
-                                <View>
-                                    <Text>{item.power}Kw</Text>
-                                    <Text>{item.ports} cổng</Text>
-                                    <Text>{item.price}đ/Kwh</Text>
+
+                        <View style={styles.containerList}>
+
+                            <View style={styles.centerColumn}>
+
+                                <View style={styles.infoRow}>
+                                    <Text style={styles.textList}>Trụ số: {index + 1}</Text>
                                 </View>
-                                <View>
-                                    <Text>Loại phương tiện: {item.vehicle}</Text>
-                                    <Text>Loại sạc :{item.type}</Text>
+                                <View style={styles.infoRow}>
+                                    <Image style={styles.icon} source={require('../../../assets/icon/icons8-flash-50 (1).png')} />
+                                    <Text style={styles.textList}>{item.power} Kw</Text>
+                                </View>
+                                <View style={styles.infoRow}>
+                                    <Image style={styles.icon} source={require('../../../assets/icon/icons8-car-charger-48.png')} />
+                                    <Text style={styles.textList}>{item.ports} Cổng sạc</Text>
                                 </View>
 
-                                {invisible === true ?
-                                    <View style={{ flexDirection: '', justifyContent: 'flex-end', justifyContent: 'center' }}>
-                                        <TouchableOpacity onPress={() => editDetail(index)} style={[styles.buttonList, { backgroundColor: 'green', }]}>
-                                            <Text style={{ color: 'white' }}>Sửa</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => deleteDetail(index)} style={[styles.buttonList, { backgroundColor: 'red', }]}>
-                                            <Text style={{ color: 'white' }}>Xóa</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                    : null}
                             </View>
+                            <View style={styles.rightColumn}>
+                                <View style={styles.infoRow}>
+                                    <Text style={styles.textList}>{item.type}</Text>
+                                </View>
+                                <View style={styles.infoRow}>
+                                    <Image style={styles.icon} source={require('../../../assets/icon/icons8-money-50 (1).png')} />
+                                    <Text style={styles.textList}>{item.price} đ / Kwh</Text>
+                                </View>
+                                <View style={styles.infoRow}>
+                                    <Image style={styles.icon} source={require('../../../assets/icon/icons8-car-50 (1).png')} />
+                                    <Text style={styles.textList}>{item.vehicle}</Text>
+                                </View>
+                            </View>
+
+                            {invisible && (
+                                <View style={styles.buttonList}>
+                                    <TouchableOpacity onPress={() => editDetail(index)} style={styles.editButton}>
+                                        <Text style={styles.editText}>Sửa</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => deleteDetail(index)} style={styles.editButton}>
+                                        <Text style={styles.deleteText}>Xóa</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )}
                         </View>
                     )}
                     keyExtractor={(item, index) => index.toString()}
                 />
-                {checkCharing ?
-                    <Text style={{ fontSize: 18, fontWeight: '500', color: 'red' }}>Cần ít nhất 1 trụ sạc </Text>
-                    : null
-                }
-            </View>
-            {/* dịch vụ */}
-            <View style={styles.viewInput}>
-                <Text style={styles.textTitleInput}>Dịch vụ</Text>
-                <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: '5%' }}>
-                    <FlatList
-                        data={service}
-                        horizontal={true}
-                        showsHorizontalScrollIndicator={false}
-                        keyExtractor={(item) => item.id.toString()}
-                        renderItem={({ item }) => {
-                            return (
-                                <TouchableOpacity
-                                    style={{
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        padding: 10,
-                                    }}
-                                    onPress={() => toggleSelection(item.id)}>
-                                    <Text style={[styles.filterText, { marginLeft: 0 }]}>{item.name}</Text>
-                                    <View style={[styles.checkbox, selectedService.includes(item.id) && styles.checkedBox]}>
-                                        {selectedService.includes(item.id) && <Text style={styles.checkmark}>✓</Text>}
-                                    </View>
-                                </TouchableOpacity>
 
-                            );
-                        }}
-                    />
-                </View>
+
             </View>
             {/* ghi chú  */}
             <View style={styles.viewInput}>
@@ -744,12 +528,13 @@ const FormStation = () => {
                     style={[styles.textInput, { textAlignVertical: 'top', width: '100%', margin: '5%', marginLeft: '0%', height: 100, }]}
                     placeholder={'Ghi chú'}
                     multiline
+                    onChangeText={setValueNote}
                 />
             </View>
             {/* nút thêm trạm sạc  */}
             <View style={{ alignItems: 'center' }}>
                 <TouchableOpacity
-                    onPress={Validation}
+                    onPress={validateStation}
                     style={{
                         margin: '10%',
                         padding: '5%',
@@ -761,134 +546,63 @@ const FormStation = () => {
                 </TouchableOpacity>
             </View>
             {/* phần list danh dách  */}
-            {/* danh sách hãng xe  */}
-            <Modal transparent={true} visible={modalVisibleBrand} animationType="slide">
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <ScrollView showsVerticalScrollIndicator={false} >
-                            {/* danh sách bộ lọc  */}
-                            <Text style={styles.modalTitleSup}> Hãng xe  </Text>
-                            <FlatList
-                                data={carBrands}
-                                scrollEnabled={false}
-                                keyExtractor={(item) => item.id}
-                                renderItem={({ item }) => (
-                                    <TouchableOpacity
-                                        style={styles.filterItem}
-                                        onPress={() => [setSelectedBrand(item.name), setSelectedBrandId(item.id)]}>
-                                        <View style={styles.radioButton}>
-                                            {selectedBrand === item.name && <View style={styles.radioInner} />}
-                                        </View>
-                                        <Text style={styles.filterText}>{item.name}</Text>
-                                    </TouchableOpacity>
-                                )}
-                            />
-                        </ScrollView >
-                        {/* nút */}
-                        <View style={styles.buttonRow}>
-                            <TouchableOpacity onPress={() => {
-                                setModalVisibleBrand(false);
-                            }}
-                                style={styles.cancelButton}>
-                                <Text style={styles.cancelText}>Hủy</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    setModalVisibleBrand(false);
-                                }}
-                                style={styles.applyButton}>
-                                <Text style={styles.applyText}>Áp dụng</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-            </Modal>
-            {/* phương tiện */}
-            <Modal transparent={true} visible={modalVisibleVehicle} animationType="slide">
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <ScrollView showsVerticalScrollIndicator={false} >
-                            {/* danh sách bộ lọc  */}
-                            <Text style={styles.modalTitleSup}>Hãng xe</Text>
-                            <FlatList
-                                data={typeVehicle}
-                                scrollEnabled={false}
-                                keyExtractor={(item) => item.id}
-                                renderItem={({ item }) => (
-                                    <TouchableOpacity
-                                        style={styles.filterItem}
-                                        onPress={() => [setValueVehicle(item.name), setValueVehicleId(item.id)]}>
-                                        <View style={styles.radioButton}>
-                                            {valueVehicle === item.name && <View style={styles.radioInner} />}
-                                        </View>
-                                        <Text style={styles.filterText}>{item.name}</Text>
-                                    </TouchableOpacity>
-                                )}
-                            />
-                        </ScrollView >
-                        {/* nút */}
-                        <View style={styles.buttonRow}>
-                            <TouchableOpacity onPress={() => {
-                                setModalVisibleVehicle(false);
-                            }}
-                                style={styles.cancelButton}>
-                                <Text style={styles.cancelText}>Hủy</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={() => {
 
-                                    setModalVisibleVehicle(false);
-                                }}
-                                style={styles.applyButton}>
-                                <Text style={styles.applyText}>Áp dụng</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-            </Modal>
-            {/* loại sạc  */}
-            <Modal transparent={true} visible={modalVisibleSocket} animationType="slide">
+            <Modal transparent={true} visible={modalVisibleMap} animationType="slide">
                 <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <ScrollView showsVerticalScrollIndicator={false} >
-                            {/* danh sách bộ lọc  */}
-                            <Text style={styles.modalTitleSup}> Hãng xe  </Text>
-                            <FlatList
-                                data={typeSocket}
-                                scrollEnabled={false}
-                                keyExtractor={(item) => item.id}
-                                renderItem={({ item }) => (
-                                    <TouchableOpacity
-                                        style={styles.filterItem}
-                                        onPress={() => [setValueType(item.name), setValueTypeId(item.id)]}>
-                                        <View style={styles.radioButton}>
-                                            {valueType === item.name && <View style={styles.radioInner} />}
-                                        </View>
-                                        <Text style={styles.filterText}>{item.name}</Text>
-                                    </TouchableOpacity>
-                                )}
-                            />
-                        </ScrollView >
-                        {/* nút */}
-                        <View style={styles.buttonRow}>
-                            <TouchableOpacity onPress={() => {
-                                setModalVisibleSocket(false);
-                            }}
-                                style={styles.cancelButton}>
-                                <Text style={styles.cancelText}>Hủy</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={() => {
 
-                                    setModalVisibleSocket(false);
+                    <View style={{ width: '90%', height: '80%', borderRadius: 20 }}>
+                        <MapView
+                            style={styles.map}
+                            initialRegion={{
+                                latitude: initialLocation.latitude,
+                                longitude: initialLocation.longitude,
+                                latitudeDelta: 0.0922,
+                                longitudeDelta: 0.0421,
+                            }}
+                            ref={mapRef}
+                            provider="google"
+                            onPress={handleMapPress}>
+                            {/* Hiển thị marker khi người dùng chọn trên bản đồ */}
+                            {selectedLocation && (
+                                <Marker
+                                    coordinate={selectedLocation}
+                                    title="Vị trí đặt trạm sạc"
+                                    description="Bạn đã chọn vị trí này"
+                                />
+                            )}
+                        </MapView>
+
+                        <View style={styles.buttonContainer}>
+                            <TouchableOpacity
+                                style={{
+                                    padding: 10,
+                                    borderColor: '#40A19C',
+                                    borderWidth: 2,
+                                    borderRadius: 10,
+                                    backgroundColor: 'white'
                                 }}
-                                style={styles.applyButton}>
-                                <Text style={styles.applyText}>Áp dụng</Text>
+                                onPress={_getLocation}>
+                                <Text style={{ fontSize: 20 }}>Lấy vị trí hiện tại</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
+
+                    <View style={styles.buttonRow}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                setModalVisibleMap(false);
+                                if (selectedLocation) {
+                                    setMyLocation(selectedLocation); // Chỉ cập nhật nếu chọn vị trí
+                                }
+                            }}
+                            style={styles.applyButton}>
+                            <Text style={styles.applyText}>Ok</Text>
+                        </TouchableOpacity>
+                    </View>
+
                 </View>
             </Modal>
+
 
         </ScrollView>
     )
@@ -897,6 +611,40 @@ const FormStation = () => {
 export default FormStation
 
 const styles = StyleSheet.create({
+
+    listStatus: {
+        justifyContent: 'center',
+    },
+    buttonStatus: {
+        borderRadius: 15,
+        backgroundColor: '#EDEDED',
+        marginRight: 20,
+        padding: 15,
+        margin: 10,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    selectedButton: {
+        backgroundColor: '#40A19C',
+    },
+    textStatus: {
+        color: '#544C4C',
+        fontSize: 16,
+    },
+    selectedText: {
+        color: 'white',
+    },
+    title: {
+        color: 'rgb(0, 0, 0)',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
     modalOverlay: {
         flex: 1,
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -948,7 +696,6 @@ const styles = StyleSheet.create({
     },
     buttonRow: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         marginTop: 15,
         width: '100%',
     },
@@ -962,19 +709,16 @@ const styles = StyleSheet.create({
     },
     applyButton: {
         backgroundColor: '#40A19C',
-        padding: 10,
+        padding: 20,
         borderRadius: 5,
         flex: 1,
-        marginLeft: 5,
         alignItems: 'center',
-    },
-    cancelText: {
-        color: 'white',
-        fontWeight: 'bold',
+        marginHorizontal: '5%'
     },
     applyText: {
         color: 'white',
         fontWeight: 'bold',
+        fontSize: 20,
     },
     checkbox: {
         width: 24,
@@ -992,22 +736,6 @@ const styles = StyleSheet.create({
     checkmark: {
         color: 'white',
         fontWeight: 'bold',
-    },
-    row: {
-        width: '95%',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: '5%',
-        marginLeft: '5%',
-        marginRight: '5%',
-    },
-    pickerContainer: {
-        width: '30%',
-        height: 50,
-        borderRadius: 15,
-        borderWidth: 1,
-        borderColor: COLOR.gray,
-        justifyContent: 'center',
     },
     title: {
         fontSize: 20,
@@ -1040,33 +768,31 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginLeft: '5%',
         marginRight: '5%',
-        marginTop: '5%'
+        marginTop: '2%',
     },
     textTitleInput: {
-        fontSize: 20,
-        color: COLOR.black,
+        fontSize: 24,
+        color: '#40A19C',
         fontWeight: 700,
         fontFamily: 'Poppins'
     },
     textInput: {
-        width: "60%",
-        height: 50,
-        fontSize: 16,
-        paddingHorizontal: 10,
-        borderWidth: 1,
-        borderColor: COLOR.gray,
-        borderRadius: 15,
-        marginLeft: '5%',
-    },
-    textInputCharger: {
         width: '100%',
         height: 50,
-        fontSize: 16,
+        fontSize: 20,
         paddingHorizontal: 10,
-        borderWidth: 1,
-        borderColor: COLOR.gray,
-        borderRadius: 15,
-        textAlign: 'center'
+        borderWidth: 0,
+        borderBottomWidth: 2,
+        borderColor: '#40A19C',
+        borderRadius: 0,
+        marginLeft: '5%',
+        marginRight: '5%',
+        marginVertical: '2%'
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 14,
+        marginTop: 5,
     },
     modalDropdowChager: {
         width: 150,
@@ -1083,32 +809,105 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     buttonType1: {
+        marginVertical: '5%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderColor: '#40A19C',
+        width: '30%',
+        height: 50,
+        borderBottomWidth: 2,
+    },
+    buttonType2: {
         margin: '5%',
         padding: '3%',
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 15,
-        borderColor: COLOR.gray,
+        borderColor: '#40A19C',
         width: '30%',
         height: 50,
+        borderWidth: 2,
+        borderRadius: 10,
+    },
+
+    map: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 20,
+    },
+    buttonContainer: {
+        position: 'absolute',
+        bottom: 20,
+        width: '100%',
+        alignItems: 'center',
+    },
+
+    // list trụ sạc
+    listItem: {
+        marginVertical: 5,
+    },
+    containerList: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        borderRadius: 10,
+        backgroundColor: 'white',
+        padding: 10,
+        margin: '2%',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    centerColumn: {
+        flex: 1,
+        alignItems: 'flex-start',
+        marginHorizontal: '2%'
+    },
+    rightColumn: {
+        flex: 1,
+        alignItems: 'flex-start',
+        marginHorizontal: '2%'
+    },
+    boldText: {
+        fontWeight: 'bold',
+    },
+    infoRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 5,
+    },
+    icon: {
+        width: 25,
+        height: 25,
+        marginRight: 5,
+    },
+    textList: {
+        fontSize: 18,
+    },
+    buttonList: {
+
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    editButton: {
         borderWidth: 1,
-    }
+        borderColor: '#40A19C',
+        padding: 7,
+        paddingHorizontal: 15,
+        borderRadius: 8,
+        margin: 5
+    },
+    editText: {
+        color: '#40A19C',
+    },
+    deleteText: {
+        color: 'red',
+    },
 
 
 });
 
-const pickerSelectStyles = StyleSheet.create({
-    inputIOS: {
-        fontSize: 14,
-        height: 0,
-        color: 'black',
-        marginVertical: 30,
-        marginHorizontal: 10,
-    },
-    inputAndroid: {
-        fontSize: 14,
-        color: 'black',
-        textAlign: 'center',
-        textAlignVertical: 'center',
-    },
-});
