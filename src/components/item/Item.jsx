@@ -1,10 +1,16 @@
-import { StyleSheet, View, Text, TouchableOpacity, Linking, ToastAndroid, TextInput, Image, Modal, ScrollView } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, FlatList, Linking, ToastAndroid, TextInput, Image, Modal, ScrollView } from "react-native";
 import { COLOR } from "../../assets/Theme/Theme";
 import { useNavigate } from "react-router-native";
 import { useNavigation } from '@react-navigation/native';
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { AppContext } from '../axios/AppContext';
 import AxiosInstance from "../axios/AxiosInstance";
+import { MaterialIcons } from "@expo/vector-icons";
+import RNPickerSelect from 'react-native-picker-select';
+
+
+const API_BASE = 'https://online-gateway.ghn.vn/shiip/public-api/master-data';
+const TOKEN = '46f53dba-ecf6-11ef-a268-9e63d516feb9';
 
 export function TextInputBegin({ uri, onChangeText, placeholder }) {
   return (
@@ -132,6 +138,73 @@ export function ItemStation({ data }) {
 
   );
 }
+
+export function ItemStationMap(props) {
+  const { data } = props;
+  const navigation = useNavigation();
+  const { myLat, myLng } = useContext(AppContext);
+
+  const clickViewDetail = () => {
+    navigation.navigate('ViewDetail', { id: data._id });
+  };
+
+  const openGoogleMaps = async () => {
+    try {
+      const linkTrack = await AxiosInstance().post('/station/testGoogleMapTrack', {
+        lat1: myLat, lng1: myLng, lat2: data.lat, lng2: data.lng
+      });
+      if (linkTrack.url) {
+        Linking.openURL(linkTrack.url).catch(err => Alert.alert("Error", "Failed to open Google Maps"));
+      } else {
+        console.log('Không tìm thấy dữ liệu từ /station/testGoogleMapTrack');
+        ToastAndroid.show('Không thể chỉ đường', ToastAndroid.SHORT);
+      }
+    } catch (error) {
+      console.error('Lỗi khi lấy dữ liệu station:', error);
+      ToastAndroid.show('Không thể thực hiện chỉ đường do hẹ thống', ToastAndroid.SHORT);
+    }
+  };
+
+  return (
+    <TouchableOpacity style={styles.listRow} key={data._id} onPress={clickViewDetail}>
+      <Image style={styles.imgStation} source={{ uri: data.image }} />
+      <View style={styles.viewInfoStation}>
+        <Text style={styles.textItemName} numberOfLines={1} ellipsizeMode='tail'>{data.brand_id.name} - {data.name}</Text>
+        <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail'>{data.location}</Text>
+      </View>
+      <View style={styles.viewInfoStation}>
+        <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail'>{data.time}</Text>
+      </View>
+      <View style={styles.viewInfoStation2}>
+
+        {(() => {
+          const portTypes = data?.specification
+            ?.map((item) => item?.specification_id?.port_id?.type)
+            .filter((type) => type === "AC" || type === "DC"); // Lọc chỉ lấy AC hoặc DC
+
+          const uniquePortTypes = [...new Set(portTypes)]; // Loại bỏ giá trị trùng lặp
+
+          const displayText = uniquePortTypes.length === 2 ? "AC/DC" : uniquePortTypes[0] || "N/A";
+
+          return (
+            <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode="tail">
+              {displayText}
+            </Text>
+          );
+        })()}
+
+        <TouchableOpacity onPress={openGoogleMaps}>
+          <View style={styles.viewButtonItem} >
+            <Text style={{ color: 'white' }}>
+              3.5Km
+            </Text>
+            <Image style={styles.imgNext} source={require('../../assets/icon/icons8-arrow-64.png')} />
+          </View>
+        </TouchableOpacity>
+      </View>
+    </TouchableOpacity>
+  );
+}
 export function ItemStationMain(props) {
   const { data } = props;
   const navigation = useNavigation();
@@ -196,6 +269,315 @@ export function ItemStationMain(props) {
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
+  );
+}
+
+// them moi
+
+// nút chọn hình vuông
+export function ItemCheckBox({ data = [], onSelect }) {
+  const [selectedService, setSelectedService] = useState([]);
+
+  const toggleSelection = (id) => {
+    let updatedSelection;
+    if (selectedService.includes(id)) {
+      updatedSelection = selectedService.filter((item) => item !== id);
+    } else {
+      updatedSelection = [...selectedService, id];
+    }
+    setSelectedService(updatedSelection);
+    onSelect(updatedSelection); // Truyền dữ liệu ra ngoài
+  };
+
+  return (
+    <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: '5%' }}>
+      <FlatList
+        data={data}
+        horizontal={true}
+        showsHorizontalScrollIndicator={false}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => {
+          const isSelected = selectedService.includes(item.name);
+          return (
+            <TouchableOpacity
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                paddingVertical: 12,
+                paddingHorizontal: 24,
+                marginRight: 12,
+                borderWidth: 2,
+                borderColor: "#40A19C",
+                borderRadius: 8,
+                backgroundColor: isSelected ? "#40A19C" : "#fff",
+              }}
+              onPress={() => toggleSelection(item.name)}
+            >
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: "bold",
+                  color: isSelected ? "#fff" : "#40A19C",
+                }}
+              >
+                {item.name}
+              </Text>
+            </TouchableOpacity>
+          );
+        }}
+      />
+    </View>
+  );
+}
+//nút chọn hình tròn
+export function ItemRadioButton({ data = [], onSelect, selectedValue }) {
+  const [selectedMethod, setSelectedMethod] = useState(selectedValue);
+
+  useEffect(() => {
+    setSelectedMethod(selectedValue);
+  }, [selectedValue]);
+
+  const handlePress = (id) => {
+    const newSelection = selectedMethod === id ? null : id;
+    setSelectedMethod(newSelection);
+    onSelect(newSelection);
+  };
+
+  return (
+    <View>
+      <FlatList
+        showsHorizontalScrollIndicator={false}
+        horizontal
+        data={data}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => {
+          const isSelected = selectedMethod === item.name;
+          return (
+            <TouchableOpacity
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                paddingVertical: 12,
+                paddingHorizontal: 24,
+                marginRight: 12,
+                borderWidth: 2,
+                borderColor: "#40A19C",
+                borderRadius: 8,
+                backgroundColor: isSelected ? "#40A19C" : "#fff",
+                justifyContent: "center",
+                marginVertical: 10,
+              }}
+              onPress={() => handlePress(item.name)}
+            >
+              <MaterialIcons
+                name={isSelected ? "radio-button-checked" : "radio-button-unchecked"}
+                size={20}
+                color={isSelected ? "#fff" : "#40A19C"}
+              />
+              <Text
+                style={{
+                  marginLeft: 8,
+                  fontSize: 16,
+                  fontWeight: "bold",
+                  color: isSelected ? "#fff" : "#40A19C",
+                }}
+              >
+                {item.name}
+              </Text>
+            </TouchableOpacity>
+          );
+        }}
+      />
+    </View>
+  );
+}
+
+
+// chọn địa chỉ 
+export function ItemBoxLocation({ onSelect }) {
+  const [valueProvinceName, setValueProvinceName] = useState('');
+  const [valueDistrictName, setValueDistrictName] = useState('');
+  const [valueWardName, setValueWardName] = useState('');
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
+  const [selectedProvince, setSelectedProvince] = useState('');
+  const [selectedDistrict, setSelectedDistrict] = useState('');
+  const [selectedWard, setSelectedWard] = useState('');
+
+  useEffect(() => {
+    fetchProvinces();
+  }, []);
+
+  const fetchProvinces = async () => {
+    try {
+      const response = await fetch(`${API_BASE}/province`, {
+        headers: { Token: TOKEN }
+      });
+      const data = await response.json();
+      setProvinces((data.data || [])
+        .map(item => ({
+          label: item.ProvinceName,
+          value: String(item.ProvinceID),
+          name: item.ProvinceName,
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label))
+      );
+    } catch (error) {
+      console.error('Error fetching provinces:', error);
+    }
+  };
+
+  const fetchDistricts = async (provinceId, provinceName) => {
+    try {
+      const response = await fetch(`${API_BASE}/district?province_id=${provinceId}`, {
+        headers: { Token: TOKEN }
+      });
+      const data = await response.json();
+      setDistricts((data.data || [])
+        .map(item => ({
+          label: item.DistrictName,
+          value: String(item.DistrictID),
+          name: item.DistrictName,
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label))
+      );
+      setSelectedProvince(provinceId);
+      setValueProvinceName(provinceName);
+      setSelectedDistrict('');
+      setSelectedWard('');
+      setValueDistrictName('');
+      setValueWardName('');
+
+      // Gửi dữ liệu ra ngoài
+      onSelect({ provinceName, districtName: '', wardName: '' });
+    } catch (error) {
+      console.error('Error fetching districts:', error);
+      setDistricts([]);
+    }
+  };
+
+  const fetchWards = async (districtId, districtName) => {
+    try {
+      const response = await fetch(`${API_BASE}/ward?district_id=${districtId}`, {
+        headers: { Token: TOKEN }
+      });
+      const data = await response.json();
+      setWards((data.data || [])
+        .map(item => ({
+          label: item.WardName,
+          value: String(item.WardCode),
+          name: item.WardName,
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label))
+      );
+      setSelectedDistrict(districtId);
+      setValueDistrictName(districtName);
+      setSelectedWard('');
+      setValueWardName('');
+
+      // Gửi dữ liệu ra ngoài
+      onSelect({ provinceName: valueProvinceName, districtName, wardName: '' });
+    } catch (error) {
+      console.error('Error fetching wards:', error);
+      setWards([]);
+    }
+  };
+
+  return (
+    <View style={{ alignItems: 'center' }}>
+      <View style={styles.row}>
+        <View style={styles.pickerContainer}>
+          <RNPickerSelect
+            placeholder={{ label: 'Tỉnh/TP...', value: '' }}
+            onValueChange={(value) => {
+              const province = provinces.find(p => p.value === value) || { name: '' };
+              fetchDistricts(value, province.name);
+            }}
+            items={provinces}
+            value={selectedProvince}
+            style={pickerSelectStyles}
+            useNativeAndroidPickerStyle={false}
+          />
+        </View>
+        <View style={styles.pickerContainer}>
+          <RNPickerSelect
+            placeholder={{ label: 'Quận/Huyện...', value: '' }}
+            onValueChange={(value) => {
+              const district = districts.find(d => d.value === value) || { name: '' };
+              fetchWards(value, district.name);
+            }}
+            items={districts}
+            value={selectedDistrict}
+            style={pickerSelectStyles}
+            disabled={!selectedProvince}
+            useNativeAndroidPickerStyle={false}
+          />
+        </View>
+        <View style={styles.pickerContainer}>
+          <RNPickerSelect
+            placeholder={{ label: 'Xã/Phường...', value: '' }}
+            onValueChange={(value) => {
+              const ward = wards.find(w => w.value === value) || { name: '' };
+              setSelectedWard(value);
+              setValueWardName(ward.name);
+
+              // Gửi dữ liệu ra ngoài
+              onSelect({ provinceName: valueProvinceName, districtName: valueDistrictName, wardName: ward.name });
+            }}
+            items={wards}
+            value={selectedWard}
+            style={pickerSelectStyles}
+            disabled={!selectedDistrict}
+            useNativeAndroidPickerStyle={false}
+          />
+        </View>
+      </View>
+    </View>
+  );
+}
+
+export function ItemInputCharging({ value, onChangeText, placeholder, note }) {
+  return (
+    <View style={{
+      width: '30%',
+      flexDirection: 'row',
+      borderBottomWidth: 2,
+      borderColor: '#40A19C',
+      justifyContent: 'space-between',
+      height: 40,
+      alignItems: 'center'
+    }}>
+      <TextInput
+        style={{
+          flex: 1,
+          height: 40,
+          fontSize: 20,
+          textAlign: 'center'
+        }}
+        placeholder={placeholder}
+        value={value}
+        onChangeText={onChangeText}
+        keyboardType="numeric"
+      />
+      <View style={{
+        width: 50,
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <Text
+          style={{
+            fontSize: 20,
+            color: '#40A19C',
+            textAlign: 'center'
+
+          }}>
+          {note}
+        </Text>
+      </View>
+    </View>
+
   );
 }
 
@@ -423,5 +805,37 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 15,
     width: '100%',
+  },
+  // item box location
+  row: {
+    width: '95%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: '5%',
+    marginLeft: '5%',
+    marginRight: '5%',
+  },
+  pickerContainer: {
+    width: '30%',
+    height: 50,
+    borderBottomWidth: 2,
+    borderColor: '#40A19C',
+    justifyContent: 'center',
+  },
+});
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 20,
+    height: 0,
+    color: 'black',
+    marginVertical: 30,
+    marginHorizontal: 10,
+  },
+  inputAndroid: {
+    fontSize: 20,
+    color: 'black',
+    textAlign: 'center',
+    textAlignVertical: 'center',
   },
 });

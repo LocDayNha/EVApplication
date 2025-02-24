@@ -16,6 +16,7 @@ import NewPassword from '../ui/begin/NewPassword';
 import List from '../ui/main/ListStation'
 import Track from '../ui/main/Track';
 import Trip from '../ui/main/Trip';
+import MapStation from '../ui/main/MapStation';
 import Setting from '../ui/main/Setting';
 import Schedule from '../ui/main/Schedule';
 import Profile from '../ui/main/Profile';
@@ -89,7 +90,7 @@ const Tabbar = () => {
             />
             <Tab.Screen
                 name="Map"
-                component={TestAPILocationVN}
+                component={MapStation}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <TabIcon focused={focused} icon={require('../../assets/icon/location.png')} label="Bản đồ" />
