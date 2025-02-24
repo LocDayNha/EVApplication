@@ -80,7 +80,6 @@ const MapStation = (props) => {
         }
     ];
 
-    console.log(selectedStation)
     return (
         <View style={styles.container}>
             {/* <View style={styles.searchContainer}>
@@ -153,9 +152,9 @@ const MapStation = (props) => {
                 </View>
             )} */}
 
-            {/* <View style={styles.buttonContainer}>
+            <View style={styles.buttonContainer}>
                 <Button title="Lấy vị trí hiện tại" onPress={focusOnLocation} />
-            </View> */}
+            </View>
         </View>
     );
 }
