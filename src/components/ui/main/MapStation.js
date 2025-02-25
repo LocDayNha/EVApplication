@@ -7,7 +7,7 @@ import { AppContext } from '../../axios/AppContext';
 import AxiosInstance from '../../axios/AxiosInstance';
 
 const MapStation = (props) => {
-    const initialLocation = { latitude: 14.0583, longitude: 108.2772 };
+    const initialLocation = { latitude: 10.8231, longitude: 106.6297 };
 
     const [myLocation, setMyLocation] = useState(initialLocation);
     const [searchText, setSearchText] = useState("");
@@ -82,14 +82,18 @@ const MapStation = (props) => {
 
     return (
         <View style={styles.container}>
-            {/* <View style={styles.searchContainer}>
+            <View style={styles.searchContainer}>
                 <TextInput
                     style={styles.searchInput}
                     placeholder="Nhập vị trí..."
                     value={searchText}
                     onChangeText={setSearchText}
                 />
-            </View> */}
+                <TouchableOpacity onPress={focusOnLocation} style={styles.buttonContainer}>
+                    <Image style={{ width: 30, height: 30, }} source={require('../../../assets/icon/icons8-my-location-48.png')} />
+                </TouchableOpacity>
+            </View>
+
             <MapView
                 style={styles.map}
                 initialRegion={{
@@ -108,11 +112,11 @@ const MapStation = (props) => {
                             latitude: location.lat,
                             longitude: location.lng,
                         }}
-                        //title={location.title}
+                        title={location.name}
                         onPress={() => setSelectedStation(location)}
                     >
-                        <Image source={require('../../../assets/icon/icons8-location-94.png')}
-                            style={{ width: 40, height: 40 }} />
+                        <Image source={require('../../../assets/icon/IconLoaction.png')}
+                            style={{ width: 40, height: 40, elevation: 5, }} />
                     </Marker>
                 ))}
             </MapView>
@@ -124,8 +128,18 @@ const MapStation = (props) => {
                         margin: 10,
                         padding: 10,
                         paddingHorizontal: 30,
-                        borderRadius: 10,
-
+                        borderRadius: 20,
+                        position: 'absolute',
+                        left: '80%',
+                        top: '-15%',
+                        shadowColor: "#000",
+                        shadowOffset: {
+                            width: 0,
+                            height: 2,
+                        },
+                        shadowOpacity: 0.25,
+                        shadowRadius: 3.84,
+                        elevation: 5,
                     }} onPress={() => setSelectedStation(null)}>
                         <Text style={styles.closeButton}>Đóng</Text>
                     </TouchableOpacity>
@@ -152,9 +166,7 @@ const MapStation = (props) => {
                 </View>
             )} */}
 
-            <View style={styles.buttonContainer}>
-                <Button title="Lấy vị trí hiện tại" onPress={focusOnLocation} />
-            </View>
+
         </View>
     );
 }
@@ -165,34 +177,57 @@ export default MapStation;
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#fff' },
     searchContainer: {
-        position: 'absolute',
-        top: 50, width: '90%',
-        backgroundColor: 'white',
+        position: 'relative',
+        top: 40,
+        width: '100%',
         borderRadius: 10,
-        padding: 10,
-        shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
         shadowRadius: 4,
         elevation: 5,
         zIndex: 10,
+
     },
     searchInput: {
-        height: 40,
-        borderColor: '#ddd',
-        borderWidth: 1,
-        borderRadius: 8,
-        paddingHorizontal: 10
+        position: 'absolute',
+        height: 50,
+        borderRadius: 30,
+        paddingHorizontal: 10,
+        width: "75%",
+        marginHorizontal: '5%',
+        backgroundColor: 'white',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+
+    buttonContainer: {
+        position: 'absolute',
+        left: '80%',
+        height: 50,
+        width: 50,
+        backgroundColor: 'white',
+        marginHorizontal: '5%',
+        borderRadius: 30,
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
     map: {
         width: '100%',
         height: '100%'
-    },
-    buttonContainer: {
-        position: 'absolute',
-        bottom: 20,
-        width: '100%',
-        alignItems: 'center'
     },
     stationInfo: {
         position: 'absolute',

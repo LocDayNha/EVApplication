@@ -5,6 +5,8 @@ import { ItemStationMain } from '../../item/Item';
 import AxiosInstance from '../../axios/AxiosInstance';
 import * as Location from 'expo-location';
 import { AppContext } from '../../axios/AppContext';
+import { ItemListModal, ItemModalRadioButton } from '../../item/Modal';
+
 
 const carBrands = [
     { id: 0, name: 'Tất cả' },
@@ -38,8 +40,6 @@ const Kw = [
     { id: 3, name: 'Sạc siêu nhanh' },
 ];
 
-
-
 const Home = (props) => {
 
     const { navigation } = props;
@@ -51,14 +51,7 @@ const Home = (props) => {
     const [selectedChargerType, setSelectedChargerType] = useState([]);
     const [selectedKw, setSelectedKw] = useState('Tất cả');
     const [selectedVehicle, setSelectedVehicle] = useState('Tất cả');
-    const [selectedBrand, setSelectedBrand] = useState('Tất cả');
-    const toggleSelection = (id) => {
-        if (selectedChargerType.includes(id)) {
-            setSelectedChargerType(selectedChargerType.filter((item) => item !== id));
-        } else {
-            setSelectedChargerType([...selectedChargerType, id]);
-        }
-    };
+    const [selectedBrand, setSelectedBrand] = useState('');
 
     //Lấy địa chỉ và định vị
     const [errorMsg, setErrorMsg] = useState('');
@@ -112,7 +105,7 @@ const Home = (props) => {
 
             if (dataStation.data && dataStation.data.length > 0) {
                 setDataStation(dataStation.data);
-                setModalVisible(false);
+                //setModalVisible(false);
             } else {
                 console.log('Không tìm thấy dữ liệu từ /station/getByOption');
                 ToastAndroid.show('Không có thông tin trạm sạc', ToastAndroid.SHORT);
@@ -148,14 +141,33 @@ const Home = (props) => {
         }
     }
 
+    const [dataBrandStation, setDataBrandStation] = useState(null);
+    const getBrandDataStation = async () => {
+        try {
+            const dataStation = await AxiosInstance().get('/brand/get');
+            if (dataStation.data && dataStation.data.length > 0) {
+                setDataBrandStation(dataStation.data);
+            } else {
+                console.log('Không tìm thấy dữ liệu từ /station/get');
+                ToastAndroid.show('Không có thông tin trạm sạc', ToastAndroid.SHORT);
+            }
+        } catch (error) {
+            console.error('Lỗi khi lấy dữ liệu station:', error);
+            ToastAndroid.show('Không thể tải danh sách thông tin trạm sạc', ToastAndroid.SHORT);
+        }
+    };
+
     // Hook effect khởi tạo dữ liệu
     useEffect(() => {
         getDataStation();
         getYourLocation();
+        getBrandDataStation();
     }, []);
+    console.log(selectedBrand);
+
 
     return (
-        <ScrollView showsVerticalScrollIndicator={false} style={{flex:1, height:'100%'}}>
+        <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1, height: '100%' }}>
             {/* Ten nguoi dung */}
             <View style={styles.containerUser}>
                 <View style={styles.inputSearch}>
@@ -179,128 +191,18 @@ const Home = (props) => {
                         <Image style={styles.iconFilter} source={require('../../../assets/icon/icons8-filter-50 (1).png')} />
                     </TouchableOpacity>
                 </View>
-
-
-                {/* Bộ lọc  */}
-                <Modal transparent={true} visible={modalVisible} animationType="slide">
-                    <View style={styles.modalOverlay}>
-                        <View style={styles.modalContent}>
-
-                            <Text style={styles.modalTitle}>Bộ lọc </Text>
-
-                            <ScrollView showsVerticalScrollIndicator={false} >
-                                {/* danh sách bộ lọc  */}
-                                <Text style={styles.modalTitleSup}> Dòng điện </Text>
-                                <FlatList
-                                    data={Von}
-                                    scrollEnabled={false}
-                                    keyExtractor={(item) => item.id}
-                                    renderItem={({ item }) => (
-                                        <TouchableOpacity
-                                            style={styles.filterItem}
-                                            onPress={() => setSelectedVon(item.name)}>
-                                            <View style={styles.radioButton}>
-                                                {selectedVon === item.name && <View style={styles.radioInner} />}
-                                            </View>
-                                            <Text style={styles.filterText}>{item.name}</Text>
-                                        </TouchableOpacity>
-                                    )}
-                                />
-
-                                <Text style={styles.modalTitleSup}> Loại đầu sạc </Text>
-                                <FlatList
-                                    data={typeCharger}
-                                    scrollEnabled={false}
-                                    keyExtractor={(item) => item.id.toString()}
-                                    renderItem={({ item }) => {
-                                        return (
-                                            <TouchableOpacity
-                                                style={styles.filterItem}
-                                                onPress={() => toggleSelection(item.name)}>
-                                                <View style={[styles.checkbox, selectedChargerType.includes(item.name) && styles.checkedBox]}>
-                                                    {selectedChargerType.includes(item.name) && <Text style={styles.checkmark}>✓</Text>}
-                                                </View>
-                                                <Text style={styles.filterText}>{item.name}</Text>
-                                            </TouchableOpacity>
-
-                                        );
-                                    }}
-                                />
-
-                                <Text style={styles.modalTitleSup}> Công suất  </Text>
-                                <FlatList
-                                    data={Kw}
-                                    scrollEnabled={false}
-                                    keyExtractor={(item) => item.id}
-                                    renderItem={({ item }) => (
-                                        <TouchableOpacity
-                                            style={styles.filterItem}
-                                            onPress={() => setSelectedKw(item.name)}>
-                                            <View style={styles.radioButton}>
-                                                {selectedKw === item.name && <View style={styles.radioInner} />}
-                                            </View>
-                                            <Text style={styles.filterText}>{item.name}</Text>
-                                        </TouchableOpacity>
-                                    )}
-                                />
-
-                                <Text style={styles.modalTitleSup}> Loại Xe </Text>
-                                <FlatList
-                                    data={Vehicle}
-                                    scrollEnabled={false}
-                                    keyExtractor={(item) => item.id}
-                                    renderItem={({ item }) => (
-                                        <TouchableOpacity
-                                            style={styles.filterItem}
-                                            onPress={() => setSelectedVehicle(item.name)}>
-                                            <View style={styles.radioButton}>
-                                                {selectedVehicle === item.name && <View style={styles.radioInner} />}
-                                            </View>
-                                            <Text style={styles.filterText}>{item.name}</Text>
-                                        </TouchableOpacity>
-                                    )}
-                                />
-
-                                <Text style={styles.modalTitleSup}> Hãng xe  </Text>
-                                <FlatList
-                                    data={carBrands}
-                                    scrollEnabled={false}
-                                    keyExtractor={(item) => item.id}
-                                    renderItem={({ item }) => (
-                                        <TouchableOpacity
-                                            style={styles.filterItem}
-                                            onPress={() => setSelectedBrand(item.name)}>
-                                            <View style={styles.radioButton}>
-                                                {selectedBrand === item.name && <View style={styles.radioInner} />}
-                                            </View>
-                                            <Text style={styles.filterText}>{item.name}</Text>
-                                        </TouchableOpacity>
-                                    )}
-                                />
-
-                            </ScrollView >
-                            {/* nút */}
-                            <View style={styles.buttonRow}>
-                                <TouchableOpacity onPress={() => {
-                                    setModalVisible(false);
-                                    setSelectedBrand(0);
-                                    setSelectedKw(0);
-                                    setSelectedVon(0);
-                                }}
-                                    style={styles.cancelButton}>
-                                    <Text style={styles.cancelText}>Hủy</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    onPress={getDataStationByOption}
-                                    style={styles.applyButton}>
-                                    <Text style={styles.applyText}>Áp dụng</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                </Modal>
-
-
+                {/* <ItemModalRadioButton
+                    checkModal={modalVisible}
+                    setModalVisible={setModalVisible}
+                    data={dataBrandStation}
+                    selectedItem={selectedBrand}
+                    setSelectedItem={setSelectedBrand}
+                    title={'Hãng Xe'}
+                /> */}
+                <ItemListModal
+                    checkModal={modalVisible}
+                    setModalVisible={setModalVisible}
+                    data={dataBrandStation} />
             </View>
 
             {/* Tram sac gan ban */}

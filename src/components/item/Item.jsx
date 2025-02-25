@@ -166,7 +166,7 @@ export function ItemStationMap(props) {
   };
 
   return (
-    <TouchableOpacity style={styles.listRow} key={data._id} onPress={clickViewDetail}>
+    <TouchableOpacity style={styles.listLocation} key={data._id} onPress={clickViewDetail}>
       <Image style={styles.imgStation} source={{ uri: data.image }} />
       <View style={styles.viewInfoStation}>
         <Text style={styles.textItemName} numberOfLines={1} ellipsizeMode='tail'>{data.brand_id.name} - {data.name}</Text>
@@ -581,6 +581,8 @@ export function ItemInputCharging({ value, onChangeText, placeholder, note }) {
   );
 }
 
+
+
 const styles = StyleSheet.create({
   container: {
     width: "85%",
@@ -807,6 +809,19 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   // item box location
+  listLocation: {
+    width: '100%',
+    borderRadius: 25,
+    backgroundColor: 'white',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
   row: {
     width: '95%',
     flexDirection: 'row',
