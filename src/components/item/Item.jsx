@@ -38,14 +38,14 @@ export function TextInputMain({ value, onChangeText, placeholder }) {
   );
 }
 
-export function TextInputProfile({ label, value, onChangeText, placeholder, editable }) {
+export function TextInputProfile({ label, defaultValue, onChangeText, placeholder, editable }) {
   return (
     <View style={styles.viewInputProfile}>
       <Text style={styles.textProfile}>{label}</Text>
       <TextInput
         style={styles.inputProfile}
         placeholder={placeholder}
-        value={value}
+        defaultValue={defaultValue}
         onChangeText={onChangeText}
         editable={editable}
       />
@@ -62,8 +62,55 @@ export function CustomButton({ label, onPress }) {
 }
 
 export function ItemRating({ data }) {
+  const { idUser } = useContext(AppContext);
+  const [optionRating, setOptionRating] = useState(false);
+
+  const getDataRatingById = async () => {
+
+  }
+
+  const deleteRating = async (id) => {
+    try {
+      const data = await AxiosInstance().post('/rating/activeUpdate', {
+        id: id
+      });
+      if (data) {
+        console.log('Xoa thanh cong');
+      } else {
+        console.log('Xoa that bai');
+      }
+    } catch (error) {
+      console.log('Co loi xay ra:', error);
+    }
+  }
+
   return (
     <View style={styles.viewRatingContainer} key={data._id}>
+      {optionRating ?
+        <>
+          <View style={{ position: 'absolute', top: '3.5%', right: '0%', width: 50, justifyContent: 'space-between', alignItems: 'center' }}>
+            <TouchableOpacity>
+              <Text style={{ fontSize: 16, fontWeight: 500 }}>Sửa</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => deleteRating(data._id)}>
+              <Text style={{ fontSize: 16, fontWeight: 500, color: 'red' }}>Xóa</Text>
+            </TouchableOpacity>
+          </View>
+        </>
+        :
+        null
+      }
+      {idUser && idUser === data.user_id._id && optionRating !== true ?
+        <>
+          <TouchableOpacity onPress={() => setOptionRating(true)} style={{ width: 24, height: 24, position: 'absolute', top: 0, right: 5 }}>
+            <Image source={require('../../assets/icon/icons8-more-50.png')} style={{ width: 24, height: 24 }} />
+          </TouchableOpacity>
+        </>
+        :
+        <>
+          <Image style={{ width: 24, height: 24, position: 'absolute', top: 5, right: 10 }} />
+        </>
+      }
       <View style={styles.viewRatingUser}>
         <View style={{ marginRight: "5%" }}>
           <Image source={{ uri: data.user_id.image }} style={styles.imgUser}></Image>
@@ -295,7 +342,7 @@ export function ItemCheckBox({ data = [], onSelect }) {
         data={data}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item._id}
         renderItem={({ item }) => {
           const isSelected = selectedService.includes(item.name);
           return (
@@ -307,7 +354,7 @@ export function ItemCheckBox({ data = [], onSelect }) {
                 paddingVertical: 12,
                 paddingHorizontal: 24,
                 marginRight: 12,
-                borderWidth: 2,
+                borderBottomWidth: 1,
                 borderColor: "#40A19C",
                 borderRadius: 8,
                 backgroundColor: isSelected ? "#40A19C" : "#fff",
@@ -318,7 +365,7 @@ export function ItemCheckBox({ data = [], onSelect }) {
                 style={{
                   fontSize: 16,
                   fontWeight: "bold",
-                  color: isSelected ? "#fff" : "#40A19C",
+                  color: isSelected ? "#fff" : "black",
                 }}
               >
                 {item.name}
@@ -350,7 +397,7 @@ export function ItemRadioButton({ data = [], onSelect, selectedValue }) {
         showsHorizontalScrollIndicator={false}
         horizontal
         data={data}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item._id}
         renderItem={({ item }) => {
           const isSelected = selectedMethod === item.name;
           return (
@@ -361,10 +408,6 @@ export function ItemRadioButton({ data = [], onSelect, selectedValue }) {
                 paddingVertical: 12,
                 paddingHorizontal: 24,
                 marginRight: 12,
-                borderWidth: 2,
-                borderColor: "#40A19C",
-                borderRadius: 8,
-                backgroundColor: isSelected ? "#40A19C" : "#fff",
                 justifyContent: "center",
                 marginVertical: 10,
               }}
@@ -373,18 +416,35 @@ export function ItemRadioButton({ data = [], onSelect, selectedValue }) {
               <MaterialIcons
                 name={isSelected ? "radio-button-checked" : "radio-button-unchecked"}
                 size={20}
-                color={isSelected ? "#fff" : "#40A19C"}
+                color={isSelected ? "#40A19C" : "#40A19C"}
               />
-              <Text
-                style={{
-                  marginLeft: 8,
-                  fontSize: 16,
-                  fontWeight: "bold",
-                  color: isSelected ? "#fff" : "#40A19C",
-                }}
-              >
-                {item.name}
-              </Text>
+              {item.name && item.type ?
+                <>
+                  <Text
+                    style={{
+                      marginLeft: 8,
+                      fontSize: 16,
+                      fontWeight: "bold",
+                      color: 'black',
+                    }}
+                  >
+                    {item.name}-{item.type}
+                  </Text>
+                </>
+                :
+                <>
+                  <Text
+                    style={{
+                      marginLeft: 8,
+                      fontSize: 16,
+                      fontWeight: "bold",
+                      color: 'black',
+                    }}
+                  >
+                    {item.name}
+                  </Text>
+                </>
+              }
             </TouchableOpacity>
           );
         }}
@@ -543,7 +603,7 @@ export function ItemInputCharging({ value, onChangeText, placeholder, note }) {
     <View style={{
       width: '30%',
       flexDirection: 'row',
-      borderBottomWidth: 2,
+      borderBottomWidth: 1,
       borderColor: '#40A19C',
       justifyContent: 'space-between',
       height: 40,
@@ -602,7 +662,7 @@ const styles = StyleSheet.create({
     width: "85%",
     height: 50,
     paddingLeft: 10,
-    borderWidth: 1,
+    borderBottomWidth: 1,
     borderColor: COLOR.gray2,
     borderRadius: 10,
     backgroundColor: "#fff",
@@ -637,7 +697,7 @@ const styles = StyleSheet.create({
     height: 50,
     fontSize: 16,
     paddingHorizontal: 10,
-    borderWidth: 1,
+    borderBottomWidth: 1,
     borderColor: COLOR.gray,
     borderRadius: 15
   },
@@ -673,7 +733,7 @@ const styles = StyleSheet.create({
     width: "95%"
   },
   textNameUser: {
-    fontSize: 16,
+    fontSize: 18,
     color: COLOR.black,
     fontWeight: 700,
     fontFamily: 'Poppins',
@@ -687,9 +747,10 @@ const styles = StyleSheet.create({
     marginTop: '2%',
   },
   textRatingContent: {
-    fontSize: 20,
+    fontSize: 18,
     color: COLOR.black,
     fontFamily: 'Poppins',
+    fontWeight: '500'
   },
 
   // item list 
@@ -833,7 +894,7 @@ const styles = StyleSheet.create({
   pickerContainer: {
     width: '30%',
     height: 50,
-    borderBottomWidth: 2,
+    borderBottomWidth: 1,
     borderColor: '#40A19C',
     justifyContent: 'center',
   },

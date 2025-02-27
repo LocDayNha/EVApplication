@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, ScrollView,ToastAndroid, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Image, ScrollView, ToastAndroid, TouchableOpacity } from 'react-native'
 import React, { useContext, useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import { AppContext } from '../../axios/AppContext';
@@ -51,6 +51,7 @@ const Setting = () => {
 
                 {infoUser && idUser ?
                     <>
+
                         <TouchableOpacity style={styles.boxContent} onPress={() => navigation.navigate("List")}>
                             <View style={{ flexDirection: 'row', alignItems: 'center', }}>
                                 <Image style={styles.imgIcon} source={require('../../../assets/icon/icons8-car-charger-48.png')} />
@@ -69,7 +70,7 @@ const Setting = () => {
                             <Image style={{ width: 20, height: 20, }} source={require('../../../assets/icon/icons8-next-96.png')} />
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.boxContent}>
+                        <TouchableOpacity onPress={()=> navigation.navigate('ForgotPass')} style={styles.boxContent}>
                             <View style={{ flexDirection: 'row', alignItems: 'center', }}>
                                 <Image style={styles.imgIcon} source={require('../../../assets/icon/icons8-password-96.png')} />
                                 <Text style={styles.textNameSetting}>Đổi mật khẩu</Text>

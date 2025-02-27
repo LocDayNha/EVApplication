@@ -7,7 +7,6 @@ import * as Location from 'expo-location';
 import { AppContext } from '../../axios/AppContext';
 import { ItemListModal, ItemModalRadioButton } from '../../item/Modal';
 
-
 const carBrands = [
     { id: 0, name: 'Tất cả' },
     { id: 1, name: 'Vinfast' },

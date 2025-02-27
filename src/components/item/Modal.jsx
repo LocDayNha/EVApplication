@@ -21,15 +21,14 @@ export function ItemModalCheckBox({ checkModal, setModalVisible, data, selectedI
 
                     <FlatList
                         data={data}
-                        keyExtractor={(item) => item.id.toString()}
+                        keyExtractor={(item) => item._id}
                         renderItem={({ item }) => (
                             <TouchableOpacity
                                 style={styles.filterItem}
-                                onPress={() => toggleSelection(item.name)}
+                                onPress={() => toggleSelection(item._id)}
                             >
-
-                                <View style={[styles.checkbox, selectedItems.includes(item.name) && styles.checkedBox]}>
-                                    {selectedItems.includes(item.name) && <Text style={styles.checkmark}>✓</Text>}
+                                <View style={[styles.checkbox, selectedItems.includes(item._id) && styles.checkedBox]}>
+                                    {selectedItems.includes(item._id) && <Text style={styles.checkmark}>✓</Text>}
                                 </View>
 
                                 <Text style={styles.filterText}>{item.name}</Text>
@@ -48,6 +47,7 @@ export function ItemModalCheckBox({ checkModal, setModalVisible, data, selectedI
                             <Text style={styles.cancelText}>Hủy</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
+                            onPress={() => setModalVisible(false)} // Added missing onPress
                             style={styles.applyButton}
                         >
                             <Text style={styles.applyText}>Áp dụng</Text>
@@ -74,13 +74,20 @@ export function ItemModalRadioButton({ checkModal, setModalVisible, data, select
                             renderItem={({ item }) => (
                                 <TouchableOpacity
                                     style={styles.filterItem}
-                                    onPress={() => setSelectedItem(item.name)}
+                                    onPress={() => setSelectedItem([item._id, item.name])}
                                 >
                                     <View style={styles.radioButton}>
-                                        {selectedItem === item.name && <View style={styles.radioInner} />}
+                                        {selectedItem[0] === item._id && <View style={styles.radioInner} />}
                                     </View>
-
-                                    <Text style={styles.filterText}>{item.name}</Text>
+                                    {item.name && item.type ?
+                                        <>
+                                            <Text style={styles.filterText}>{item.name} - {item.type}</Text>
+                                        </>
+                                        :
+                                        <>
+                                            <Text style={styles.filterText}>{item.name}</Text>
+                                        </>
+                                    }
                                 </TouchableOpacity>
                             )}
                         />
@@ -100,9 +107,9 @@ export function ItemModalRadioButton({ checkModal, setModalVisible, data, select
                             style={styles.applyButton}
                         >
                             <Text
-                                onPress={() => [
+                                onPress={() =>
                                     setModalVisible(false)
-                                ]
+
                                 }
                                 style={styles.applyText}>Áp dụng</Text>
                         </TouchableOpacity>
@@ -130,7 +137,7 @@ export function ItemListModal({ checkModal, setModalVisible, data, selectedItem,
                                     onPress={() => setSelectedItem(item.name)}
                                 >
                                     <View style={styles.radioButton}>
-                                       <Text>{item.name}</Text>
+                                        <Text>{item.name}</Text>
                                     </View>
                                     <Text style={styles.filterText}>{item.name}</Text>
                                 </TouchableOpacity>
@@ -244,6 +251,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         marginRight: 10,
+        borderRadius: 5
     },
     checkedBox: {
         backgroundColor: "#40A19C",
