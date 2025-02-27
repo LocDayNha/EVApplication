@@ -9,7 +9,7 @@ import * as Location from 'expo-location';
 import { ItemBoxLocation, ItemCheckBox, ItemInputCharging, ItemRadioButton } from '../../item/Item';
 import { AppContext } from '../../axios/AppContext';
 import AxiosInstance from '../../axios/AxiosInstance';
-import { ItemListModal, ItemModalRadioButton, ItemModalCheckBox } from '../../item/Modal';
+import { ItemListModal, ItemModalRadioButton, ItemModalCheckBox, ItemModalRadioButtonImage, ItemModalCheckBoxImage } from '../../item/Modal';
 
 const API_BASE = 'https://online-gateway.ghn.vn/shiip/public-api/master-data';
 const TOKEN = '46f53dba-ecf6-11ef-a268-9e63d516feb9';
@@ -638,7 +638,7 @@ const FormStation = () => {
                 setSelectedItem={setSelectedBrand}
             />
 
-            <ItemModalCheckBox
+            <ItemModalCheckBoxImage
                 checkModal={modalVisibleService}
                 setModalVisible={setModalVisibleSevice}
                 data={dataService}

@@ -407,8 +407,7 @@ export function ItemRadioButton({ data = [], onSelect, selectedValue }) {
                 alignItems: "center",
                 paddingVertical: 12,
                 paddingHorizontal: 24,
-                marginRight: 12,
-                borderWidth: 1,
+                borderWidth: 2,
                 borderColor: COLOR.green3,
                 borderRadius: 8,
                 backgroundColor: isSelected ? COLOR.green3 : "#fff",
@@ -431,13 +430,8 @@ export function ItemRadioButton({ data = [], onSelect, selectedValue }) {
                   color: isSelected ? "#fff" : 'black',
                 }}
               >
-                {item}
+                {item.name}
               </Text>
-
-              {/* {uniqueTypes.map((type, index) => (
-                <Text key={index}>{type}</Text>
-              ))} */}
-
             </TouchableOpacity>
           );
         }}
@@ -445,7 +439,6 @@ export function ItemRadioButton({ data = [], onSelect, selectedValue }) {
     </View>
   );
 }
-
 // nút chọn hình vuông có hình ảnh 
 export function ItemCheckBoxImage({ data = [], onSelect }) {
   const [selectedService, setSelectedService] = useState([]);
@@ -751,7 +744,77 @@ export function ItemInputCharging({ value, onChangeText, placeholder, note }) {
   );
 }
 
+// nut hình tròn lấy tyle
+export function ItemRadioButtonType({ data = [], onSelect, selectedValue }) {
+  const [selectedMethod, setSelectedMethod] = useState(selectedValue);
 
+
+
+  useEffect(() => {
+    setSelectedMethod(selectedValue);
+  }, [selectedValue]);
+
+  const handlePress = (id) => {
+    const newSelection = selectedMethod === id ? null : id;
+    setSelectedMethod(newSelection);
+    onSelect(newSelection);
+  };
+
+  const uniqueTypes = [...new Set(data.map(item => item.type))];
+
+  return (
+    <View>
+      <FlatList
+        showsHorizontalScrollIndicator={false}
+        horizontal
+        data={uniqueTypes}
+        keyExtractor={(item) => item}
+        renderItem={({ item }) => {
+          const isSelected = selectedMethod === item;
+          return (
+            <TouchableOpacity
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                paddingVertical: 12,
+                paddingHorizontal: 24,
+                borderWidth: 2,
+                borderColor: COLOR.green3,
+                borderRadius: 8,
+                backgroundColor: isSelected ? COLOR.green3 : "#fff",
+                marginVertical: 10,
+                marginHorizontal: 20,
+                height: 50,
+              }}
+              onPress={() => handlePress(item)}
+            >
+              <MaterialIcons
+                name={isSelected ? "radio-button-checked" : "radio-button-unchecked"}
+                size={20}
+                color={isSelected ? "#fff" : COLOR.green3}
+              />
+              <Text
+                style={{
+                  marginLeft: 8,
+                  fontSize: 16,
+                  fontWeight: "bold",
+                  color: isSelected ? "#fff" : 'black',
+                }}
+              >
+                {item}
+              </Text>
+
+              {/* {uniqueTypes.map((type, index) => (
+                <Text key={index}>{type}</Text>
+              ))} */}
+
+            </TouchableOpacity>
+          );
+        }}
+      />
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {

@@ -10,53 +10,6 @@ import { ItemListModal, ItemModalCheckBox, ItemModalRadioButton, ItemSliderModal
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { LinearGradient } from 'expo-linear-gradient';
 
-const carBrands = [
-    { id: 1, name: 'Byd', image: require('../../../assets/icon/byd.png') },
-    { id: 0, name: 'Vinfast', image: require('../../../assets/icon/vinfast.png') },
-    { id: 2, name: 'EvOne', image: require('../../../assets/icon/evone.png') },
-    { id: 3, name: 'Wuling', image: require('../../../assets/icon/wuling.png') },
-];
-
-const typeCharger = [
-    { id: 0, name: 'J1772' },
-    { id: 1, name: 'Mennekes' },
-    { id: 2, name: 'GB/T' },
-    { id: 3, name: 'CHAdeMO' },
-    { id: 4, name: 'CCS1' },
-    { id: 5, name: 'CCS2' },
-];
-const Von = [
-    { id: 0, name: 'Tất cả' },
-    { id: 1, name: 'AC' },
-    { id: 2, name: 'DC' },
-];
-const Vehicle = [
-    { id: 0, name: 'Tất cả' },
-    { id: 1, name: 'Xe máy điện' },
-    { id: 2, name: 'Ô tô điện' },
-];
-
-const Kw = [
-    { id: 0, name: 'Tất cả' },
-    { id: 1, name: 'Sạc Thường' },
-    { id: 2, name: 'Sạc Nhanh' },
-    { id: 3, name: 'Sạc siêu nhanh' },
-];
-const filter = [
-    { id: 0, name: 'Công Xuất' },
-    { id: 1, name: 'Dòng điện' },
-    { id: 2, name: 'Dịch vụ' },
-    { id: 3, name: 'Trạng thái hoạt động' },
-];
-
-const brand = [
-    { _id: 0, name: 'Honda' },
-    { _id: 1, name: 'Vin' },
-    { _id: 2, name: 'Wuth' },
-    { _id: 3, name: 'Yamaha' },
-];
-
-
 const Home = (props) => {
 
     const { navigation } = props;
