@@ -13,6 +13,8 @@ export const COLOR = {
     white: '#ffffff',
     green: '#49b915',
     green2: '#039a83',
+    green3:'#009558', // màu chính
+    green4:'#007A45',
     light: '#EEEEEE',
     dark: '#333',
     gray: '#CCCCCC',

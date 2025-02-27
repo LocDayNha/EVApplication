@@ -128,7 +128,7 @@ export function ItemStation({ data }) {
                 setModalVisible(false)
               }}
                 style={styles.cancelButton}>
-                <Text style={{ color: '#40A19C' }}>Quay lại </Text>
+                <Text style={{ color: COLOR.green3 }}>Quay lại </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -295,7 +295,7 @@ export function ItemCheckBox({ data = [], onSelect }) {
         data={data}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item._id.toString()}
         renderItem={({ item }) => {
           const isSelected = selectedService.includes(item.name);
           return (
@@ -308,9 +308,9 @@ export function ItemCheckBox({ data = [], onSelect }) {
                 paddingHorizontal: 24,
                 marginRight: 12,
                 borderWidth: 2,
-                borderColor: "#40A19C",
+                borderColor: COLOR.green3,
                 borderRadius: 8,
-                backgroundColor: isSelected ? "#40A19C" : "#fff",
+                backgroundColor: isSelected ? COLOR.green3 : "#fff",
               }}
               onPress={() => toggleSelection(item.name)}
             >
@@ -318,7 +318,7 @@ export function ItemCheckBox({ data = [], onSelect }) {
                 style={{
                   fontSize: 16,
                   fontWeight: "bold",
-                  color: isSelected ? "#fff" : "#40A19C",
+                  color: isSelected ? "#fff" : 'black',
                 }}
               >
                 {item.name}
@@ -350,7 +350,7 @@ export function ItemRadioButton({ data = [], onSelect, selectedValue }) {
         showsHorizontalScrollIndicator={false}
         horizontal
         data={data}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item._id}
         renderItem={({ item }) => {
           const isSelected = selectedMethod === item.name;
           return (
@@ -360,27 +360,27 @@ export function ItemRadioButton({ data = [], onSelect, selectedValue }) {
                 alignItems: "center",
                 paddingVertical: 12,
                 paddingHorizontal: 24,
-                marginRight: 12,
                 borderWidth: 2,
-                borderColor: "#40A19C",
+                borderColor: COLOR.green3,
                 borderRadius: 8,
-                backgroundColor: isSelected ? "#40A19C" : "#fff",
-                justifyContent: "center",
+                backgroundColor: isSelected ? COLOR.green3 : "#fff",
                 marginVertical: 10,
+                marginHorizontal: 20,
+                height: 50,
               }}
               onPress={() => handlePress(item.name)}
             >
               <MaterialIcons
                 name={isSelected ? "radio-button-checked" : "radio-button-unchecked"}
                 size={20}
-                color={isSelected ? "#fff" : "#40A19C"}
+                color={isSelected ? "#fff" : COLOR.green3}
               />
               <Text
                 style={{
                   marginLeft: 8,
                   fontSize: 16,
                   fontWeight: "bold",
-                  color: isSelected ? "#fff" : "#40A19C",
+                  color: isSelected ? "#fff" : 'black',
                 }}
               >
                 {item.name}
@@ -392,8 +392,196 @@ export function ItemRadioButton({ data = [], onSelect, selectedValue }) {
     </View>
   );
 }
+// nut hình tròn lấy tyle
+export function ItemRadioButtonType({ data = [], onSelect, selectedValue }) {
+  const [selectedMethod, setSelectedMethod] = useState(selectedValue);
 
 
+
+  useEffect(() => {
+    setSelectedMethod(selectedValue);
+  }, [selectedValue]);
+
+  const handlePress = (id) => {
+    const newSelection = selectedMethod === id ? null : id;
+    setSelectedMethod(newSelection);
+    onSelect(newSelection);
+  };
+
+  const uniqueTypes = [...new Set(data.map(item => item.type))];
+
+  return (
+    <View>
+      <FlatList
+        showsHorizontalScrollIndicator={false}
+        horizontal
+        data={uniqueTypes}
+        keyExtractor={(item) => item._id}
+        renderItem={({ item }) => {
+          const isSelected = selectedMethod === item;
+          return (
+            <TouchableOpacity
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                paddingVertical: 12,
+                paddingHorizontal: 24,
+                borderWidth: 2,
+                borderColor: COLOR.green3,
+                borderRadius: 8,
+                backgroundColor: isSelected ? COLOR.green3 : "#fff",
+                marginVertical: 10,
+                marginHorizontal: 20,
+                height: 50,
+              }}
+              onPress={() => handlePress(item)}
+            >
+              <MaterialIcons
+                name={isSelected ? "radio-button-checked" : "radio-button-unchecked"}
+                size={20}
+                color={isSelected ? "#fff" : COLOR.green3}
+              />
+              <Text
+                style={{
+                  marginLeft: 8,
+                  fontSize: 16,
+                  fontWeight: "bold",
+                  color: isSelected ? "#fff" : 'black',
+                }}
+              >
+                {item}
+              </Text>
+
+              {/* {uniqueTypes.map((type, index) => (
+                <Text key={index}>{type}</Text>
+              ))} */}
+
+            </TouchableOpacity>
+          );
+        }}
+      />
+    </View>
+  );
+}
+
+// nút chọn hình vuông có hình ảnh 
+export function ItemCheckBoxImage({ data = [], onSelect }) {
+  const [selectedService, setSelectedService] = useState([]);
+
+  const toggleSelection = (id) => {
+    let updatedSelection;
+    if (selectedService.includes(id)) {
+      updatedSelection = selectedService.filter((item) => item !== id);
+    } else {
+      updatedSelection = [...selectedService, id];
+    }
+    setSelectedService(updatedSelection);
+    onSelect(updatedSelection); // Truyền dữ liệu ra ngoài
+  };
+
+  return (
+    <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: '5%' }}>
+      <FlatList
+        data={data}
+        horizontal={true}
+        showsHorizontalScrollIndicator={false}
+        keyExtractor={(item) => item._id.toString()}
+        renderItem={({ item }) => {
+          const isSelected = selectedService.includes(item.name);
+          return (
+            <TouchableOpacity
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                paddingVertical: 12,
+                paddingHorizontal: 24,
+                marginRight: 12,
+                borderWidth: 2,
+                borderColor: COLOR.green3,
+                borderRadius: 8,
+                backgroundColor: isSelected ? COLOR.green3 : "#fff",
+              }}
+              onPress={() => toggleSelection(item.name)}
+            >
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: "bold",
+                  color: isSelected ? "#fff" : 'black',
+                }}
+              >
+                {item.name}
+              </Text>
+            </TouchableOpacity>
+          );
+        }}
+      />
+    </View>
+  );
+}
+//nút chọn hình tròn có honh anh 
+export function ItemRadioButtonImage({ data = [], onSelect, selectedValue }) {
+  const [selectedMethod, setSelectedMethod] = useState(selectedValue);
+
+  useEffect(() => {
+    setSelectedMethod(selectedValue);
+  }, [selectedValue]);
+
+  const handlePress = (id) => {
+    const newSelection = selectedMethod === id ? null : id;
+    setSelectedMethod(newSelection);
+    onSelect(newSelection);
+  };
+
+  return (
+    <View>
+      <FlatList
+        showsHorizontalScrollIndicator={false}
+        horizontal
+        data={data}
+        keyExtractor={(item) => item._id}
+        renderItem={({ item }) => {
+          const isSelected = selectedMethod === item.name;
+          return (
+            <TouchableOpacity
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                paddingVertical: 12,
+                paddingHorizontal: 24,
+                borderWidth: 2,
+                borderColor: COLOR.green3,
+                borderRadius: 8,
+                backgroundColor: isSelected ? COLOR.green3 : "#fff",
+                marginVertical: 10,
+                marginHorizontal: 20,
+                height: 50,
+              }}
+              onPress={() => handlePress(item.name)}
+            >
+              <MaterialIcons
+                name={isSelected ? "radio-button-checked" : "radio-button-unchecked"}
+                size={20}
+                color={isSelected ? "#fff" : COLOR.green3}
+              />
+              <Text
+                style={{
+                  marginLeft: 8,
+                  fontSize: 16,
+                  fontWeight: "bold",
+                  color: isSelected ? "#fff" : 'black',
+                }}
+              >
+                {item.name}
+              </Text>
+            </TouchableOpacity>
+          );
+        }}
+      />
+    </View>
+  );
+}
 // chọn địa chỉ 
 export function ItemBoxLocation({ onSelect }) {
   const [valueProvinceName, setValueProvinceName] = useState('');
@@ -544,7 +732,7 @@ export function ItemInputCharging({ value, onChangeText, placeholder, note }) {
       width: '30%',
       flexDirection: 'row',
       borderBottomWidth: 2,
-      borderColor: '#40A19C',
+      borderColor: COLOR.green3,
       justifyContent: 'space-between',
       height: 40,
       alignItems: 'center'
@@ -569,7 +757,7 @@ export function ItemInputCharging({ value, onChangeText, placeholder, note }) {
         <Text
           style={{
             fontSize: 20,
-            color: '#40A19C',
+            color: COLOR.green3,
             textAlign: 'center'
 
           }}>
@@ -731,7 +919,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 40,
     flexDirection: 'row',
-    backgroundColor: '#40A19C',
+    backgroundColor: COLOR.green3,
     justifyContent: 'space-evenly',
     alignItems: 'center',
     borderRadius: 30,
@@ -792,10 +980,10 @@ const styles = StyleSheet.create({
     marginRight: 5,
     alignItems: 'center',
     borderWidth: 0.5,
-    borderColor: '#40A19C'
+    borderColor: COLOR.green3
   },
   applyButton: {
-    backgroundColor: '#40A19C',
+    backgroundColor: COLOR.green3,
     padding: 10,
     borderRadius: 20,
     flex: 1,
@@ -834,7 +1022,7 @@ const styles = StyleSheet.create({
     width: '30%',
     height: 50,
     borderBottomWidth: 2,
-    borderColor: '#40A19C',
+    borderColor: COLOR.green3,
     justifyContent: 'center',
   },
 });
