@@ -144,14 +144,23 @@ const ViewDetail = () => {
                             </View>
                         </View>
                         {/* Dich Vu  */}
-                        <View>
-                            <Text style={styles.textInfoService}> Dịch vụ </Text>
-                        </View>
-                        <View style={{ margin: '5%' }} >
+                        <View style={{
+                            margin: '5%', backgroundColor: 'white', borderRadius: 10, paddingTop: 10, shadowColor: "#000",
+                            shadowOffset: {
+                                width: 0,
+                                height: 2,
+                            },
+                            shadowOpacity: 0.25,
+                            shadowRadius: 3.84,
+                            elevation: 5,
+                        }} >
+                            <View style={{ justifyContent: 'center', alignItems: 'center', }}>
+                                <Text style={styles.textInfoService}> Dịch vụ </Text>
+                            </View>
                             <FlatList
                                 data={dataStation.service.map(item => item.service_id)}
-                                horizontal={true}
                                 showsHorizontalScrollIndicator={false}
+                                scrollEnabled={false}
                                 keyExtractor={(item) => item._id}
                                 renderItem={({ item }) => (
                                     <View style={styles.viewService} >
@@ -163,48 +172,51 @@ const ViewDetail = () => {
 
                                 )}
                             />
+
+                            {/* ghi chú dịch vụ  */}
+                            <View>
+                                <Text style={styles.textNote}>{dataStation.note}</Text>
+                            </View>
                         </View>
-                        {/* ghi chú dịch vụ  */}
-                        <View>
-                            <Text style={styles.textNote}>Ghi chú</Text>
-                            <Text style={styles.textNote}>{dataStation.note}</Text>
-                        </View>
+
                         {/* trụ sạc  */}
-                        <View>
-                            <Text style={styles.textInfoService}> Danh sách trụ sạc </Text>
-                        </View>
-                        <View style={styles.containerCharging}>
-                            <FlatList
-                                data={dataStation.specification.map(item => item.specification_id)}
-                                scrollEnabled={false}
-                                keyExtractor={(item) => item._id}
-                                renderItem={({ item }) => (
-                                    <View style={styles.viewChargingPost}>
-                                        <Image style={styles.imgSocket} source={{ uri: item.port_id.image }} />
+                        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                            <View style={styles.containerCharging}>
+                                <View style={{ justifyContent: 'center', alignItems: 'center', margin: '5%' }}>
+                                    <Text style={styles.textInfoService}> Danh sách trụ sạc </Text>
+                                </View>
+                                <FlatList
+                                    data={dataStation.specification.map(item => item.specification_id)}
+                                    scrollEnabled={false}
+                                    keyExtractor={(item) => item._id}
+                                    renderItem={({ item }) => (
+                                        <View style={styles.viewChargingPost}>
+                                            <Image style={styles.imgSocket} source={{ uri: item.port_id.image }} />
 
-                                        <View style={styles.infoCharing2}>
-                                            <Text style={styles.textTypeCharing}>{item.port_id.name}</Text>
-                                            <Text style={styles.textInfoCharing}>{item.kw} Kw/h</Text>
-                                            <Text style={styles.textInfoCharing}>{item.price.toLocaleString("vi-VN")} đ/Kwh</Text>
-                                        </View>
+                                            <View style={styles.infoCharing2}>
+                                                <Text style={styles.textTypeCharing}>{item.port_id.name}</Text>
+                                                <Text style={styles.textInfoCharing}>{item.kw} Kw</Text>
+                                                <Text style={styles.textInfoCharing}>{item.price.toLocaleString("vi-VN")} đ/Kwh</Text>
+                                            </View>
 
-                                        <View style={styles.infoCharing}>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center', }}>
-                                                <Image style={styles.imginfoCharing} source={require('../../../assets/icon/icons8-flash-50 (1).png')} />
-                                                <Text style={[styles.textInfoCharing, { color: '#40A19C' }]}>  {item.kw < 20
-                                                    ? 'Sạc thường'
-                                                    : item.kw < 50
-                                                        ? 'Sạc nhanh'
-                                                        : 'Sạc siêu nhanh'}</Text>
-                                            </View>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center', }}>
-                                                <Image style={styles.imginfoCharing} source={require('../../../assets/icon/icons8-socket-60.png')} />
-                                                <Text style={[styles.textInfoCharing, { color: '#40A19C' }]}> {item.slot} Cổng sạc</Text>
+                                            <View style={styles.infoCharing}>
+                                                <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+                                                    <Image style={styles.imginfoCharing} source={require('../../../assets/icon/icons8-flash-50 (1).png')} />
+                                                    <Text style={[styles.textInfoCharing, { color: '#40A19C' }]}>  {item.kw < 20
+                                                        ? 'Sạc thường'
+                                                        : item.kw < 50
+                                                            ? 'Sạc nhanh'
+                                                            : 'Sạc siêu nhanh'}</Text>
+                                                </View>
+                                                <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+                                                    <Image style={styles.imginfoCharing} source={require('../../../assets/icon/icons8-socket-60.png')} />
+                                                    <Text style={[styles.textInfoCharing, { color: '#40A19C' }]}> {item.slot} Cổng sạc</Text>
+                                                </View>
                                             </View>
                                         </View>
-                                    </View>
-                                )}
-                            />
+                                    )}
+                                />
+                            </View>
                         </View>
 
                     </>
@@ -252,7 +264,7 @@ const ViewDetail = () => {
                         <View style={styles.modalContent}>
 
                             <Text style={styles.modalTitle}>Đánh giá của bạn</Text>
-                            <ScrollView showsVerticalScrollIndicator={false} >
+                            <View>
                                 <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 20 }}>
                                     {[1, 2, 3, 4, 5].map((star) => (
                                         <TouchableOpacity key={star} onPress={() => setStarRating(star)}>
@@ -276,7 +288,7 @@ const ViewDetail = () => {
                                     }}
                                     multiline
                                 />
-                            </ScrollView >
+                            </View >
                             {/* nút */}
                             <View style={styles.buttonRow}>
                                 <TouchableOpacity onPress={() => {
@@ -322,7 +334,10 @@ const styles = StyleSheet.create({
     container: {
     },
     containerCharging: {
-        padding: '5%',
+        backgroundColor: 'white',
+        borderRadius: 10,
+        width: '95%',
+        paddingBottom: '5%'
     },
     containerRate: {
         borderRadius: 10,
@@ -363,8 +378,6 @@ const styles = StyleSheet.create({
     textInfoService: {
         fontSize: 20,
         fontWeight: 'bold',
-        margin: '5%',
-        marginBottom: '0%',
     },
     imgMain: {
         height: 100,
@@ -383,8 +396,8 @@ const styles = StyleSheet.create({
         height: 80,
     },
     imgServies: {
-        width: 50,
-        height: 50,
+        width: 28,
+        height: 28,
     },
     boxMain: {
         alignItems: 'center',
@@ -443,20 +456,22 @@ const styles = StyleSheet.create({
     },
     textInfoCharing: {
         fontSize: 16,
-
+        fontWeight: '500'
     },
     textService: {
-        fontSize: 14,
-        textAlign: 'center'
+        fontSize: 18,
+        marginLeft: '5%',
+        fontWeight: '500'
     },
     textTypeCharing: {
         fontSize: 18,
         fontWeight: '500'
     },
     textNote: {
-        marginRight: '8%',
-        marginLeft: '8%',
+        marginLeft: '5%',
         fontSize: 16,
+        fontWeight: '500',
+        marginBottom: '5%'
     },
     viewImage: {
         alignItems: 'center',
@@ -486,24 +501,12 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     viewService: {
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-        borderRadius: 10,
         backgroundColor: 'white',
         alignItems: 'center',
-        justifyContent: 'center',
-        margin: 0,
-        marginRight: '5%',
-        marginLeft: '5%',
-        marginTop: '10%',
-        marginBottom: '10%',
-        padding: '10%',
+        // justifyContent: 'center',
+        flexDirection: 'row',
+        marginBottom: '5%',
+        marginLeft: '5%'
     },
 
     containerBottom: {

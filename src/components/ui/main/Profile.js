@@ -1,11 +1,12 @@
-import { StyleSheet, Text, View, ScrollView, Image } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Image, ToastAndroid } from 'react-native';
 import React, { useState, useContext, useEffect } from 'react';
 import { TextInputProfile, CustomButton } from '../../item/Item';
 import { AppContext } from '../../axios/AppContext';
+import AxiosInstance from '../../axios/AxiosInstance';
 
 const Profile = () => {
 
-  const { infoUser, idUser } = useContext(AppContext);
+  const { infoUser, idUser, setInfoUser } = useContext(AppContext);
   const { name, email, phoneNumber, image } = infoUser;
 
   const [nameUser, setNameUser] = useState(null);
@@ -13,20 +14,45 @@ const Profile = () => {
   const [phoneNumberUser, setPhoneNumberUser] = useState(null);
   const [imageUser, setImageUser] = useState(null);
 
+  const updateInforUser = async () => {
+    try {
+      const data = await AxiosInstance().post('/user/updateInforUser', {
+        id: idUser, name: nameUser, phoneNumber: phoneNumberUser, image: imageUser
+      });
+      console.log(data.user);
+      if (data) {
+        console.log('Cập nhật thành công');
+        setInfoUser(data.user);
+      } else {
+        console.log('Cập nhật thất bại');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    setNameUser(name);
+    setEmailUser(email);
+    setPhoneNumberUser(phoneNumber);
+    setImageUser(image);
+  }, [])
+
+
   return (
     <ScrollView style={{ backgroundColor: 'white' }}>
       <View style={styles.user}>
         <View style={styles.viewUser}>
-          <Image style={styles.imguser} source={{ uri: image }} />
-          <Text style={styles.textNameuser} >{name}</Text>
+          <Image style={styles.imguser} source={{ uri: imageUser }} />
+          <Text style={styles.textNameuser} >{nameUser}</Text>
         </View>
       </View>
       <View style={styles.boxHome}>
         <View style={{ alignItems: 'center', justifyContent: 'center', height: 400 }} >
-          <TextInputProfile label={'Tên của bạn'} onChangeText={setNameUser} value={name} />
-          <TextInputProfile label={'Tài khoản Email'} onChangeText={setEmailUser} value={email} editable={false}/>
-          <TextInputProfile label={'Số điện thoại'} onChangeText={setPhoneNumberUser} value={phoneNumber} />
-          <CustomButton label={'Xác nhận lưu'} />
+          <TextInputProfile label={'Tên của bạn'} onChangeText={setNameUser} defaultValue={nameUser} />
+          <TextInputProfile label={'Tài khoản Email'} onChangeText={setEmailUser} defaultValue={emailUser} editable={false} />
+          <TextInputProfile label={'Số điện thoại'} onChangeText={setPhoneNumberUser} defaultValue={phoneNumberUser} />
+          <CustomButton onPress={updateInforUser} label={'Xác nhận lưu'} />
         </View>
       </View>
 

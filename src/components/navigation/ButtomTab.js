@@ -25,6 +25,7 @@ import TestAPILocationVN from '../test/TestAPILocationVN';
 import Location from '../test/Location';
 import TestOpenGoogleMap from '../test/TestOpenGoogleMap';
 import TestGoogleMap from '../test/TestGoogleMap';
+import UploadImage from '../test/UploadImage'
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -33,8 +34,8 @@ const TabIcon = ({ focused, icon, label }) => (
     <View style={{ alignItems: 'center', width: 70, marginTop: '70%' }}>
         <ImageBackground
             style={{
-                width: label === "" ? 73 : null,
-                height: label === "" ? 73 : null,
+                width: label === "" ? 70 : null,
+                height: label === "" ? 70 : null,
                 borderRadius: 50,
                 justifyContent: 'center',
                 alignItems: 'center',
@@ -44,8 +45,8 @@ const TabIcon = ({ focused, icon, label }) => (
         >
             <Image
                 style={{
-                    width: label === "" ? 32 : 22,
-                    height: label === "" ? 32 : 24,
+                    width: label === "" ? 30 : 20,
+                    height: label === "" ? 30 : 22,
                     tintColor: focused ? COLOR.primary : COLOR.gray4,
                 }}
                 source={icon}
@@ -99,7 +100,7 @@ const Tabbar = () => {
             />
             <Tab.Screen
                 name="QR"
-                component={TestGoogleMap}
+                component={UploadImage}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <TabIcon focused={focused} icon={require('../../assets/icon/qr.png')} label="" />

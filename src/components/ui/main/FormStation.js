@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, ScrollView, Image, Modal, Alert, FlatList, TextInput, ActivityIndicator, TouchableOpacity, Button } from 'react-native';
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { StyleSheet, Text, View, ScrollView, Image, Modal, ToastAndroid, Alert, FlatList, TextInput, ActivityIndicator, TouchableOpacity, Button } from 'react-native';
+import React, { useEffect, useRef, useState, useCallback, useContext } from 'react';
 import { COLOR } from "../../../assets/Theme/Theme";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import * as ImagePicker from 'expo-image-picker';
@@ -7,11 +7,19 @@ import RNPickerSelect from 'react-native-picker-select';
 import MapView, { Marker, Callout } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { ItemBoxLocation, ItemCheckBox, ItemInputCharging, ItemRadioButton } from '../../item/Item';
+import { AppContext } from '../../axios/AppContext';
+import AxiosInstance from '../../axios/AxiosInstance';
+import { ItemListModal, ItemModalRadioButton, ItemModalCheckBox } from '../../item/Modal';
 
 const API_BASE = 'https://online-gateway.ghn.vn/shiip/public-api/master-data';
 const TOKEN = '46f53dba-ecf6-11ef-a268-9e63d516feb9';
 
 const FormStation = () => {
+    const [modalVisibleBrand, setModalVisibleBrand] = useState(false); // an hien bo loc 
+    const [modalVisibleService, setModalVisibleSevice] = useState(false); // an hien bo loc 
+    const [modalVisibleVehicle, setModalVisibleVehicle] = useState(false); // an hien bo loc 
+    const [modalVisiblePort, setModalVisiblePort] = useState(false); // an hien bo loc 
+    const { idUser } = useContext(AppContext);
 
     // Danh sách dịch vụ
     const typeService = [
@@ -46,6 +54,177 @@ const FormStation = () => {
         { id: 3, name: 'Ổ điện' },
         { id: 4, name: 'Chademo' },
     ];
+
+    // get Service
+    const [dataService, setDataService] = useState(null);
+    const getDataService = async () => {
+        try {
+            const dataService = await AxiosInstance().get('/services/get');
+            if (dataService.data && dataService.data.length > 0) {
+                setDataService(dataService.data);
+            } else {
+                console.log('Không tìm thấy dữ liệu từ /services/get');
+            }
+        } catch (error) {
+            console.error('Lỗi khi lấy dữ liệu services:', error);
+        }
+    };
+
+    // get Brand
+    const [dataBrand, setDataBrand] = useState(null);
+    const getDataBrand = async () => {
+        try {
+            const dataBrand = await AxiosInstance().get('/brand/get');
+            if (dataBrand.data && dataBrand.data.length > 0) {
+                setDataBrand(dataBrand.data);
+            } else {
+                console.log('Không tìm thấy dữ liệu từ /brand/get');
+            }
+        } catch (error) {
+            console.error('Lỗi khi lấy dữ liệu brand:', error);
+        }
+    };
+
+    // get Vehicle
+    const [dataVehicle, setDataVehicle] = useState(null);
+    const getDataVehicle = async () => {
+        try {
+            const dataVehicle = await AxiosInstance().get('/vehicle/get');
+            if (dataVehicle.data && dataVehicle.data.length > 0) {
+                setDataVehicle(dataVehicle.data);
+            } else {
+                console.log('Không tìm thấy dữ liệu từ /vehicle/get');
+            }
+        } catch (error) {
+            console.error('Lỗi khi lấy dữ liệu vehicle:', error);
+        }
+    };
+
+    // get Port
+    const [dataPort, setDataPort] = useState(null);
+    const getDataPort = async () => {
+        try {
+            const dataPort = await AxiosInstance().get('/port/get');
+            if (dataPort.data && dataPort.data.length > 0) {
+                setDataPort(dataPort.data);
+            } else {
+                console.log('Không tìm thấy dữ liệu từ /port/get');
+            }
+        } catch (error) {
+            console.error('Lỗi khi lấy dữ liệu port:', error);
+        }
+    };
+
+    // add Specification
+    const [listDataSpecification, setListDataSpecification] = useState([]); // gộp dataSpecification thành 1 mảng
+    const [dataSpecification, setDataSpecification] = useState(null);
+    const addNewSpecification = async () => {
+        try {
+            if (valuePower && valuePorts && valuePrice && selectedVehical[0] && selectedSocket[0]) {
+                const dataSpecification = await AxiosInstance().post('/specification/addNew',
+                    {
+                        user_id: idUser, vehicle_id: selectedVehical[0], port_id: selectedSocket[0], kw: valuePower, slot: valuePorts, price: valuePrice
+                    });
+                if (dataSpecification.data) {
+                    setDataSpecification(dataSpecification.data);
+                    setListDataSpecification(prevList => [...prevList, dataSpecification.data]);
+                    clearForm();
+                } else {
+                    console.log('Không tìm thấy dữ liệu từ /specification/addNew');
+                }
+            }
+        } catch (error) {
+            console.error('Lỗi khi lấy dữ liệu Specification:', error);
+        }
+    };
+
+    // get by id Specification
+    const [dataSpecificationById, setDataSpecificationById] = useState(null);
+    const getSpecificationById = async (id) => {
+        try {
+            const dataSpecificationById = await AxiosInstance().post('/specification/getById',
+                {
+                    id: id
+                });
+
+            if (dataSpecificationById.data && dataSpecificationById.data.length > 0) {
+                setDataSpecificationById(dataSpecificationById.data);
+            } else {
+                console.log('Không tìm thấy dữ liệu từ /specification/addNew');
+            }
+        } catch (error) {
+            console.error('Lỗi khi lấy dữ liệu Specification:', error);
+        }
+    }
+
+    // update Specification
+
+    // delete Specification
+    const deleteSpecificationById = async (id) => {
+        try {
+            const dataSpecificationById = await AxiosInstance().delete('/specification/deleteById',
+                {
+                    data: { id }
+                });
+
+            if (dataSpecificationById) {
+                console.log('Xóa SpecificationById thành công')
+                setListDataSpecification(prevList =>
+                    prevList.filter(item => item._id !== id)
+                );
+            } else {
+                console.log('Không tìm thấy dữ liệu từ /specification/addNew');
+            }
+        } catch (error) {
+            console.error('Lỗi khi lấy dữ liệu Specification:', error);
+        }
+    }
+
+    // add new station
+    const addNewStaion = async () => {
+        try {
+            const formattedServices = selectedServices.map(id => ({ service_id: id }));
+            const formattedSpecifications = listDataSpecification.map(item => ({
+                specification_id: item._id
+            }));
+
+            const locationString = `${locationDetail}, ${location.wardName}, ${location.districtName}, ${location.provinceName}`;
+
+            if (nameStation && timeStart && timeEnd && selectedBrand && formattedServices && selectedLocation.latitude && selectedLocation.longitude && formattedSpecifications) {
+                const dataStation = await AxiosInstance().post('/station/addNew', {
+                    user_id: idUser, brand_id: selectedBrand[0], specification: formattedSpecifications, service: formattedServices, name: nameStation, location: locationString, lat: selectedLocation.latitude, lng: selectedLocation.longitude, time: `${timeStart} - ${timeEnd}`, note: valueNote
+                });
+
+                if (dataStation) {
+                    ToastAndroid.show('Đã ghi nhận thông tin', ToastAndroid.SHORT);
+                } else {
+                    ToastAndroid.show('Có lỗi xảy ra, vui lòng kiểm tra lại', ToastAndroid.SHORT);
+                }
+            } else {
+                console.log('Nhập thiếu dữ liệu');
+            }
+        } catch (error) {
+            console.error('Lỗi khi thêm mới dữ liệu Station:', error);
+        }
+    }
+
+    const logData = () => {
+        console.log('nameStation:', nameStation);
+        console.log('time:', `${timeStart} - ${timeEnd}`);
+        console.log('Location:', `${locationDetail}, ${location.wardName}, ${location.districtName}, ${location.provinceName}`);
+        console.log('Brand:', selectedBrand[0]);
+        console.log('Services:', formattedServices);
+        console.log('Lat:', selectedLocation.latitude);
+        console.log('Lng:', selectedLocation.longitude);
+        console.log('Specification:', formattedSpecifications);
+
+        console.log('kw:', valuePower);
+        console.log('slot:', valuePorts);
+        console.log('price:', valuePrice);
+        console.log('vehicle_id:', selectedVehical[0]);
+        console.log('port_id:', selectedSocket[0]);
+    }
+
     //modal
     const [modalVisibleMap, setModalVisibleMap] = useState(false);
 
@@ -119,17 +298,17 @@ const FormStation = () => {
     };
 
     // thương hiệu
-    const [selectedBrand, setSelectedBrand] = useState(null);
+    const [selectedBrand, setSelectedBrand] = useState([]);
     const handleBrandSelect = (brandId) => {
         setSelectedBrand(brandId);
     };
 
     // phương tiện
-    const [selectedVehical, setSelectedVehical] = useState(null);
+    const [selectedVehical, setSelectedVehical] = useState([]);
     const handleVehicalSelect = (VehicalId) => {
         setSelectedVehical(VehicalId);
     };
-    const [selectedSocket, setSelectedSocket] = useState(null);
+    const [selectedSocket, setSelectedSocket] = useState([]);
     //dau sac 
     const handleSocketSelect = (ScoketId) => {
         setSelectedSocket(ScoketId);
@@ -140,8 +319,7 @@ const FormStation = () => {
     const [invisible, setInvisible] = useState(false);
     //luu tram sac
     const addOrUpdateDetail = () => {
-        const newDetail = { power: valuePower, ports: valuePorts, price: valuePrice, vehicle: selectedVehical, type: selectedSocket };
-
+        const newDetail = { id: dataSpecification._id, power: dataSpecification.kw, ports: dataSpecification.slot, price: dataSpecification.price, vehicle: dataSpecification.vehicle_id.name, type: dataSpecification.port_id.name };
         if (editIndex !== null) {
             const updatedList = [...chargingDetails];
             updatedList[editIndex] = newDetail;
@@ -173,8 +351,8 @@ const FormStation = () => {
         setValuePower('');
         setValuePorts('');
         setValuePrice('');
-        setSelectedVehical(null);
-        setSelectedSocket(null);
+        setSelectedVehical([]);
+        setSelectedSocket([]);
     };
 
     //thoi gian
@@ -305,7 +483,7 @@ const FormStation = () => {
         } else setCheckSocket(false);
 
         if (isValid) {
-            addOrUpdateDetail();
+            addNewSpecification();
         }
 
         return isValid;
@@ -317,6 +495,14 @@ const FormStation = () => {
             console.log("Lưu tất cả thông tin!");
         }
     };
+
+    useEffect(() => {
+        getDataService();
+        getDataBrand();
+        getDataVehicle();
+        getDataPort();
+    }, [])
+
 
     return (
         <ScrollView style={styles.container}>
@@ -361,8 +547,7 @@ const FormStation = () => {
             {/* thời gian hoạt động  */}
             <View style={styles.viewInput}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Text style={styles.textTitleInput}>Thời gian bắt đầu </Text>
-                    <Text style={styles.textTitleInput}>Thời gian kết thúc</Text>
+                    <Text style={styles.textTitleInput}>Thời gian hoạt động</Text>
                 </View>
 
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: '0%' }}>
@@ -408,43 +593,123 @@ const FormStation = () => {
                     <TouchableOpacity
                         onPress={() => setModalVisibleMap(true)}
                         style={styles.buttonType2}>
-                        <Text style={{ textAlign: 'center', color: '#40A19C' }}>Chọn vị trí</Text>
+                        <Text style={{ textAlign: 'center', color: '#40A19C', fontWeight: 'bold' }}>Chọn vị trí</Text>
                     </TouchableOpacity>
                 </View>
                 {checkLocation && <Text style={styles.errorText}>Vui lòng nhập đầy đủ thông tin</Text>}
             </View>
-            {/* hãng trạm sạc  */}
-            <View style={styles.viewInput}>
+            {/* hãng trạm sạc  */}            {/* dịch vụ */}
+            <View style={{ width: '100%' }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-around', width: '100%' }}>
+                    <View style={{ justifyContent: 'center', alignItems: 'center', width: '45%' }}>
+                        <Text style={{ fontSize: 20, color: '#40A19C', fontWeight: 'bold' }}>Hãng sạc</Text>
+                        <TouchableOpacity onPress={() => setModalVisibleBrand(true)}
+                            style={[styles.buttonType1, { width: '70%', flexDirection: 'row', justifyContent: 'space-around' }]}>
+                            <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
+                                {selectedBrand?.[1] || "Chọn hãng sạc"}
+                            </Text>
+                            <Image style={{ width: 30, height: 30 }} source={require('../../../assets/icon/down.png')} />
+                        </TouchableOpacity>
+                    </View>
+                    <View style={{ justifyContent: 'center', alignItems: 'center', width: '45%' }}>
+                        <Text style={{ fontSize: 20, color: '#40A19C', fontWeight: 'bold' }}>Dịch vụ</Text>
+                        <TouchableOpacity onPress={() => setModalVisibleSevice(true)}
+                            style={[styles.buttonType1, { width: '70%', flexDirection: 'row', justifyContent: 'space-around' }]}>
+                            {selectedServices && selectedServices.length > 0 ?
+                                <>
+                                    <Text style={{ fontSize: 15, fontWeight: 'bold' }} >Đã chọn</Text>
+                                </>
+                                :
+                                <>
+                                    <Text style={{ fontSize: 15, fontWeight: 'bold' }} >Chọn dịch vụ</Text>
+                                </>
+                            }
+                            <Image style={{ width: 30, height: 30 }} source={require('../../../assets/icon/down.png')} />
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </View>
+
+            <ItemModalRadioButton
+                checkModal={modalVisibleBrand}
+                setModalVisible={setModalVisibleBrand}
+                data={dataBrand}
+                selectedItem={selectedBrand}
+                setSelectedItem={setSelectedBrand}
+            />
+
+            <ItemModalCheckBox
+                checkModal={modalVisibleService}
+                setModalVisible={setModalVisibleSevice}
+                data={dataService}
+                selectedItems={selectedServices}
+                setSelectedItems={setSelectedServices}
+            />
+
+            {/* <View style={styles.viewInput}>
                 <View style={styles.listStatus}>
                     <Text style={styles.textTitleInput}>Hãng trạm sạc</Text>
-                    <ItemRadioButton data={typeBrands} onSelect={handleBrandSelect} />
+                    <ItemRadioButton data={dataBrand} onSelect={handleBrandSelect} />
                 </View>
                 {checkBrand && <Text style={styles.errorText}>Vui lòng chọn hãng trạm sạc</Text>}
             </View>
-            {/* dịch vụ */}
             <View style={styles.viewInput}>
                 <Text style={styles.textTitleInput}>Dịch vụ</Text>
-                <ItemCheckBox data={typeService} onSelect={handleServiceSelect} />
-            </View>
+                <ItemCheckBox data={dataService} onSelect={handleServiceSelect} />
+            </View> */}
             {/* chi tiết trụ sạc  */}
             <View style={styles.viewInput}>
                 <Text style={styles.textTitleInput}>Chi tiết trụ sạc</Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: '5%' }}>
-                    <ItemInputCharging onChangeText={onChangeTextKw} placeholder={'Kw'} value={valuePower} note={'Kw'} />
-                    <ItemInputCharging onChangeText={onChangeTextChager} placeholder={'Đầu'} value={valuePorts} note={'Cổng'} />
-                    <ItemInputCharging onChangeText={onChangeTextPrice} placeholder={'Giá'} value={valuePrice} note={'Vnd'} />
-
+                    <TextInput style={{ borderBottomWidth: 1, borderColor: '#40A19C', width: '30%', textAlign: "center", color: 'black', fontWeight: '700', fontSize: 16, }} onChangeText={onChangeTextKw} placeholder='Kw' value={valuePower} keyboardType="numeric" />
+                    <TextInput style={{ borderBottomWidth: 1, borderColor: '#40A19C', width: '30%', textAlign: "center", color: 'black', fontWeight: '700', fontSize: 16, }} onChangeText={onChangeTextChager} placeholder='Số cổng' value={valuePorts} keyboardType="numeric" />
+                    <TextInput style={{ borderBottomWidth: 1, borderColor: '#40A19C', width: '30%', textAlign: "center", color: 'black', fontWeight: '700', fontSize: 16, }} onChangeText={onChangeTextPrice} placeholder='Giá' value={valuePrice} keyboardType="numeric" />
                 </View>
                 {(checkKw || checkCharger || checkPrice) && <Text style={styles.errorText}>Vui lòng nhập đầy đủ thông tin</Text>}
-                <View style={{}}>
-                    <View>
-                        <ItemRadioButton data={typeVehicle} onSelect={handleVehicalSelect} selectedValue={selectedVehical} />
-                        {checkVehicle && <Text style={styles.errorText} >Vui lòng chọn phương tiện</Text>}
+                <View style={{ width: '100%', flexDirection: 'row', marginTop: '5%', justifyContent: 'space-around' }}>
+                    <View style={{ width: '45%' }}>
+                        <TouchableOpacity onPress={() => setModalVisibleVehicle(true)} style={{ width: '100%', padding: '7%', justifyContent: 'center', alignItems: 'center', borderRadius: 10, backgroundColor: '#D7D7D7', flexDirection: 'row' }}>
+                            <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
+                                {selectedVehical?.[1] || "Chọn phương tiện"}
+                            </Text>
+                            <Image style={{ width: 24, height: 24, marginLeft: '5%' }} source={require('../../../assets/icon/down.png')}></Image>
+                        </TouchableOpacity>
+                        {/* <ItemRadioButton data={dataVehicle} onSelect={handleVehicalSelect} selectedValue={selectedVehical} />
+                        {checkVehicle && <Text style={styles.errorText} >Vui lòng chọn phương tiện</Text>} */}
                     </View>
-                    <View>
-                        <ItemRadioButton data={typeSocket} onSelect={handleSocketSelect} selectedValue={selectedSocket}/>
-                        {checkSocket && <Text style={styles.errorText}>Vui lòng chọn loại sạc</Text>}
+                    <View style={{ width: '45%' }}>
+                        <TouchableOpacity onPress={() => setModalVisiblePort(true)} style={{ width: '100%', padding: '7%', justifyContent: 'center', alignItems: 'center', borderRadius: 10, backgroundColor: '#D7D7D7', flexDirection: 'row' }}>
+                            {selectedSocket && selectedSocket.length > 0 ?
+                                <>
+                                    <Text style={{ fontSize: 15, fontWeight: 'bold' }} >{selectedSocket[1]}</Text>
+                                </>
+                                :
+                                <>
+                                    <Text style={{ fontSize: 15, fontWeight: 'bold' }} >Loại đầu sạc</Text>
+                                </>
+                            }
+                            <Image style={{ width: 24, height: 24, marginLeft: '5%' }} source={require('../../../assets/icon/down.png')}></Image>
+                        </TouchableOpacity>
+                        {/* <ItemRadioButton data={dataPort} onSelect={handleSocketSelect} selectedValue={selectedSocket} />
+                        {checkSocket && <Text style={styles.errorText}>Vui lòng chọn loại sạc</Text>} */}
                     </View>
+
+                    <ItemModalRadioButton
+                        checkModal={modalVisibleVehicle}
+                        setModalVisible={setModalVisibleVehicle}
+                        data={dataVehicle}
+                        selectedItem={selectedVehical}
+                        setSelectedItem={setSelectedVehical}
+                    />
+
+                    <ItemModalRadioButton
+                        checkModal={modalVisiblePort}
+                        setModalVisible={setModalVisiblePort}
+                        data={dataPort}
+                        selectedItem={selectedSocket}
+                        setSelectedItem={setSelectedSocket}
+                    />
+
                 </View>
                 <View style={{ alignItems: 'center' }}>
                     <TouchableOpacity
@@ -461,60 +726,61 @@ const FormStation = () => {
                             borderColor: '#40A19C',
                         }}>
                         <Text
-                            style={{ color: '#40A19C', textAlign: 'center' }}>
+                            style={{ color: '#40A19C', textAlign: 'center', fontWeight: '700' }}>
                             {editIndex !== null ? "Cập nhật" : "Lưu trụ sạc"}
                         </Text>
                     </TouchableOpacity>
-                   
+
                 </View>
                 {checkCharging && <Text style={styles.errorText}>Cần tối thiểu một trụ sạc</Text>}
                 <FlatList
-                    data={chargingDetails}
+                    style={{ width: '100%' }}
+                    data={listDataSpecification}
                     scrollEnabled={false}
                     renderItem={({ item, index }) => (
+                        item ? (
+                            <View style={styles.containerList}>
 
-                        <View style={styles.containerList}>
+                                <View style={styles.centerColumn}>
+                                    <View style={styles.infoRow}>
+                                        <Image style={styles.icon} source={require('../../../assets/icon/icons8-flash-50 (1).png')} />
+                                        <Text style={styles.textList}>{item.kw} Kw</Text>
+                                    </View>
+                                    <View style={styles.infoRow}>
+                                        <Image style={styles.icon} source={require('../../../assets/icon/icons8-car-charger-48.png')} />
+                                        <Text style={styles.textList}>{item.slot} Cổng sạc</Text>
+                                    </View>
+                                    <View style={styles.infoRow}>
+                                        <Image style={{ width: 32, height: 32, marginLeft: '-4%', marginRight: 5 }} source={require('../../../assets/imageSocket/power-plug.png')} />
+                                        <Text style={styles.textList}>{item.port_id.name}</Text>
+                                    </View>
+                                    <View style={styles.infoRow}>
+                                        <Image style={styles.icon} source={require('../../../assets/icon/icons8-money-50 (1).png')} />
+                                        <Text style={styles.textList}>
+                                            {parseInt(item.price, 10).toLocaleString('vi-VN')} đ/KWh
+                                        </Text>
+                                    </View>
+                                    <View style={styles.infoRow}>
+                                        {item.vehicle_id.name === 'Xe máy điện' ?
+                                            <>
+                                                <Image style={styles.icon} source={require('../../../assets/icon/electric-scooter.png')} />
+                                            </>
+                                            :
+                                            <>
+                                                <Image style={styles.icon} source={require('../../../assets/icon/icons8-car-50 (1).png')} />
+                                            </>
 
-                            <View style={styles.centerColumn}>
-
-                                <View style={styles.infoRow}>
-                                    <Text style={styles.textList}>Trụ số: {index + 1}</Text>
+                                        }
+                                        <Text style={styles.textList}>{item.vehicle_id.name}</Text>
+                                    </View>
                                 </View>
-                                <View style={styles.infoRow}>
-                                    <Image style={styles.icon} source={require('../../../assets/icon/icons8-flash-50 (1).png')} />
-                                    <Text style={styles.textList}>{item.power} Kw</Text>
+                                <View style={styles.rightColumn}>
                                 </View>
-                                <View style={styles.infoRow}>
-                                    <Image style={styles.icon} source={require('../../../assets/icon/icons8-car-charger-48.png')} />
-                                    <Text style={styles.textList}>{item.ports} Cổng sạc</Text>
-                                </View>
-
+                                <TouchableOpacity onPress={() => deleteSpecificationById(item._id)} style={{ position: 'absolute', top: 10, right: 10, width: 24, height: 24 }}>
+                                    <Image source={require('../../../assets/icon/close.png')} style={{ width: 24, height: 24 }} />
+                                </TouchableOpacity>
                             </View>
-                            <View style={styles.rightColumn}>
-                                <View style={styles.infoRow}>
-                                    <Text style={styles.textList}>{item.type}</Text>
-                                </View>
-                                <View style={styles.infoRow}>
-                                    <Image style={styles.icon} source={require('../../../assets/icon/icons8-money-50 (1).png')} />
-                                    <Text style={styles.textList}>{item.price} đ / Kwh</Text>
-                                </View>
-                                <View style={styles.infoRow}>
-                                    <Image style={styles.icon} source={require('../../../assets/icon/icons8-car-50 (1).png')} />
-                                    <Text style={styles.textList}>{item.vehicle}</Text>
-                                </View>
-                            </View>
-
-                            {invisible && (
-                                <View style={styles.buttonList}>
-                                    <TouchableOpacity onPress={() => editDetail(index)} style={styles.editButton}>
-                                        <Text style={styles.editText}>Sửa</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity onPress={() => deleteDetail(index)} style={styles.editButton}>
-                                        <Text style={styles.deleteText}>Xóa</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            )}
-                        </View>
+                        ) : null
                     )}
                     keyExtractor={(item, index) => index.toString()}
                 />
@@ -534,7 +800,7 @@ const FormStation = () => {
             {/* nút thêm trạm sạc  */}
             <View style={{ alignItems: 'center' }}>
                 <TouchableOpacity
-                    onPress={validateStation}
+                    onPress={addNewStaion}
                     style={{
                         margin: '10%',
                         padding: '5%',
@@ -577,7 +843,7 @@ const FormStation = () => {
                                 style={{
                                     padding: 10,
                                     borderColor: '#40A19C',
-                                    borderWidth: 2,
+                                    borderWidth: 1,
                                     borderRadius: 10,
                                     backgroundColor: 'white'
                                 }}
@@ -683,7 +949,7 @@ const styles = StyleSheet.create({
         width: 20,
         height: 20,
         borderRadius: 10,
-        borderWidth: 2,
+        borderWidth: 1,
         borderColor: '#40A19C',
         alignItems: 'center',
         justifyContent: 'center',
@@ -723,7 +989,7 @@ const styles = StyleSheet.create({
     checkbox: {
         width: 24,
         height: 24,
-        borderWidth: 2,
+        borderWidth: 1,
         borderColor: '#40A19C',
         borderRadius: 5,
         justifyContent: 'center',
@@ -771,7 +1037,7 @@ const styles = StyleSheet.create({
         marginTop: '2%',
     },
     textTitleInput: {
-        fontSize: 24,
+        fontSize: 20,
         color: '#40A19C',
         fontWeight: 700,
         fontFamily: 'Poppins'
@@ -779,15 +1045,16 @@ const styles = StyleSheet.create({
     textInput: {
         width: '100%',
         height: 50,
-        fontSize: 20,
+        fontSize: 16,
         paddingHorizontal: 10,
         borderWidth: 0,
-        borderBottomWidth: 2,
+        borderBottomWidth: 1,
         borderColor: '#40A19C',
         borderRadius: 0,
         marginLeft: '5%',
         marginRight: '5%',
-        marginVertical: '2%'
+        marginVertical: '2%',
+        fontWeight: 'bold'
     },
     errorText: {
         color: 'red',
@@ -809,13 +1076,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     buttonType1: {
-        marginVertical: '5%',
+        // marginVertical: '5%',
         justifyContent: 'center',
         alignItems: 'center',
         borderColor: '#40A19C',
         width: '30%',
-        height: 50,
-        borderBottomWidth: 2,
+        height: 40,
+        borderBottomWidth: 1,
     },
     buttonType2: {
         margin: '5%',
@@ -825,7 +1092,7 @@ const styles = StyleSheet.create({
         borderColor: '#40A19C',
         width: '30%',
         height: 50,
-        borderWidth: 2,
+        borderWidth: 1,
         borderRadius: 10,
     },
 
@@ -861,15 +1128,12 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
+        width: '96%'
     },
     centerColumn: {
-        flex: 1,
-        alignItems: 'flex-start',
         marginHorizontal: '2%'
     },
     rightColumn: {
-        flex: 1,
-        alignItems: 'flex-start',
         marginHorizontal: '2%'
     },
     boldText: {

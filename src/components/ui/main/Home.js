@@ -10,7 +10,6 @@ import { ItemListModal, ItemModalCheckBox, ItemModalRadioButton, ItemSliderModal
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { LinearGradient } from 'expo-linear-gradient';
 
-
 const carBrands = [
     { id: 1, name: 'Byd', image: require('../../../assets/icon/byd.png') },
     { id: 0, name: 'Vinfast', image: require('../../../assets/icon/vinfast.png') },

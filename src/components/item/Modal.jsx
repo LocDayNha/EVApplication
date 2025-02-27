@@ -81,8 +81,16 @@ export function ItemModalRadioButton({ checkModal, setModalVisible, data, select
                                     <View style={styles.radioButton}>
                                         {selectedItem[0] === item._id && <View style={styles.radioInner} />}
                                     </View>
-                                    {item.type == null ?
-                                        <Text style={styles.filterText}>{item.name}</Text> : <Text style={styles.filterText}>{item.name} ({item.type})</Text>}
+
+                                    {item.name && item.type ?
+                                        <>
+                                            <Text style={styles.filterText}>{item.name} - {item.type}</Text>
+                                        </>
+                                        :
+                                        <>
+                                            <Text style={styles.filterText}>{item.name}</Text>
+                                        </>
+                                    }
                                 </TouchableOpacity>
                             )}
                         />
@@ -101,9 +109,9 @@ export function ItemModalRadioButton({ checkModal, setModalVisible, data, select
                             style={styles.applyButton}
                         >
                             <Text
-                                onPress={() => [
+                                onPress={() =>
                                     setModalVisible(false)
-                                ]
+
                                 }
                                 style={styles.applyText}>Áp dụng</Text>
                         </TouchableOpacity>
@@ -233,8 +241,8 @@ export function ItemSlider({ values, setValues, minValue, maxValue, defaultValue
                 snapped
                 values={values}
                 allowOverlap={false}
-                markerStyle={{ height: 20,width:20, }}
-                trackStyle={{height:4,}}
+                markerStyle={{ height: 20, width: 20, }}
+                trackStyle={{ height: 4, }}
             />
             <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-evenly' }}>
                 <Text style={{ fontSize: 18, marginHorizontal: '20%' }} >{minValue}Kw</Text>
@@ -268,7 +276,7 @@ export function ItemModalCheckBoxImage({ checkModal, setModalVisible, data, sele
                                 onPress={() => toggleSelection(item._id)}
                             >
                                 <Image style={{ width: 30, height: 30 }} source={{ uri: item.image }} />
-                                <View style={{width:'30%',marginLeft:'-30%'}}><Text style={styles.filterText}>{item.name}</Text></View>
+                                <View style={{ width: '30%', marginLeft: '-30%' }}><Text style={styles.filterText}>{item.name}</Text></View>
                                 <View style={[styles.checkbox, selectedItems.includes(item._id) && styles.checkedBox]}>
                                     {selectedItems.includes(item._id) && <Text style={styles.checkmark}>✓</Text>}
                                 </View>
@@ -440,6 +448,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         marginRight: 10,
+        borderRadius: 5
     },
     checkedBox: {
         backgroundColor: "#40A19C",
