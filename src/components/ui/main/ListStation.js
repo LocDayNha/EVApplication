@@ -5,6 +5,8 @@ import { useNavigation } from '@react-navigation/native';
 import AxiosInstance from '../../axios/AxiosInstance';
 import { AppContext } from '../../axios/AppContext';
 import { ItemStationMain } from '../../item/Item';
+import { COLOR } from '@/src/assets/Theme/Theme';
+
 
 
 const Status = [
@@ -71,7 +73,7 @@ const ListStation = (props) => {
                 <View style={styles.buttonSearchContainer}>
                     <TouchableOpacity style={styles.buttonSearch} onPress={() => [setModalVisible(true), navigation.navigate('FormStation')]}>
                         {/* <Image source={require('../../../assets/icon/icons8-add-64.png')} /> */}
-                        <Text style={{ color: '#40A19C' }}>Thêm trạm sạc </Text>
+                        <Text style={{ color: COLOR.green3 }}>Thêm trạm sạc </Text>
                     </TouchableOpacity>
                 </View>
                 <View>
@@ -167,7 +169,7 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     selectedButton: {
-        backgroundColor: '#40A19C',
+        backgroundColor: COLOR.green3,
     },
     textStatus: {
         color: '#544C4C',

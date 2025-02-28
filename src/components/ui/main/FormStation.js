@@ -10,6 +10,7 @@ import { ItemBoxLocation, ItemCheckBox, ItemInputCharging, ItemRadioButton } fro
 import { AppContext } from '../../axios/AppContext';
 import AxiosInstance from '../../axios/AxiosInstance';
 import { ItemListModal, ItemModalRadioButton, ItemModalCheckBox, ItemModalRadioButtonImage, ItemModalCheckBoxImage } from '../../item/Modal';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 const API_BASE = 'https://online-gateway.ghn.vn/shiip/public-api/master-data';
 const TOKEN = '46f53dba-ecf6-11ef-a268-9e63d516feb9';
@@ -520,11 +521,11 @@ const FormStation = () => {
                             borderWidth: 3,
                             margin: '5%',
                             marginBottom: '0%',
-                            borderColor: '#40A19C',
+                            borderColor: COLOR.green3,
                             borderRadius: 30
                         }} >
                         {
-                            checkImage ? <Text style={{ fontSize: 18, fontWeight: '500', color: '#40A19C' }}> Thêm hình ảnh </Text> : null
+                            checkImage ? <Text style={{ fontSize: 18, fontWeight: '500', color: COLOR.green3 }}> Thêm hình ảnh </Text> : null
                         }
                         {image && <Image source={{ uri: image }} style={{ width: '110%', height: 170, borderRadius: 30, }} />}
                     </TouchableOpacity>
@@ -593,7 +594,7 @@ const FormStation = () => {
                     <TouchableOpacity
                         onPress={() => setModalVisibleMap(true)}
                         style={styles.buttonType2}>
-                        <Text style={{ textAlign: 'center', color: '#40A19C', fontWeight: 'bold' }}>Chọn vị trí</Text>
+                        <Text style={{ textAlign: 'center', color: COLOR.green3, fontWeight: 'bold' }}>Chọn vị trí</Text>
                     </TouchableOpacity>
                 </View>
                 {checkLocation && <Text style={styles.errorText}>Vui lòng nhập đầy đủ thông tin</Text>}
@@ -602,7 +603,7 @@ const FormStation = () => {
             <View style={{ width: '100%' }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-around', width: '100%' }}>
                     <View style={{ justifyContent: 'center', alignItems: 'center', width: '45%' }}>
-                        <Text style={{ fontSize: 20, color: '#40A19C', fontWeight: 'bold' }}>Hãng sạc</Text>
+                        <Text style={{ fontSize: 20, color: COLOR.green3, fontWeight: 'bold' }}>Hãng sạc</Text>
                         <TouchableOpacity onPress={() => setModalVisibleBrand(true)}
                             style={[styles.buttonType1, { width: '70%', flexDirection: 'row', justifyContent: 'space-around' }]}>
                             <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
@@ -612,7 +613,7 @@ const FormStation = () => {
                         </TouchableOpacity>
                     </View>
                     <View style={{ justifyContent: 'center', alignItems: 'center', width: '45%' }}>
-                        <Text style={{ fontSize: 20, color: '#40A19C', fontWeight: 'bold' }}>Dịch vụ</Text>
+                        <Text style={{ fontSize: 20, color: COLOR.green3, fontWeight: 'bold' }}>Dịch vụ</Text>
                         <TouchableOpacity onPress={() => setModalVisibleSevice(true)}
                             style={[styles.buttonType1, { width: '70%', flexDirection: 'row', justifyContent: 'space-around' }]}>
                             {selectedServices && selectedServices.length > 0 ?
@@ -630,12 +631,13 @@ const FormStation = () => {
                 </View>
             </View>
 
-            <ItemModalRadioButton
+            <ItemModalRadioButtonImage
                 checkModal={modalVisibleBrand}
                 setModalVisible={setModalVisibleBrand}
                 data={dataBrand}
                 selectedItem={selectedBrand}
                 setSelectedItem={setSelectedBrand}
+                title={'Hãng Sạc'}
             />
 
             <ItemModalCheckBoxImage
@@ -644,6 +646,7 @@ const FormStation = () => {
                 data={dataService}
                 selectedItems={selectedServices}
                 setSelectedItems={setSelectedServices}
+                title={'Dịch vụ'}
             />
 
             {/* <View style={styles.viewInput}>
@@ -661,9 +664,9 @@ const FormStation = () => {
             <View style={styles.viewInput}>
                 <Text style={styles.textTitleInput}>Chi tiết trụ sạc</Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: '5%' }}>
-                    <TextInput style={{ borderBottomWidth: 1, borderColor: '#40A19C', width: '30%', textAlign: "center", color: 'black', fontWeight: '700', fontSize: 16, }} onChangeText={onChangeTextKw} placeholder='Kw' value={valuePower} keyboardType="numeric" />
-                    <TextInput style={{ borderBottomWidth: 1, borderColor: '#40A19C', width: '30%', textAlign: "center", color: 'black', fontWeight: '700', fontSize: 16, }} onChangeText={onChangeTextChager} placeholder='Số cổng' value={valuePorts} keyboardType="numeric" />
-                    <TextInput style={{ borderBottomWidth: 1, borderColor: '#40A19C', width: '30%', textAlign: "center", color: 'black', fontWeight: '700', fontSize: 16, }} onChangeText={onChangeTextPrice} placeholder='Giá' value={valuePrice} keyboardType="numeric" />
+                    <TextInput style={{ borderBottomWidth: 1, borderColor: COLOR.green3, width: '30%', textAlign: "center", color: 'black', fontWeight: '700', fontSize: 16, }} onChangeText={onChangeTextKw} placeholder='Kw' value={valuePower} keyboardType="numeric" />
+                    <TextInput style={{ borderBottomWidth: 1, borderColor: COLOR.green3, width: '30%', textAlign: "center", color: 'black', fontWeight: '700', fontSize: 16, }} onChangeText={onChangeTextChager} placeholder='Số cổng' value={valuePorts} keyboardType="numeric" />
+                    <TextInput style={{ borderBottomWidth: 1, borderColor: COLOR.green3, width: '30%', textAlign: "center", color: 'black', fontWeight: '700', fontSize: 16, }} onChangeText={onChangeTextPrice} placeholder='Giá' value={valuePrice} keyboardType="numeric" />
                 </View>
                 {(checkKw || checkCharger || checkPrice) && <Text style={styles.errorText}>Vui lòng nhập đầy đủ thông tin</Text>}
                 <View style={{ width: '100%', flexDirection: 'row', marginTop: '5%', justifyContent: 'space-around' }}>
@@ -700,14 +703,16 @@ const FormStation = () => {
                         data={dataVehicle}
                         selectedItem={selectedVehical}
                         setSelectedItem={setSelectedVehical}
+                        title={'Loại phương tiện'}
                     />
 
-                    <ItemModalRadioButton
+                    <ItemModalRadioButtonImage
                         checkModal={modalVisiblePort}
                         setModalVisible={setModalVisiblePort}
                         data={dataPort}
                         selectedItem={selectedSocket}
                         setSelectedItem={setSelectedSocket}
+                        title={'Loại đầu sạc'}
                     />
 
                 </View>
@@ -723,10 +728,10 @@ const FormStation = () => {
                             borderRadius: 10,
                             height: 50,
                             borderWidth: 1,
-                            borderColor: '#40A19C',
+                            borderColor: COLOR.green3,
                         }}>
                         <Text
-                            style={{ color: '#40A19C', textAlign: 'center', fontWeight: '700' }}>
+                            style={{ color: COLOR.green3, textAlign: 'center', fontWeight: '700' }}>
                             {editIndex !== null ? "Cập nhật" : "Lưu trụ sạc"}
                         </Text>
                     </TouchableOpacity>
@@ -804,7 +809,7 @@ const FormStation = () => {
                     style={{
                         margin: '10%',
                         padding: '5%',
-                        backgroundColor: '#40A19C',
+                        backgroundColor: COLOR.green3,
                         borderRadius: 10,
                         width: '60%'
                     }}>
@@ -842,7 +847,7 @@ const FormStation = () => {
                             <TouchableOpacity
                                 style={{
                                     padding: 10,
-                                    borderColor: '#40A19C',
+                                    borderColor: COLOR.green3,
                                     borderWidth: 1,
                                     borderRadius: 10,
                                     backgroundColor: 'white'
@@ -897,7 +902,7 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     selectedButton: {
-        backgroundColor: '#40A19C',
+        backgroundColor: COLOR.green3,
     },
     textStatus: {
         color: '#544C4C',
@@ -950,7 +955,7 @@ const styles = StyleSheet.create({
         height: 20,
         borderRadius: 10,
         borderWidth: 1,
-        borderColor: '#40A19C',
+        borderColor: COLOR.green3,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -958,7 +963,7 @@ const styles = StyleSheet.create({
         width: 12,
         height: 12,
         borderRadius: 6,
-        backgroundColor: '#40A19C',
+        backgroundColor: COLOR.green3,
     },
     buttonRow: {
         flexDirection: 'row',
@@ -974,7 +979,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     applyButton: {
-        backgroundColor: '#40A19C',
+        backgroundColor: COLOR.green3,
         padding: 20,
         borderRadius: 5,
         flex: 1,
@@ -990,7 +995,7 @@ const styles = StyleSheet.create({
         width: 24,
         height: 24,
         borderWidth: 1,
-        borderColor: '#40A19C',
+        borderColor: COLOR.green3,
         borderRadius: 5,
         justifyContent: 'center',
         alignItems: 'center',
@@ -1038,7 +1043,7 @@ const styles = StyleSheet.create({
     },
     textTitleInput: {
         fontSize: 20,
-        color: '#40A19C',
+        color: COLOR.green3,
         fontWeight: 700,
         fontFamily: 'Poppins'
     },
@@ -1049,7 +1054,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         borderWidth: 0,
         borderBottomWidth: 1,
-        borderColor: '#40A19C',
+        borderColor: COLOR.green3,
         borderRadius: 0,
         marginLeft: '5%',
         marginRight: '5%',
@@ -1079,7 +1084,7 @@ const styles = StyleSheet.create({
         // marginVertical: '5%',
         justifyContent: 'center',
         alignItems: 'center',
-        borderColor: '#40A19C',
+        borderColor: COLOR.green3,
         width: '30%',
         height: 40,
         borderBottomWidth: 1,
@@ -1089,7 +1094,7 @@ const styles = StyleSheet.create({
         padding: '3%',
         justifyContent: 'center',
         alignItems: 'center',
-        borderColor: '#40A19C',
+        borderColor: COLOR.green3,
         width: '30%',
         height: 50,
         borderWidth: 1,
@@ -1159,14 +1164,14 @@ const styles = StyleSheet.create({
     },
     editButton: {
         borderWidth: 1,
-        borderColor: '#40A19C',
+        borderColor: COLOR.green3,
         padding: 7,
         paddingHorizontal: 15,
         borderRadius: 8,
         margin: 5
     },
     editText: {
-        color: '#40A19C',
+        color: COLOR.green3,
     },
     deleteText: {
         color: 'red',
