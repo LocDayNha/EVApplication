@@ -266,7 +266,6 @@ export function ItemModalCheckBoxImage({ checkModal, setModalVisible, data, sele
             <View style={styles.modalOverlay}>
                 <View style={styles.modalContent}>
                     <Text style={styles.modalTitle}>{title}</Text>
-
                     <FlatList
                         data={data}
                         keyExtractor={(item) => item._id}
@@ -275,8 +274,16 @@ export function ItemModalCheckBoxImage({ checkModal, setModalVisible, data, sele
                                 style={styles.filterItemImage}
                                 onPress={() => toggleSelection(item._id)}
                             >
-                                <Image style={{ width: 30, height: 30 }} source={{ uri: item.image }} />
-                                <View style={{ width: '30%', marginLeft: '-30%' }}><Text style={styles.filterText}>{item.name}</Text></View>
+
+                                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                                    <View>
+                                        <Image style={{ width: 30, height: 30 }} source={{ uri: item.image }} />
+                                    </View>
+                                    <View style={{ marginHorizontal: '20%' }}>
+                                        <Text style={[styles.filterText,]}>{item.name}</Text>
+                                    </View>
+
+                                </View>
                                 <View style={[styles.checkbox, selectedItems.includes(item._id) && styles.checkedBox]}>
                                     {selectedItems.includes(item._id) && <Text style={styles.checkmark}>✓</Text>}
                                 </View>
@@ -284,7 +291,6 @@ export function ItemModalCheckBoxImage({ checkModal, setModalVisible, data, sele
                             </TouchableOpacity>
                         )}
                     />
-
                     <View style={styles.buttonRow}>
                         <TouchableOpacity
                             onPress={() => {
@@ -322,14 +328,23 @@ export function ItemModalRadioButtonImage({ checkModal, setModalVisible, data, s
                             keyExtractor={(item) => item._id}
                             renderItem={({ item }) => (
                                 <TouchableOpacity
-                                    style={styles.filterItem}
+                                    style={styles.filterItemImage}
                                     onPress={() => setSelectedItem([item._id, item.name])}
                                 >
+                                    <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                                        <View>
+                                            <Image style={{ width: 30, height: 30 }} source={{ uri: item.image }} />
+                                        </View>
+                                        <View style={{ marginHorizontal: '20%' }}>
+                                            {item.type == null ?
+                                                <Text style={styles.filterText}>{item.name}</Text> : <Text style={styles.filterText}>{item.name} ({item.type})</Text>}
+                                        </View>
+                                    </View>
+
                                     <View style={styles.radioButton}>
                                         {selectedItem[0] === item._id && <View style={styles.radioInner} />}
                                     </View>
-                                    {item.type == null ?
-                                        <Text style={styles.filterText}>{item.name}</Text> : <Text style={styles.filterText}>{item.name} ({item.type})</Text>}
+
                                 </TouchableOpacity>
                             )}
                         />
@@ -395,7 +410,7 @@ const styles = StyleSheet.create({
         height: 20,
         borderRadius: 10,
         borderWidth: 2,
-        borderColor: "#40A19C",
+        borderColor: COLOR.green3,
         justifyContent: "center",
         alignItems: "center",
         marginRight: 10,
@@ -404,7 +419,7 @@ const styles = StyleSheet.create({
         width: 10,
         height: 10,
         borderRadius: 5,
-        backgroundColor: "#40A19C",
+        backgroundColor: COLOR.green3,
     },
     filterText: {
         fontSize: 16,
@@ -444,14 +459,14 @@ const styles = StyleSheet.create({
         width: 20,
         height: 20,
         borderWidth: 2,
-        borderColor: "#40A19C",
+        borderColor: COLOR.green3,
         justifyContent: "center",
         alignItems: "center",
         marginRight: 10,
         borderRadius: 5
     },
     checkedBox: {
-        backgroundColor: "#40A19C",
+        backgroundColor: COLOR.green3,
     },
     checkmark: {
         color: "white",
