@@ -79,7 +79,7 @@ export function ItemModalRadioButton({ checkModal, setModalVisible, data, select
                                     onPress={() => setSelectedItem([item._id, item.name])}
                                 >
                                     <View style={styles.radioButton}>
-                                        {selectedItem[0] === item._id && <View style={styles.radioInner} />}
+                                        {selectedItem[0] === item._id ? <View style={styles.radioInner} /> : null}
                                     </View>
 
                                     {item.name && item.type ?
@@ -150,7 +150,7 @@ export function ItemListModal({ checkModal, setModalVisible, data, selectedItem,
                             style={styles.applyButton}
                             onPress={() => setModalVisible(false)}
                         >
-                            <Text style={styles.applyText}> Đóng</Text>
+                            <Text style={styles.applyText}>Đóng</Text>
                         </TouchableOpacity>
                     </View>
 
@@ -179,7 +179,7 @@ export function ItemSliderModal({ checkModal, setModalVisible, value, setValue, 
                             justifyContent: 'center',
                         }}>
                             <Text style={{ fontSize: 18, color: 'white', textAlign: 'center' }}>{value}</Text>
-                            <Text style={{ fontSize: 18, color: 'white' }}>Km </Text>
+                            <Text style={{ fontSize: 18, color: 'white' }}>Km</Text>
                         </View>
                     </View>
                     <View style={{ alignItems: 'center' }}>
@@ -208,13 +208,13 @@ export function ItemSliderModal({ checkModal, setModalVisible, value, setValue, 
                             style={[styles.applyButton, { backgroundColor: COLOR.gray1 }]}
                             onPress={() => [setModalVisible(false), setValue(defaultValue)]}
                         >
-                            <Text style={[styles.applyText, { color: 'black' }]}> Làm mới</Text>
+                            <Text style={[styles.applyText, { color: 'black' }]}>Làm mới</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={styles.applyButton}
                             onPress={() => setModalVisible(false)}
                         >
-                            <Text style={styles.applyText}> Đóng</Text>
+                            <Text style={styles.applyText}>Đóng</Text>
                         </TouchableOpacity>
 
                     </View>
@@ -223,12 +223,16 @@ export function ItemSliderModal({ checkModal, setModalVisible, value, setValue, 
         </Modal>
     );
 }
-export function ItemSlider({ values, setValues, minValue, maxValue, defaultValue }) {
+export function ItemSlider({ values, setValues, minValue, maxValue }) {
 
     return (
 
         <View style={{ alignItems: 'center' }}>
-            <View> <Text style={{ fontSize: 18 }} >{values[0]}Kw - {values[1]}Kw</Text></View>
+            <View>
+                <Text style={{ fontSize: 18 }}>
+                    {values?.[0] ?? 0}Kw - {values?.[1] ?? 0}Kw
+                </Text>
+            </View>
             <MultiSlider
                 style={{ width: '100%', height: 50 }}
                 min={minValue}
@@ -285,7 +289,7 @@ export function ItemModalCheckBoxImage({ checkModal, setModalVisible, data, sele
 
                                 </View>
                                 <View style={[styles.checkbox, selectedItems.includes(item._id) && styles.checkedBox]}>
-                                    {selectedItems.includes(item._id) && <Text style={styles.checkmark}>✓</Text>}
+                                    {selectedItems.includes(item._id) ? <Text style={styles.checkmark}>✓</Text> : null}
                                 </View>
 
                             </TouchableOpacity>
@@ -342,7 +346,7 @@ export function ItemModalRadioButtonImage({ checkModal, setModalVisible, data, s
                                     </View>
 
                                     <View style={styles.radioButton}>
-                                        {selectedItem[0] === item._id && <View style={styles.radioInner} />}
+                                        {selectedItem[0] === item._id ? <View style={styles.radioInner} /> : null}
                                     </View>
 
                                 </TouchableOpacity>

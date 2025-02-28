@@ -103,7 +103,6 @@ const MapStation = (props) => {
                     longitudeDelta: 0.0421,
                 }}
                 ref={mapRef}
-                provider="google"
             >
                 {dataStation.map((location) => (
                     <Marker

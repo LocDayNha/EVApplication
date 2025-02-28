@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Platform, ScrollView } from 'react-native'
+import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Platform, ScrollView, KeyboardAvoidingView, Keyboard } from 'react-native'
 import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
@@ -25,9 +25,11 @@ const ForgotPass = () => {
     }
 
     return (
-        <ScrollView scrollEnabled={false} style={{ backgroundColor: 'white', padding: "5%" }}>
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? "padding" : null}
+        >
             <View style={styles.container}>
-                <View>
+                <View onTouchStart={() => Keyboard.dismiss()} style={{ width: '100%', justifyContent: 'center', alignItems: 'center' }}>
                     <Image source={require('../../../assets/images/image1.png')} style={styles.image} />
                 </View>
                 <View>
@@ -46,7 +48,7 @@ const ForgotPass = () => {
                     <Text style={styles.textSend}>Gửi</Text>
                 </TouchableOpacity>
             </View>
-        </ScrollView>
+        </KeyboardAvoidingView>
     )
 }
 

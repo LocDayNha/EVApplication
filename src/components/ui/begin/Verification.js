@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, TextInput, ToastAndroid, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Image, TextInput, ToastAndroid, TouchableOpacity, ScrollView, Platform, KeyboardAvoidingView, Keyboard } from 'react-native';
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
@@ -93,9 +93,13 @@ const Verification = () => {
 
 
     return (
-        <ScrollView style={{backgroundColor:'white', padding: "5%", width:'100%', height:'100%'}}>
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? "padding" : null}
+        >
             <View style={styles.container}>
-                <Image source={require('../../../assets/images/image1.png')} style={styles.image} />
+                <View style={{ width: '100%', height: 300, justifyContent: 'center', alignItems: 'center' }} onTouchStart={() => Keyboard.dismiss()}>
+                    <Image source={require('../../../assets/images/image1.png')} style={styles.image} />
+                </View>
                 <Text style={styles.textTitle}>Nhập mã xác thực</Text>
                 <View style={styles.otpContainer}>
 
@@ -117,7 +121,7 @@ const Verification = () => {
                     <Text style={styles.textSend}>Xác nhận</Text>
                 </TouchableOpacity>
             </View>
-        </ScrollView>
+        </KeyboardAvoidingView>
     );
 };
 
@@ -132,11 +136,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     image: {
-        marginTop: 0,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 5,
-
+        marginBottom: '5%',
     },
     textTitle: {
         fontSize: 18,
@@ -178,9 +178,9 @@ const styles = StyleSheet.create({
 
     sendButton: {
         backgroundColor: "#3FA79B",
-        width: "100%",
+        width: "90%",
         padding: 15,
-        borderRadius: 50,
+        borderRadius: 20,
         alignItems: "center",
         marginTop: 20,
 

@@ -525,9 +525,11 @@ const FormStation = () => {
                             borderRadius: 30
                         }} >
                         {
-                            checkImage ? <Text style={{ fontSize: 18, fontWeight: '500', color: COLOR.green3 }}> Thêm hình ảnh </Text> : null
+                            checkImage ? <Text style={{ fontSize: 18, fontWeight: '500', color: COLOR.green3 }}>Thêm hình ảnh</Text> : null
                         }
-                        {image && <Image source={{ uri: image }} style={{ width: '110%', height: 170, borderRadius: 30, }} />}
+                        {
+                            image ? <Image source={{ uri: image }} style={{ width: '110%', height: 170, borderRadius: 30, }} /> : null
+                        }
                     </TouchableOpacity>
                 </View>
             </View>
@@ -555,13 +557,13 @@ const FormStation = () => {
                     <TouchableOpacity
                         onPress={() => showTimeStartPicker()}
                         style={[styles.buttonType1, { width: '40%', flexDirection: 'row', justifyContent: 'space-evenly' }]}>
-                        <Text style={{ fontSize: 20 }}> {timeStart}</Text>
+                        <Text style={{ fontSize: 20 }}>{timeStart ? timeStart : "Chọn giờ"}</Text>
                         <Image style={{ width: 30, height: 30 }} source={require('../../../assets/icon/icons8-time-24.png')} />
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={() => showTimeEndPicker()}
                         style={[styles.buttonType1, { width: '40%', flexDirection: 'row', justifyContent: 'space-evenly' }]}>
-                        <Text style={{ fontSize: 20 }}> {timeEnd}</Text>
+                        <Text style={{ fontSize: 20 }}>{timeEnd ? timeEnd : "Chọn giờ"}</Text>
                         <Image style={{ width: 30, height: 30 }} source={require('../../../assets/icon/icons8-time-24.png')} />
                     </TouchableOpacity>
                 </View>
@@ -616,15 +618,9 @@ const FormStation = () => {
                         <Text style={{ fontSize: 20, color: COLOR.green3, fontWeight: 'bold' }}>Dịch vụ</Text>
                         <TouchableOpacity onPress={() => setModalVisibleSevice(true)}
                             style={[styles.buttonType1, { width: '70%', flexDirection: 'row', justifyContent: 'space-around' }]}>
-                            {selectedServices && selectedServices.length > 0 ?
-                                <>
-                                    <Text style={{ fontSize: 15, fontWeight: 'bold' }} >Đã chọn</Text>
-                                </>
-                                :
-                                <>
-                                    <Text style={{ fontSize: 15, fontWeight: 'bold' }} >Chọn dịch vụ</Text>
-                                </>
-                            }
+                            <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
+                                {selectedServices && selectedServices.length > 0 ? "Đã chọn" : "Chọn dịch vụ"}
+                            </Text>
                             <Image style={{ width: 30, height: 30 }} source={require('../../../assets/icon/down.png')} />
                         </TouchableOpacity>
                     </View>
@@ -649,17 +645,6 @@ const FormStation = () => {
                 title={'Dịch vụ'}
             />
 
-            {/* <View style={styles.viewInput}>
-                <View style={styles.listStatus}>
-                    <Text style={styles.textTitleInput}>Hãng trạm sạc</Text>
-                    <ItemRadioButton data={dataBrand} onSelect={handleBrandSelect} />
-                </View>
-                {checkBrand && <Text style={styles.errorText}>Vui lòng chọn hãng trạm sạc</Text>}
-            </View>
-            <View style={styles.viewInput}>
-                <Text style={styles.textTitleInput}>Dịch vụ</Text>
-                <ItemCheckBox data={dataService} onSelect={handleServiceSelect} />
-            </View> */}
             {/* chi tiết trụ sạc  */}
             <View style={styles.viewInput}>
                 <Text style={styles.textTitleInput}>Chi tiết trụ sạc</Text>
@@ -757,7 +742,7 @@ const FormStation = () => {
                                     </View>
                                     <View style={styles.infoRow}>
                                         <Image style={{ width: 32, height: 32, marginLeft: '-4%', marginRight: 5 }} source={require('../../../assets/imageSocket/power-plug.png')} />
-                                        <Text style={styles.textList}>{item.port_id.name}</Text>
+                                        <Text style={styles.textList}>{item.port_id?.name || "Không xác định"}</Text>
                                     </View>
                                     <View style={styles.infoRow}>
                                         <Image style={styles.icon} source={require('../../../assets/icon/icons8-money-50 (1).png')} />

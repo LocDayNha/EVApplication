@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, TextInput, ToastAndroid, TouchableOpacity, COLOR, Alert } from 'react-native'
+import { StyleSheet, Text, View, Image, TextInput, ToastAndroid, TouchableOpacity, COLOR, Alert, KeyboardAvoidingView, Keyboard, Platform } from 'react-native'
 import React, { Component, useState, alert } from 'react'
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from '@react-navigation/native';
@@ -52,59 +52,63 @@ const Register = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View>
-        <Text style={styles.logoText}>LOGO</Text>
-      </View>
-      <Text style={styles.title}>Đăng ký tài khoản</Text>
-      <View>
-        <View style={styles.inputContainer}>
-          <Image source={require('../../../assets/icon/email.png')} style={styles.img} />
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            placeholderTextColor={"#D9D9D9"}
-            onChangeText={setEmail}
-          />
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? "padding" : null}
+    >
+      <View style={styles.container}>
+        <View style={{ width: '100%', height: '30%', justifyContent: 'center', alignItems: 'center' }} onTouchStart={() => Keyboard.dismiss()}>
+          <Text style={styles.logoText}>LOGO</Text>
         </View>
-      </View>
-      <View>
-        <View style={styles.inputContainer}>
-          <Image source={require('../../../assets/icon/key.png')} style={styles.img} />
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            placeholderTextColor={"#D9D9D9"}
-            onChangeText={setPassword}
-            secureTextEntry={!showPassword}
-          />
-          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-            <Image source={require('../../../assets/icon/eye.png')} style={styles.img} />
-          </TouchableOpacity>
+        <Text style={styles.title}>Đăng ký tài khoản</Text>
+        <View>
+          <View style={styles.inputContainer}>
+            <Image source={require('../../../assets/icon/email.png')} style={styles.img} />
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              placeholderTextColor={"#D9D9D9"}
+              onChangeText={setEmail}
+            />
+          </View>
         </View>
-      </View>
-      <View>
-        <View style={styles.inputContainer}>
-          <Image source={require('../../../assets/icon/key.png')} style={styles.img} />
-          <TextInput
-            style={styles.input}
-            placeholder="Re-Password"
-            placeholderTextColor={"#D9D9D9"}
-            onChangeText={setPassword2}
-            secureTextEntry={!showPassword}
-          />
-          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-            <Image source={require('../../../assets/icon/eye.png')} style={styles.img} />
-          </TouchableOpacity>
+        <View>
+          <View style={styles.inputContainer}>
+            <Image source={require('../../../assets/icon/key.png')} style={styles.img} />
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              placeholderTextColor={"#D9D9D9"}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
+            />
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+              <Image source={require('../../../assets/icon/eye.png')} style={styles.img} />
+            </TouchableOpacity>
+          </View>
         </View>
+        <View>
+          <View style={styles.inputContainer}>
+            <Image source={require('../../../assets/icon/key.png')} style={styles.img} />
+            <TextInput
+              style={styles.input}
+              placeholder="Re-Password"
+              placeholderTextColor={"#D9D9D9"}
+              onChangeText={setPassword2}
+              secureTextEntry={!showPassword}
+            />
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+              <Image source={require('../../../assets/icon/eye.png')} style={styles.img} />
+            </TouchableOpacity>
+          </View>
+        </View>
+        <TouchableOpacity style={styles.loginButton} onPress={Register}>
+          <Text style={styles.loginText}>Đăng ký</Text>
+        </TouchableOpacity>
+        <Text style={styles.registerText}>
+          Bạn đã có tài khoản? <Text style={styles.registerLink} onPress={() => navigation.navigate('Login')}>Đăng nhập</Text>
+        </Text>
       </View>
-      <TouchableOpacity style={styles.loginButton} onPress={Register}>
-        <Text style={styles.loginText}>Đăng ký</Text>
-      </TouchableOpacity>
-      <Text style={styles.registerText}>
-        Bạn đã có tài khoản? <Text style={styles.registerLink} onPress={() => navigation.navigate('Login')}>Đăng nhập</Text>
-      </Text>
-    </View>
+    </KeyboardAvoidingView>
   )
 
 }
@@ -113,11 +117,11 @@ export default Register
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     paddingHorizontal: 16,
     backgroundColor: "#fff",
     justifyContent: "center",
     alignItems: "center",
+    width:'100%', height:'100%'
   },
   img: {
     marginLeft: "5%",
@@ -125,8 +129,8 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    marginTop: 87,
-    marginBottom: 44,
+    marginTop: '5%',
+    marginBottom: '5%',
     fontFamily: "Roboto_500Medium"
   },
   inputContainer: {
@@ -160,9 +164,6 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: 'black',
     fontWeight: 'bold',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 100,
   },
   loginButton: {
     backgroundColor: "#3FA79B",

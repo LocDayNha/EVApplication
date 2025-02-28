@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, ToastAndroid, TextInput, TouchableOpacity, COLOR, Alert, Platform } from 'react-native'
+import { StyleSheet, Text, View, Image, ToastAndroid, TextInput, TouchableOpacity, COLOR, Alert, Platform, KeyboardAvoidingView, ScrollView, Keyboard } from 'react-native'
 import React, { Component, useContext, useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
@@ -66,49 +66,51 @@ const Login = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View>
-        <Text style={styles.logoText}>LOGO</Text>
-      </View>
-      <Text style={styles.title}>Đăng nhập tài khoản</Text>
-      <View>
-        <View style={styles.inputContainer}>
-          <Image source={require('../../../assets/icon/email.png')} style={styles.img} />
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            placeholderTextColor={"#D9D9D9"}
-            onChangeText={setEmail}
-          />
+    <KeyboardAvoidingView
+    behavior={Platform.OS ==='ios' ? "padding" : null}
+    >
+      <View style={styles.container} >
+        <View style={{ width:'100%', height:'30%', justifyContent:'center', alignItems:'center'}} onTouchStart={()=> Keyboard.dismiss()}>
+          <Text style={styles.logoText}>LOGO</Text>
         </View>
-      </View>
-      <View>
-        <View style={styles.inputContainer}>
-          <Image source={require('../../../assets/icon/key.png')} style={styles.img} />
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            placeholderTextColor={"#D9D9D9"}
-            onChangeText={setPassword}
-            secureTextEntry={!showPassword}
-          />
-          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-            <Image source={require('../../../assets/icon/eye.png')} style={styles.img} />
+        <Text style={styles.title}>Đăng nhập tài khoản</Text>
+        <View>
+          <View style={styles.inputContainer}>
+            <Image source={require('../../../assets/icon/email.png')} style={styles.img} />
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              placeholderTextColor={"#D9D9D9"}
+              onChangeText={setEmail}
+            />
+          </View>
+        </View>
+        <View>
+          <View style={styles.inputContainer}>
+            <Image source={require('../../../assets/icon/key.png')} style={styles.img} />
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              placeholderTextColor={"#D9D9D9"}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
+            />
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+              <Image source={require('../../../assets/icon/eye.png')} style={styles.img} />
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity style={{width:'100%'}}>
+            <Text style={styles.forgotText} onPress={() => navigation.navigate('ForgotPass')}>Quên mật khẩu?</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity>
-          <Text style={styles.forgotText} onPress={() => navigation.navigate('ForgotPass')}>Quên mật khẩu?</Text>
+        <TouchableOpacity style={styles.loginButton} onPress={onLogin}>
+          <Text style={styles.loginText}>Đăng nhập</Text>
         </TouchableOpacity>
+        <Text style={styles.registerText}>
+          Bạn chưa có tài khoản? <Text style={styles.registerLink} onPress={() => navigation.navigate('Register')}>Đăng ký</Text>
+        </Text>
       </View>
-      <TouchableOpacity style={styles.loginButton} onPress={onLogin}>
-        <Text style={styles.loginText}>Đăng nhập</Text>
-      </TouchableOpacity>
-      <Text style={styles.registerText}>
-        Bạn chưa có tài khoản? <Text style={styles.registerLink} onPress={() => navigation.navigate('Register')}>Đăng ký</Text>
-      </Text>
-    </View>
-
-
+    </KeyboardAvoidingView>
   )
 
 }
@@ -130,8 +132,8 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    marginTop: 87,
-    marginBottom: 44,
+    marginTop: '5%',
+    marginBottom: '5%',
     fontFamily: "Roboto_500Medium"
   },
   inputContainer: {
@@ -167,7 +169,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 100,
   },
   loginButton: {
     backgroundColor: "#3FA79B",
@@ -185,7 +186,6 @@ const styles = StyleSheet.create({
   forgotText: {
     color: "black",
     fontFamily: 'Poppins_600SemiBold',
-    marginBottom: 20,
   },
   registerText: {
     marginTop: 25,
