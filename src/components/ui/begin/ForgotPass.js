@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Platform } from 'react-native'
+import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Platform, ScrollView } from 'react-native'
 import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
@@ -25,27 +25,28 @@ const ForgotPass = () => {
     }
 
     return (
-        <View style={styles.container}>
-            <View>
-                <Image source={require('../../../assets/images/image1.png')} style={styles.image} />
-            </View>
-            <View>
-                <Text style={styles.textEmail}>Nhập email của bạn</Text>
-                <View style={styles.inputContainer}>
-                    <Image source={require('../../../assets/icon/email.png')} style={styles.img} />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Email"
-                        placeholderTextColor={"#D9D9D9"}
-                        onChangeText={setEmail}
-                    />
+        <ScrollView scrollEnabled={false} style={{ backgroundColor: 'white', padding: "5%" }}>
+            <View style={styles.container}>
+                <View>
+                    <Image source={require('../../../assets/images/image1.png')} style={styles.image} />
                 </View>
+                <View>
+                    <Text style={styles.textEmail}>Nhập email của bạn</Text>
+                    <View style={styles.inputContainer}>
+                        <Image source={require('../../../assets/icon/email.png')} style={styles.img} />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Email"
+                            placeholderTextColor={"#D9D9D9"}
+                            onChangeText={setEmail}
+                        />
+                    </View>
+                </View>
+                <TouchableOpacity style={styles.sendButton} onPress={SenCode}>
+                    <Text style={styles.textSend}>Gửi</Text>
+                </TouchableOpacity>
             </View>
-            <TouchableOpacity style={styles.sendButton} onPress={SenCode}>
-                <Text style={styles.textSend}>Gửi</Text>
-            </TouchableOpacity>
-        </View>
-
+        </ScrollView>
     )
 }
 
@@ -57,10 +58,11 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         justifyContent: "center",
         alignItems: "center",
-        flex: 1
+        width: '100%',
+        height: '100%',
     },
     image: {
-        marginTop: 44,
+        // marginTop: 44,
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 5,

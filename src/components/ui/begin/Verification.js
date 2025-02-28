@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, TextInput, ToastAndroid, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, TextInput, ToastAndroid, TouchableOpacity, ScrollView } from 'react-native';
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
@@ -93,29 +93,31 @@ const Verification = () => {
 
 
     return (
-        <View style={styles.container}>
-            <Image source={require('../../../assets/images/image1.png')} style={styles.image} />
-            <Text style={styles.textTitle}>Nhập mã xác thực</Text>
-            <View style={styles.otpContainer}>
+        <ScrollView style={{backgroundColor:'white', padding: "5%", width:'100%', height:'100%'}}>
+            <View style={styles.container}>
+                <Image source={require('../../../assets/images/image1.png')} style={styles.image} />
+                <Text style={styles.textTitle}>Nhập mã xác thực</Text>
+                <View style={styles.otpContainer}>
 
-                {[...Array(4)].map((_, index) => (
-                    <TextInput
-                        key={index}
-                        ref={(el) => (inputRefs.current[index] = el)}
-                        style={styles.otpBox}
-                        keyboardType="numeric"
-                        maxLength={1}
-                        value={otp[index] || ""}
-                        onChangeText={(text) => handleChange(index, text)}
-                        onKeyPress={(e) => handleKeyDown(index, e)}
-                    />
-                ))}
+                    {[...Array(4)].map((_, index) => (
+                        <TextInput
+                            key={index}
+                            ref={(el) => (inputRefs.current[index] = el)}
+                            style={styles.otpBox}
+                            keyboardType="numeric"
+                            maxLength={1}
+                            value={otp[index] || ""}
+                            onChangeText={(text) => handleChange(index, text)}
+                            onKeyPress={(e) => handleKeyDown(index, e)}
+                        />
+                    ))}
+                </View>
+
+                <TouchableOpacity style={styles.sendButton} onPress={handleConfirm}>
+                    <Text style={styles.textSend}>Xác nhận</Text>
+                </TouchableOpacity>
             </View>
-
-            <TouchableOpacity style={styles.sendButton} onPress={handleConfirm}>
-                <Text style={styles.textSend}>Xác nhận</Text>
-            </TouchableOpacity>
-        </View>
+        </ScrollView>
     );
 };
 
@@ -128,7 +130,6 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         alignItems: "center",
         justifyContent: 'center',
-        padding: "5%"
     },
     image: {
         marginTop: 0,
