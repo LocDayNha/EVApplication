@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { ItemCheckBox, ItemCheckBoxImage, ItemRadioButton, ItemRadioButtonType, ItemRadioButtonVertical, ItemStationMain } from '../../item/Item';
 import AxiosInstance from '../../axios/AxiosInstance';
 import * as Location from 'expo-location';
-import { COLOR, SIZE} from "../../../assets/Theme/Theme";
+import { COLOR, SIZE } from "../../../assets/Theme/Theme";
 import { AppContext } from '../../axios/AppContext';
 import { ItemListModal, ItemModalCheckBox, ItemModalRadioButton, ItemSliderModal, ItemSlider, ItemModalCheckBoxImage } from '../../item/Modal';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
@@ -44,6 +44,14 @@ const Home = (props) => {
     const [selectedVehicle, setSelectedVehicle] = useState([]);
     const [selectedBrand, setSelectedBrand] = useState([]);
     const [selectedService, setSelectedService] = useState([]);
+
+    const clearForm = () => {
+        setSelectedVon([]);
+        setSelectedBrand([]);
+        setSelectedService([]);
+        setSelectedVehicle([]);
+        setSelectedSocket([]);
+    };
     //console.log('Dòng điện' + selectedVon);
     //console.log('Loại đầu sạc ' + selectedSocket);
     //console.log(' Loại xe' + selectedVehicle);
@@ -51,15 +59,17 @@ const Home = (props) => {
     //console.log('dịch vụ ' + selectedService);
     // phan bo sung 
     const [selectedKw, setSelectedKw] = useState('Tất cả');
-    const [selectedKm, setSelectedKm] = useState('Tất cả');
+    const [selectedKm, setSelectedKm] = useState();
 
-    const [defaultValueKm, setDefaultValueKm] = useState(5);
+    const [defaultValueKm, setDefaultValueKm] = useState([10]);
     const [valueKm, setValueKm] = useState(defaultValueKm);
     const [minValueKm, setMinValueKm] = useState(1);
-    const [maxValueKm, setMaxValueKm] = useState(230);
+    const [maxValueKm, setMaxValueKm] = useState(50);
     const [valuesKw, setValuesKw] = useState([1, 200]);
     const [minValueKw, setMinValueKw] = useState(1);
     const [maxValueKw, setMaxValueKw] = useState(200);
+
+    const [valueTest, setValueTest] = useState('test dư lieu ');
 
     // check 
     const [selectedStatus, setSelectedStatus] = useState();
@@ -134,7 +144,7 @@ const Home = (props) => {
         }
     };
     // hãng trạm sạc 
-    const [dataBrandStation, setDataBrandStation] = useState(null);
+    const [dataBrandStation, setDataBrandStation] = useState([]);
     const getBrandDataStation = async () => {
         try {
             const dataStation = await AxiosInstance().get('/brand/get');
@@ -283,10 +293,12 @@ const Home = (props) => {
 
     // const point1 = { latitude: myLat, longitude: myLng };
     // const point2 = { latitude: 11.3495, longitude: 106.0640 };
-    
+
     // const distance = haversine(point1, point2); // Khoảng cách tính bằng mét
-    
+
     // console.log(distance / 1000 + " km");
+
+
 
     return (
         <View style={{ height: '100%', backgroundColor: 'white' }}>
@@ -333,7 +345,7 @@ const Home = (props) => {
                             return (
                                 <TouchableOpacity
                                     style={[styles.itemBrand, isSelected && styles.selectedItemBrand]}
-                                    onPress={() => setSelectedBrand(selectedBrand === item._id ? null : item._id)}
+                                    onPress={() => setSelectedBrand(selectedBrand === item._id ? [] : item._id)}
                                 >
                                     <Image style={styles.iconListBrand} source={{ uri: item.image }} />
                                     {/* <Text style={[styles.textBrand, isSelected && styles.selectedTextBrand]}>{item.name}</Text> */}
@@ -365,7 +377,7 @@ const Home = (props) => {
                             keyExtractor={(item) => item._id}
                             renderItem={({ item }) => (
                                 <View>
-                                    <ItemStationMain data={item} />
+                                    <ItemStationMain data={item} Kilomet={valueKm} />
                                 </View>
                             )}
                         />
@@ -388,7 +400,7 @@ const Home = (props) => {
                                 <View>
                                     <ItemSlider values={valuesKw} setValues={setValuesKw} minValue={minValueKw} maxValue={maxValueKw} />
                                 </View> */}
-                        <View style={{ flexDirection: 'row', width: '100%', height: '80%' }}>
+                        <View style={{ flexDirection: 'row', width: '100%', height: '87%' }}>
                             {/* danh muc */}
                             <ItemRadioButton data={list} setSelectedValue={setSelectedFliter} selectedValue={selectedFilter} />
                             {/* nooij dung */}
@@ -402,6 +414,7 @@ const Home = (props) => {
                             <TouchableOpacity
                                 onPress={() => {
                                     setModalVisible(false);
+                                    clearForm()
                                 }}
                                 style={styles.cancelButton}
                             >

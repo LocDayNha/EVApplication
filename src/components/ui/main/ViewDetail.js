@@ -147,7 +147,7 @@ const ViewDetail = () => {
                         </View>
                         {/* Dich Vu  */}
                         <View style={{
-                            margin: '5%', backgroundColor: 'white', borderRadius: 10, paddingTop: 10, shadowColor: "#000",
+                            margin: '5%',marginTop:0, backgroundColor: 'white', borderRadius: 10, paddingTop: 10, shadowColor: "#000",
                             shadowOffset: {
                                 width: 0,
                                 height: 2,
@@ -334,6 +334,7 @@ export default ViewDetail
 
 const styles = StyleSheet.create({
     container: {
+        backgroundColor:'white'
     },
     containerCharging: {
         backgroundColor: 'white',
@@ -362,8 +363,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
     },
-
-
     textMain: {
         fontSize: SIZE.size14,
         textAlign: 'center',
@@ -391,7 +390,7 @@ const styles = StyleSheet.create({
         width: 20,
         justifyContent: 'center',
         alignItems: 'center',
-
+        marginHorizontal:'1%'
     },
     imgSocket: {
         width: 70,

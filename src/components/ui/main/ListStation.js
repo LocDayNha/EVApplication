@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, TouchableOpacity, FlatList, ScrollView, Modal, Image } from 'react-native';
 import React, { useState, useEffect, useContext } from 'react';
-import { ItemStation } from '../../item/Item';
+import { ItemStation, ItemStationList } from '../../item/Item';
 import { useNavigation } from '@react-navigation/native';
 import AxiosInstance from '../../axios/AxiosInstance';
 import { AppContext } from '../../axios/AppContext';
@@ -90,7 +90,7 @@ const ListStation = (props) => {
                                             <View>
                                                 {
                                                     selectedStatus === item.isActive ?
-                                                        (<ItemStationMain data={item} />)
+                                                        (<ItemStationList data={item} />)
                                                         :
                                                         (null)
                                                 }

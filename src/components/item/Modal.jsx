@@ -163,7 +163,6 @@ export function ItemListModal({ checkModal, setModalVisible, data, selectedItem,
 }
 
 export function ItemSliderModal({ checkModal, setModalVisible, value, setValue, title, minValue, maxValue, defaultValue }) {
-    //console.log(value);
     return (
         <Modal transparent={true} visible={checkModal} animationType="slide">
             <View style={styles.modalOverlay}>
@@ -195,7 +194,7 @@ export function ItemSliderModal({ checkModal, setModalVisible, value, setValue, 
                             maximumTrackTintColor="grey"
                             thumbTintColor={COLOR.green4}
                             onValuesChange={setValue}
-                            value={value}
+                            values={value}
                             snapped
                             markerStyle={{ height: 20, width: 20, }}
                             trackStyle={{ height: 4, }}
@@ -211,7 +210,7 @@ export function ItemSliderModal({ checkModal, setModalVisible, value, setValue, 
                     <View style={styles.buttonRow}>
                         <TouchableOpacity
                             style={[styles.applyButton, { backgroundColor: COLOR.gray1 }]}
-                            onPress={() => [setModalVisible(false), setValue(defaultValue)]}
+                            onPress={() => setValue(defaultValue)}
                         >
                             <Text style={[styles.applyText, { color: 'black' }]}>Làm mới</Text>
                         </TouchableOpacity>

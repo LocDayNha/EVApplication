@@ -666,7 +666,9 @@ const FormStation = () => {
                 </View>
                 {checkLocation && <Text style={styles.errorText}>Vui lòng nhập đầy đủ thông tin</Text>}
             </View>
-            {/* hãng trạm sạc  */}            {/* dịch vụ */}
+            {/* hãng trạm sạc  */}          
+              {/* dịch vụ */}
+            
             <View style={{ width: '100%' }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-around', width: '100%' }}>
                     <View style={{ justifyContent: 'center', alignItems: 'center', width: '45%' }}>
@@ -881,7 +883,6 @@ const FormStation = () => {
                                 longitudeDelta: 0.0421,
                             }}
                             ref={mapRef}
-                            provider="google"
                             onPress={handleMapPress}>
                             {/* Hiển thị marker khi người dùng chọn trên bản đồ */}
                             {selectedLocation && (

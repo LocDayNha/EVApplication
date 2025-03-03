@@ -19,19 +19,7 @@ import { TextInputBegin, TextInputMain, CustomButton, TextInputProfile, ItemRati
 import { useFonts, Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
 import AppLoading from 'expo-app-loading'
 export default function App() {
-  // let [fontsLoaded] = useFonts({
-  //   Inter_400Regular,
-  //   Inter_600SemiBold,
-  //   Inter_700Bold,
-  // });
-  let [fontsLoaded] = useFonts({
-    Poppins_400Regular,
-    Poppins_600SemiBold,
-    Poppins_700Bold,
-  });
-  if (!fontsLoaded) {
-    return <AppLoading/>
-  }
+
   return (
     <AppContextProvider>
       <ButtomTab />

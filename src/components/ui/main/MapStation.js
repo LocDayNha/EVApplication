@@ -60,6 +60,7 @@ const MapStation = (props) => {
     // Hook effect khởi tạo dữ liệu
     useEffect(() => {
         getDataStation();
+        focusOnLocation;
     }, []);
 
     const locations = [
