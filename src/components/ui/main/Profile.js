@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
   },
   textNameuser: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     marginTop: '5%'
     // color:'white',

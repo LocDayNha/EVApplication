@@ -60,7 +60,22 @@ const Setting = () => {
 
                             <Image style={{ width: 20, height: 20, }} source={require('../../../assets/icon/icons8-next-96.png')} />
                         </TouchableOpacity>
+                    </>
+                    :
+                    null
+                }
 
+                <TouchableOpacity style={styles.boxContent}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+                        <Image style={styles.imgIcon} source={require('../../../assets/icon/electric-car.png')} />
+                        <Text style={styles.textNameSetting}>Phương tiện của bạn </Text>
+                    </View>
+
+                    <Image style={{ width: 20, height: 20, }} source={require('../../../assets/icon/icons8-next-96.png')} />
+                </TouchableOpacity>
+
+                {infoUser && idUser ?
+                    <>
                         <TouchableOpacity style={styles.boxContent} onPress={() => navigation.navigate("Profile")}>
                             <View style={{ flexDirection: 'row', alignItems: 'center', }} >
                                 <Image style={styles.imgIcon} source={require('../../../assets/icon/icons8-user-96.png')} />
@@ -70,7 +85,7 @@ const Setting = () => {
                             <Image style={{ width: 20, height: 20, }} source={require('../../../assets/icon/icons8-next-96.png')} />
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={()=> navigation.navigate('ForgotPass')} style={styles.boxContent}>
+                        <TouchableOpacity onPress={() => navigation.navigate('ForgotPass')} style={styles.boxContent}>
                             <View style={{ flexDirection: 'row', alignItems: 'center', }}>
                                 <Image style={styles.imgIcon} source={require('../../../assets/icon/icons8-password-96.png')} />
                                 <Text style={styles.textNameSetting}>Đổi mật khẩu</Text>
@@ -125,7 +140,7 @@ const Setting = () => {
                 :
                 <>
                     <View style={styles.boxSetting}>
-                        <TouchableOpacity style={styles.boxContent2} onPress={() => navigation.navigate("Login")}>
+                        <TouchableOpacity style={styles.boxContent2} onPress={() => navigation.navigate('Login')}>
                             <Image style={styles.imgIcon} source={require('../../../assets/icon/login.png')} />
                             <Text style={styles.textNameSetting}>Đăng nhập tài khoản</Text>
                         </TouchableOpacity>
@@ -181,16 +196,17 @@ const styles = StyleSheet.create({
         width: '30',
         height: '30',
         //    borderRadius:30,
-        marginRight: '5%'
+        marginRight: '5%',
+        tintColor:'#009558'
     },
     textNameuser: {
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: 'bold',
 
     },
     textNameSetting: {
-        fontSize: 20,
-
+        fontSize: 16,
+        fontWeight: 500
     },
     boxSetting: {
         borderColor: '#C7C6C5',

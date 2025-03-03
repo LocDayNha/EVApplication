@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
   },
   loginText: {
     color: "#fff",
-    fontSize: 20,
+    fontSize: 16,
     fontFamily: "Poppins_600SemiBold"
   },
   registerText: {
