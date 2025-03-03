@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { ItemCheckBox, ItemCheckBoxImage, ItemRadioButton, ItemRadioButtonType, ItemRadioButtonVertical, ItemStationMain } from '../../item/Item';
 import AxiosInstance from '../../axios/AxiosInstance';
 import * as Location from 'expo-location';
-import { COLOR, SIZE} from "../../../assets/Theme/Theme";
+import { COLOR, SIZE } from "../../../assets/Theme/Theme";
 import { AppContext } from '../../axios/AppContext';
 import { ItemListModal, ItemModalCheckBox, ItemModalRadioButton, ItemSliderModal, ItemSlider, ItemModalCheckBoxImage } from '../../item/Modal';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
@@ -34,6 +34,7 @@ const Home = (props) => {
     const [modalSocKet, setModalSocket] = useState(false);
     const [modalService, setModalService] = useState(false);
     const [modalSearch, setModalSearch] = useState(false);
+    const { myLat, setMyLat, myLng, setMyLng, infoUser } = useContext(AppContext);
 
 
     const [modalKm, setModalKm] = useState(false);
@@ -94,7 +95,6 @@ const Home = (props) => {
     //Lấy địa chỉ và định vị
     const [errorMsg, setErrorMsg] = useState('');
     const [address, setAddress] = useState('');
-    const { myLat, setMyLat, myLng, setMyLng, infoUser } = useContext(AppContext);
     const name = infoUser?.name || "Nguyễn Vô Danh";
     const image = infoUser?.image || "https://vivureviews.com/wp-content/uploads/2022/08/avatar-vo-danh-6.png";
     const getYourLocation = async () => {
@@ -281,11 +281,19 @@ const Home = (props) => {
         return matchesBrand && matchesVehicle && matchesPort && matchesService && matchesVon;
     });
 
+    const goProfile = () => {
+        if (infoUser) {
+            navigation.navigate('Profile');
+        } else {
+            navigation.navigate('Login');
+        }
+    }
+
     // const point1 = { latitude: myLat, longitude: myLng };
     // const point2 = { latitude: 11.3495, longitude: 106.0640 };
-    
+
     // const distance = haversine(point1, point2); // Khoảng cách tính bằng mét
-    
+
     // console.log(distance / 1000 + " km");
 
     return (
@@ -295,7 +303,7 @@ const Home = (props) => {
                 {
                     !modalSearch ?
                         (<View style={styles.inputSearch}>
-                            <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', width: '50%' }} onPress={() => navigation.navigate("Profile")} >
+                            <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', width: '50%' }} onPress={goProfile} >
                                 <Image style={styles.img} source={{ uri: image }} />
                                 <Text style={styles.titleContainer} numberOfLines={1} ellipsizeMode='head'>{name}</Text>
                             </TouchableOpacity>

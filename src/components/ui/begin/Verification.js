@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
         marginBottom: '5%',
     },
     textTitle: {
-        fontSize: 18,
+        fontSize: 16,
         fontFamily: "Poppins_600SemiBold",
         color: "black",
         marginBottom: 30,
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
     },
     textSend: {
         color: "#fff",
-        fontSize: 20,
+        fontSize: 16,
         fontFamily: "Poppins_600SemiBold",
     },
 });

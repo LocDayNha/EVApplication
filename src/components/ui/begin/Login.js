@@ -13,15 +13,6 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigation = useNavigation();
 
-  let [fontLoaded] = useFonts({
-
-    Roboto_500Medium,
-    Poppins_600SemiBold
-  })
-  if (!fontLoaded) {
-    return <AppLoading />
-  }
-
   const navigateToMain = () => {
     navigation.navigate('Screen');
   }
@@ -183,7 +174,7 @@ const styles = StyleSheet.create({
   },
   loginText: {
     color: "#fff",
-    fontSize: 20,
+    fontSize: 16,
     fontFamily: "Poppins_600SemiBold"
   },
   forgotText: {

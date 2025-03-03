@@ -108,13 +108,13 @@ const styles = StyleSheet.create({
     },
     textSend: {
         color: "#fff",
-        fontSize: 20,
+        fontSize: 16,
         fontFamily: "Poppins_600SemiBold"
     },
     textEmail: {
         color: "black",
         fontFamily: "Poppins_600SemiBold",
-        fontSize: 20,
+        fontSize: 16,
         marginBottom: 25,
         paddingLeft: 1
     },

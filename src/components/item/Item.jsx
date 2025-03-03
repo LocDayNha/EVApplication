@@ -927,7 +927,7 @@ const styles = StyleSheet.create({
   inputProfile: {
     width: "100%",
     height: 50,
-    fontSize: SIZE.size12,
+    fontSize: SIZE.size14,
     paddingHorizontal: 10,
     borderBottomWidth: 1,
     borderColor: COLOR.gray,
