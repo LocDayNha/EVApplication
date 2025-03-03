@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Button, Image, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Button, Image, TextInput, TouchableOpacity, Platform } from 'react-native';
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
@@ -13,7 +13,6 @@ const MapStation = (props) => {
     const [searchText, setSearchText] = useState("");
     const [selectedStation, setSelectedStation] = useState(null);
     const mapRef = useRef(null);
-
     useEffect(() => { _getLocation(); }, []);
 
     const _getLocation = useCallback(async () => {
@@ -56,6 +55,7 @@ const MapStation = (props) => {
             ToastAndroid.show('Không thể tải danh sách thông tin trạm sạc', ToastAndroid.SHORT);
         }
     };
+
 
     // Hook effect khởi tạo dữ liệu
     useEffect(() => {
@@ -103,6 +103,7 @@ const MapStation = (props) => {
                     longitudeDelta: 0.0421,
                 }}
                 ref={mapRef}
+                onTouchStart={() => setSelectedStation(null)}
             >
                 {dataStation.map((location) => (
                     <Marker
@@ -114,15 +115,26 @@ const MapStation = (props) => {
                         title={location.name}
                         onPress={() => setSelectedStation(location)}
                     >
-                        <Image source={require('../../../assets/icon/IconLoaction.png')}
-                            style={{ width: 40, height: 40, elevation: 5, }} />
+                        {Platform.OS === 'ios' ?
+                            <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                                <Image source={{ uri: location.brand_id.image }}
+                                    style={{ width: 30, height: 30, }} />
+                                <Image source={require('../../../assets/icon/IconLoaction.png')}
+                                    style={{ width: 50, height: 50, }} />
+                            </View>
+                            :
+                            <Image source={require('../../../assets/icon/IconLoaction.png')}
+                                style={{ width: 40, height: 40, }} />
+                        }
+
+
                     </Marker>
                 ))}
             </MapView>
 
             {selectedStation && (
                 <View style={styles.stationInfo}>
-                    <TouchableOpacity style={{
+                    {/* <TouchableOpacity style={{
                         backgroundColor: '#40A19C',
                         margin: 10,
                         padding: 10,
@@ -141,7 +153,7 @@ const MapStation = (props) => {
                         elevation: 5,
                     }} onPress={() => setSelectedStation(null)}>
                         <Text style={styles.closeButton}>Đóng</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                     <ItemStationMap data={selectedStation} />
 
                 </View>

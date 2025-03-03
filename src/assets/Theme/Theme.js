@@ -46,9 +46,15 @@ export const SIZE = {
     h1: 26,
     h2: 24,
     h3: 22,
-    h4: 20,
-    h5: 18,
-    h6: 16,
+    size20: 20,
+    size18: 18,
+    size16: 16,
+    size14: 14,
+    size12: 12,
+    size10: 10,
+    size8: 8,
+    size6: 6,
+
 }
 
 export const ICON ={
@@ -58,3 +64,10 @@ export const ICON ={
 export const IMAGE ={
     
 }
+
+export const FONT = {
+    REGULAR: 'Poppins-Regular',
+    MEDIUM: 'Poppins-Medium',
+    SEMI_BOLD: 'Poppins-SemiBold',
+    BOLD: 'Poppins-Bold',
+  };

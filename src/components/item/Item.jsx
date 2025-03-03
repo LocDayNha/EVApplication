@@ -1,5 +1,5 @@
 import { StyleSheet, View, Text, TouchableOpacity, FlatList, Linking, ToastAndroid, TextInput, Image, Modal, ScrollView } from "react-native";
-import { COLOR } from "../../assets/Theme/Theme";
+import { COLOR,SIZE } from "../../assets/Theme/Theme";
 import { useNavigate } from "react-router-native";
 import { useNavigation } from '@react-navigation/native';
 import React, { useState, useContext, useEffect } from 'react';
@@ -7,6 +7,8 @@ import { AppContext } from '../axios/AppContext';
 import AxiosInstance from "../axios/AxiosInstance";
 import { MaterialIcons } from "@expo/vector-icons";
 import RNPickerSelect from 'react-native-picker-select';
+import { LinearGradient } from 'expo-linear-gradient';
+import haversine from 'haversine-distance';
 
 
 const API_BASE = 'https://online-gateway.ghn.vn/shiip/public-api/master-data';
@@ -90,10 +92,10 @@ export function ItemRating({ data }) {
         <>
           <View style={{ position: 'absolute', top: '3.5%', right: '0%', width: 50, justifyContent: 'space-between', alignItems: 'center' }}>
             <TouchableOpacity>
-              <Text style={{ fontSize: 16, fontWeight: 500 }}>Sửa</Text>
+              <Text style={{ fontSize: SIZE.size12, fontWeight: 500 }}>Sửa</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => deleteRating(data._id)}>
-              <Text style={{ fontSize: 16, fontWeight: 500, color: 'red' }}>Xóa</Text>
+              <Text style={{ fontSize: SIZE.size12, fontWeight: 500, color: 'red' }}>Xóa</Text>
             </TouchableOpacity>
           </View>
         </>
@@ -241,12 +243,12 @@ export function ItemStationMap(props) {
         })()}
 
         <TouchableOpacity onPress={openGoogleMaps}>
-          <View style={styles.viewButtonItem} >
+          <LinearGradient colors={['#009558', '#5bdb5b',]} style={styles.viewButtonItem} >
             <Text style={{ color: 'white' }}>
-              3.5Km
+              Đến ngay
             </Text>
             <Image style={styles.imgNext} source={require('../../assets/icon/icons8-arrow-64.png')} />
-          </View>
+          </LinearGradient>
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
@@ -277,16 +279,27 @@ export function ItemStationMain(props) {
       ToastAndroid.show('Không thể thực hiện chỉ đường do hẹ thống', ToastAndroid.SHORT);
     }
   };
+  const point1 = { latitude: myLat, longitude: myLng };
+  const point2 = { latitude: data.lat, longitude: data.lng };
+
+  const distance = haversine(point1, point2) / 1000;
 
   return (
     <TouchableOpacity style={styles.listRow} key={data._id} onPress={clickViewDetail}>
       <Image style={styles.imgStation} source={{ uri: data.image }} />
       <View style={styles.viewInfoStation}>
         <Text style={styles.textItemName} numberOfLines={1} ellipsizeMode='tail'>{data.brand_id.name} - {data.name}</Text>
-        <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail'>{data.location}</Text>
+        <View style={{ flexDirection: 'row',alignItems: 'center' }}>
+          <Image style={{ width: 20, height: 20,marginRight:5 }} source={require('../../assets/icon/icons8-location-94.png')} />
+          <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail'>{data.location}</Text>
+        </View>
       </View>
       <View style={styles.viewInfoStation}>
-        <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail'>{data.time}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Image style={{ width: 20, height: 20,marginRight:5 }} source={require('../../assets/icon/icons8-time-48.png')} />
+          <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail'>{data.time}</Text>
+        </View>
+
       </View>
       <View style={styles.viewInfoStation2}>
 
@@ -294,9 +307,7 @@ export function ItemStationMain(props) {
           const portTypes = data?.specification
             ?.map((item) => item?.specification_id?.port_id?.type)
             .filter((type) => type === "AC" || type === "DC"); // Lọc chỉ lấy AC hoặc DC
-
           const uniquePortTypes = [...new Set(portTypes)]; // Loại bỏ giá trị trùng lặp
-
           const displayText = uniquePortTypes.length === 2 ? "AC/DC" : uniquePortTypes[0] || "N/A";
 
           return (
@@ -307,12 +318,12 @@ export function ItemStationMain(props) {
         })()}
 
         <TouchableOpacity onPress={openGoogleMaps}>
-          <View style={styles.viewButtonItem} >
+          <LinearGradient colors={['#009558', '#5bdb5b',]} style={styles.viewButtonItem} >
             <Text style={{ color: 'white' }}>
-              3.5Km
+              {distance.toFixed(1)} Km
             </Text>
             <Image style={styles.imgNext} source={require('../../assets/icon/icons8-arrow-64.png')} />
-          </View>
+          </LinearGradient>
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
@@ -363,7 +374,7 @@ export function ItemCheckBox({ data = [], onSelect }) {
             >
               <Text
                 style={{
-                  fontSize: 16,
+                  fontSize: SIZE.size12,
                   fontWeight: "bold",
                   color: isSelected ? "#fff" : "black",
                 }}
@@ -377,57 +388,47 @@ export function ItemCheckBox({ data = [], onSelect }) {
     </View>
   );
 }
-//nút chọn hình tròn
-export function ItemRadioButton({ data = [], onSelect, selectedValue }) {
-  const [selectedMethod, setSelectedMethod] = useState(selectedValue);
 
-  useEffect(() => {
-    setSelectedMethod(selectedValue);
-  }, [selectedValue]);
+// nút hình tròn dọc 
+export function ItemRadioButtonVertical({ data = [], onSelect, setSelectedValue, selectedValue }) {
 
   const handlePress = (id) => {
-    const newSelection = selectedMethod === id ? null : id;
-    setSelectedMethod(newSelection);
+    const newSelection = selectedValue === id ? null : id;
+    setSelectedValue(newSelection);
     onSelect(newSelection);
   };
 
   return (
-    <View>
+    <View style={{ width: '60%', }}>
       <FlatList
         showsHorizontalScrollIndicator={false}
-        horizontal
+        horizontal={false}
         data={data}
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => {
-          const isSelected = selectedMethod === item.name;
+          const isSelected = selectedValue === item._id;
           return (
             <TouchableOpacity
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                paddingVertical: 12,
-                paddingHorizontal: 24,
-                borderWidth: 2,
-                borderColor: COLOR.green3,
-                borderRadius: 8,
-                backgroundColor: isSelected ? COLOR.green3 : "#fff",
-                marginVertical: 10,
-                marginHorizontal: 20,
+                paddingVertical: 10,
+                paddingHorizontal: '15%',
                 height: 50,
               }}
-              onPress={() => handlePress(item.name)}
+              onPress={() => handlePress(item._id)}
             >
               <MaterialIcons
                 name={isSelected ? "radio-button-checked" : "radio-button-unchecked"}
                 size={20}
-                color={isSelected ? "#fff" : COLOR.green3}
+                color={COLOR.green3}
               />
               <Text
                 style={{
                   marginLeft: 8,
-                  fontSize: 16,
+                  fontSize: SIZE.size12,
                   fontWeight: "bold",
-                  color: isSelected ? "#fff" : 'black',
+                  color: 'black',
                 }}
               >
                 {item.name}
@@ -439,55 +440,97 @@ export function ItemRadioButton({ data = [], onSelect, selectedValue }) {
     </View>
   );
 }
-// nút chọn hình vuông có hình ảnh 
-export function ItemCheckBoxImage({ data = [], onSelect }) {
-  const [selectedService, setSelectedService] = useState([]);
+//nút chọn 11
+export function ItemRadioButton({ data = [], setSelectedValue, selectedValue }) {
+  const handlePress = (id) => {
+    const newSelection = selectedValue === id ? id : id;
+    setSelectedValue(newSelection);
 
-  const toggleSelection = (id) => {
-    let updatedSelection;
-    if (selectedService.includes(id)) {
-      updatedSelection = selectedService.filter((item) => item !== id);
-    } else {
-      updatedSelection = [...selectedService, id];
-    }
-    setSelectedService(updatedSelection);
-    onSelect(updatedSelection); // Truyền dữ liệu ra ngoài
   };
-
   return (
-    <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: '5%' }}>
+    <View style={{ width: '40%', padding: '2%', height: '100%' }}>
+      <FlatList
+        showsHorizontalScrollIndicator={false}
+        horizontal={false}
+        data={data}
+        keyExtractor={(item) => item._id}
+        renderItem={({ item }) => {
+          const isSelected = selectedValue === item._id;
+          return (
+            <LinearGradient style={{ marginVertical: 5, borderRadius: 8, }} dither={false} colors={['#5bdb5b', '#009558',]} start={{ x: 0.7, y: 0.5 }} end={{ x: 0.3, y: 0.5 }} >
+              <TouchableOpacity
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  paddingVertical: 10,
+                  paddingHorizontal: 10,
+                  backgroundColor: isSelected ? 'rgba(0, 0, 0, 0)' : COLOR.gray1,
+                  height: 50,
+                }}
+                onPress={() => handlePress(item._id)}
+              >
+                <Text
+                  style={{
+                    marginLeft: 8,
+                    fontSize: SIZE.size12,
+                    fontWeight: "bold",
+                    color: isSelected ? "#fff" : 'black',
+                  }}
+                >
+                  {item.name}
+                </Text>
+              </TouchableOpacity>
+            </LinearGradient>
+          );
+        }}
+      />
+    </View>
+  );
+}
+
+// nút chọn hình vuông có hình ảnh 
+export function ItemCheckBoxImage({ data, selectedItems, setSelectedItems }) {
+  // const [selectedItems, setSelectedItems] = useState(data);
+
+  const toggleSelection = (itemName) => {
+    if (selectedItems.includes(itemName)) {
+      setSelectedItems(selectedItems.filter((item) => item !== itemName));
+    } else {
+      setSelectedItems([...selectedItems, itemName]);
+    }
+  };
+  return (
+    <View style={{ width: '60%', padding: '2%', height: '98%' }}>
       <FlatList
         data={data}
-        horizontal={true}
+        horizontal={false}
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item) => item._id.toString()}
         renderItem={({ item }) => {
-          const isSelected = selectedService.includes(item.name);
           return (
             <TouchableOpacity
               style={{
                 flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                paddingVertical: 12,
-                paddingHorizontal: 24,
-                marginRight: 12,
-                borderWidth: 2,
-                borderColor: COLOR.green3,
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                paddingVertical: 10,
+                paddingHorizontal: 10,
                 borderRadius: 8,
-                backgroundColor: isSelected ? COLOR.green3 : "#fff",
+                height: 50,
               }}
-              onPress={() => toggleSelection(item.name)}
+              onPress={() => toggleSelection(item._id)}
             >
-              <Text
-                style={{
-                  fontSize: 16,
-                  fontWeight: "bold",
-                  color: isSelected ? "#fff" : 'black',
-                }}
-              >
-                {item.name}
-              </Text>
+              <Image style={{ width: 30, height: 30 }} source={{ uri: item.image }} />
+              <View style={{ width: '50%' }}>
+                <Text
+                  style={{ fontSize: SIZE.size12, fontWeight: "bold", color: 'black', }}>
+                  {item.name}
+                </Text>
+              </View>
+              <View style={[styles.checkbox, selectedItems.includes(item._id) && styles.checkedBox]}>
+                {selectedItems.includes(item._id) ? <Text style={styles.checkmark}>✓</Text> : null}
+              </View>
+
             </TouchableOpacity>
           );
         }}
@@ -543,7 +586,7 @@ export function ItemRadioButtonImage({ data = [], onSelect, selectedValue }) {
               <Text
                 style={{
                   marginLeft: 8,
-                  fontSize: 16,
+                  fontSize: SIZE.size12,
                   fontWeight: "bold",
                   color: isSelected ? "#fff" : 'black',
                 }}
@@ -716,7 +759,7 @@ export function ItemInputCharging({ value, onChangeText, placeholder, note }) {
         style={{
           flex: 1,
           height: 40,
-          fontSize: 20,
+          fontSize: SIZE.size16,
           textAlign: 'center'
         }}
         placeholder={placeholder}
@@ -731,7 +774,7 @@ export function ItemInputCharging({ value, onChangeText, placeholder, note }) {
       }}>
         <Text
           style={{
-            fontSize: 20,
+            fontSize: SIZE.size16,
             color: COLOR.green3,
             textAlign: 'center'
 
@@ -743,7 +786,6 @@ export function ItemInputCharging({ value, onChangeText, placeholder, note }) {
 
   );
 }
-
 // nut hình tròn lấy tyle
 export function ItemRadioButtonType({ data = [], onSelect, selectedValue }) {
   const [selectedMethod, setSelectedMethod] = useState(selectedValue);
@@ -796,7 +838,7 @@ export function ItemRadioButtonType({ data = [], onSelect, selectedValue }) {
               <Text
                 style={{
                   marginLeft: 8,
-                  fontSize: 16,
+                  fontSize: SIZE.size12,
                   fontWeight: "bold",
                   color: isSelected ? "#fff" : 'black',
                 }}
@@ -817,6 +859,23 @@ export function ItemRadioButtonType({ data = [], onSelect, selectedValue }) {
 }
 
 const styles = StyleSheet.create({
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 2,
+    borderColor: COLOR.green3,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 10,
+    borderRadius: 5
+  },
+  checkedBox: {
+    backgroundColor: COLOR.green3,
+  },
+  checkmark: {
+    color: "white",
+    fontWeight: "bold",
+  },
   container: {
     width: "85%",
     height: 50,
@@ -826,7 +885,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
   },
   buttonText: {
-    fontSize: 20,
+    fontSize: SIZE.size16,
     color: COLOR.secondary,
     fontWeight: 700,
     fontFamily: 'Poppins'
@@ -846,7 +905,7 @@ const styles = StyleSheet.create({
   input: {
     width: "100%",
     height: "100%",
-    fontSize: 16,
+    fontSize: SIZE.size12,
     paddingHorizontal: 10,
   },
   img: {
@@ -860,7 +919,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   textProfile: {
-    fontSize: 20,
+    fontSize: SIZE.size16,
     color: COLOR.black,
     fontWeight: 700,
     fontFamily: 'Poppins'
@@ -868,7 +927,7 @@ const styles = StyleSheet.create({
   inputProfile: {
     width: "100%",
     height: 50,
-    fontSize: 16,
+    fontSize: SIZE.size12,
     paddingHorizontal: 10,
     borderBottomWidth: 1,
     borderColor: COLOR.gray,
@@ -906,21 +965,21 @@ const styles = StyleSheet.create({
     width: "95%"
   },
   textNameUser: {
-    fontSize: 18,
+    fontSize: SIZE.size14,
     color: COLOR.black,
     fontWeight: 700,
     fontFamily: 'Poppins',
     marginBottom: "2%"
   },
   textTimeRating: {
-    fontSize: 14,
+    fontSize: SIZE.size12,
     color: COLOR.gray3,
     fontFamily: 'Poppins',
     marginLeft: "2%",
     marginTop: '2%',
   },
   textRatingContent: {
-    fontSize: 18,
+    fontSize: SIZE.size14,
     color: COLOR.black,
     fontFamily: 'Poppins',
     fontWeight: '500'
@@ -952,12 +1011,12 @@ const styles = StyleSheet.create({
   textItemName: {
     marginTop: '1%',
     color: 'rgb(0, 0, 0)',
-    fontSize: 20,
+    fontSize: SIZE.size16,
     fontWeight: 'bold',
   },
   textItemLocation: {
     color: '#544C4C',
-    fontSize: 18,
+    fontSize: SIZE.size14,
     marginBottom: '0.1%',
     marginTop: '0.1%',
   },
@@ -965,7 +1024,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 40,
     flexDirection: 'row',
-    backgroundColor: COLOR.green3,
+    // backgroundColor: COLOR.green3,
     justifyContent: 'space-evenly',
     alignItems: 'center',
     borderRadius: 30,
@@ -1004,13 +1063,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   modalTitle: {
-    fontSize: 18,
+    fontSize: SIZE.size14,
     fontWeight: 'bold',
     marginBottom: 10,
     textAlign: 'center'
   },
   modalTitleSup: {
-    fontSize: 16,
+    fontSize: SIZE.size12,
     marginTop: 10,
     alignItems: 'center',
     justifyContent: 'center',
@@ -1075,14 +1134,14 @@ const styles = StyleSheet.create({
 
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
-    fontSize: 20,
+    fontSize: SIZE.size16,
     height: 0,
     color: 'black',
     marginVertical: 30,
     marginHorizontal: 10,
   },
   inputAndroid: {
-    fontSize: 20,
+    fontSize: SIZE.size16,
     color: 'black',
     textAlign: 'center',
     textAlignVertical: 'center',
