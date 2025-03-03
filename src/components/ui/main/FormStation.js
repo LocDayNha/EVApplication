@@ -2,13 +2,15 @@ import { StyleSheet, Text, View, ScrollView, Image, Modal, ToastAndroid, Alert, 
 import React, { useEffect, useRef, useState, useCallback, useContext } from 'react';
 import { COLOR } from "../../../assets/Theme/Theme";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import * as ImagePicker from 'expo-image-picker';
 import RNPickerSelect from 'react-native-picker-select';
 import MapView, { Marker, Callout } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { ItemBoxLocation, ItemCheckBox, ItemInputCharging, ItemRadioButton } from '../../item/Item';
 import { AppContext } from '../../axios/AppContext';
 import AxiosInstance from '../../axios/AxiosInstance';
+import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
+import { firebase } from '../../../../config';
 import { ItemListModal, ItemModalRadioButton, ItemModalCheckBox, ItemModalRadioButtonImage, ItemModalCheckBoxImage } from '../../item/Modal';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 
@@ -21,40 +23,6 @@ const FormStation = () => {
     const [modalVisibleVehicle, setModalVisibleVehicle] = useState(false); // an hien bo loc 
     const [modalVisiblePort, setModalVisiblePort] = useState(false); // an hien bo loc 
     const { idUser } = useContext(AppContext);
-
-    // Danh sách dịch vụ
-    const typeService = [
-        { id: 0, name: 'Đồ ăn' },
-        { id: 1, name: 'Đồ uống' },
-        { id: 2, name: 'WC' },
-        { id: 3, name: 'Đỗ Xe' },
-    ];
-
-    // Danh sách hãng xe
-    const typeBrands = [
-        { id: 1, name: 'Toyota' },
-        { id: 2, name: 'Honda' },
-        { id: 3, name: 'Ford' },
-        { id: 4, name: 'Vinfast' },
-        { id: 5, name: 'Hyundai' },
-        { id: 6, name: 'Tesla' },
-    ];
-
-    // Danh sách phương tiện
-    const typeVehicle = [
-        { id: 0, name: 'Tất cả' },
-        { id: 1, name: 'Xe máy' },
-        { id: 2, name: 'Ô tô' },
-    ];
-
-    // Danh sách loại sạc
-    const typeSocket = [
-        { id: 0, name: 'CCS1' },
-        { id: 1, name: 'CCS2' },
-        { id: 2, name: 'J1772' },
-        { id: 3, name: 'Ổ điện' },
-        { id: 4, name: 'Chademo' },
-    ];
 
     // get Service
     const [dataService, setDataService] = useState(null);
@@ -191,19 +159,82 @@ const FormStation = () => {
 
             const locationString = `${locationDetail}, ${location.wardName}, ${location.districtName}, ${location.provinceName}`;
 
-            if (nameStation && timeStart && timeEnd && selectedBrand && formattedServices && selectedLocation.latitude && selectedLocation.longitude && formattedSpecifications) {
-                const dataStation = await AxiosInstance().post('/station/addNew', {
-                    user_id: idUser, brand_id: selectedBrand[0], specification: formattedSpecifications, service: formattedServices, name: nameStation, location: locationString, lat: selectedLocation.latitude, lng: selectedLocation.longitude, time: `${timeStart} - ${timeEnd}`, note: valueNote
-                });
-
-                if (dataStation) {
-                    ToastAndroid.show('Đã ghi nhận thông tin', ToastAndroid.SHORT);
-                } else {
-                    ToastAndroid.show('Có lỗi xảy ra, vui lòng kiểm tra lại', ToastAndroid.SHORT);
-                }
-            } else {
-                console.log('Nhập thiếu dữ liệu');
+            if (!imageStation) {
+                ToastAndroid.show('Vui lòng chọn ảnh trạm!', ToastAndroid.SHORT);
+                return;
             }
+            if (!nameStation) {
+                ToastAndroid.show('Vui lòng nhập tên trạm!', ToastAndroid.SHORT);
+                return;
+            }
+            if (!timeStart || !timeEnd) {
+                ToastAndroid.show('Vui lòng chọn thời gian hoạt động!', ToastAndroid.SHORT);
+                return;
+            }
+            if (!selectedBrand || selectedBrand.length === 0) {
+                ToastAndroid.show('Vui lòng chọn thương hiệu!', ToastAndroid.SHORT);
+                return;
+            }
+            if (!formattedServices || formattedServices.length === 0) {
+                ToastAndroid.show('Vui lòng chọn dịch vụ!', ToastAndroid.SHORT);
+                return;
+            }
+            if (!selectedLocation.latitude || !selectedLocation.longitude) {
+                ToastAndroid.show('Vui lòng chọn vị trí trạm!', ToastAndroid.SHORT);
+                return;
+            }
+            if (!formattedSpecifications || formattedSpecifications.length === 0) {
+                ToastAndroid.show('Vui lòng nhập thông số kỹ thuật!', ToastAndroid.SHORT);
+                return;
+            }
+
+            try {
+                let newImageUrl = imageStation;
+
+                if (choseImageStation) {
+                    const uploadedImageUrl = await uploadImageToFirebase();
+                    if (uploadedImageUrl) {
+                        newImageUrl = uploadedImageUrl;
+
+                        const dataStation = await AxiosInstance().post('/station/addNew', {
+                            user_id: idUser,
+                            brand_id: selectedBrand[0],
+                            specification: formattedSpecifications,
+                            service: formattedServices,
+                            image: newImageUrl,
+                            name: nameStation,
+                            location: locationString,
+                            lat: selectedLocation.latitude,
+                            lng: selectedLocation.longitude,
+                            time: `${timeStart} - ${timeEnd}`,
+                            note: valueNote
+                        });
+
+                        if (dataStation) {
+                            ToastAndroid.show('Đã ghi nhận thông tin', ToastAndroid.SHORT);
+                            setSelectedBrand([]);
+                            setSelectedServices([]);
+                            setListDataSpecification([]);
+                            setImageStation(null);
+                            setNameStation(null);
+                            setTimeStart('00:00');
+                            setTimeEnd('00:00');
+                            setLoactionDetail(null);
+                        } else {
+                            ToastAndroid.show('Có lỗi xảy ra, vui lòng kiểm tra lại', ToastAndroid.SHORT);
+                        }
+                    } else {
+                        console.log("Lỗi khi upload ảnh mới!");
+                        ToastAndroid.show("Lỗi khi lưu ảnh!", ToastAndroid.SHORT);
+                        return;
+                    }
+                }
+
+            } catch (error) {
+                ToastAndroid.show('Có lỗi xảy ra, vui lòng kiểm tra lại', ToastAndroid.SHORT);
+                console.log('error:', error);
+            }
+
         } catch (error) {
             console.error('Lỗi khi thêm mới dữ liệu Station:', error);
         }
@@ -273,8 +304,8 @@ const FormStation = () => {
 
     // gia tri form
     const [editIndex, setEditIndex] = useState(null);
-    const [locationDetail, setLoactionDetail] = useState('');
-    const [nameStation, setNameStation] = useState('');
+    const [locationDetail, setLoactionDetail] = useState(null);
+    const [nameStation, setNameStation] = useState(null);
     const [valuePower, setValuePower] = useState('');
     const [valuePorts, setValuePorts] = useState('');
     const [valuePrice, setValuePrice] = useState('');
@@ -380,22 +411,56 @@ const FormStation = () => {
     };
 
     //anh
-    const [image, setImage] = useState(null);
-    const [checkImage, setCheckImage] = useState(true);
+    const [imageStation, setImageStation] = useState(null);
+    const [choseImageStation, setChoseImageStation] = useState(null);
+    const [urlImageStation, setUrlImageStation] = useState(null);
 
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ['images'],
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
             allowsEditing: true,
             aspect: [4, 3],
-            quality: 1,
+            quality: 1
         });
 
-        if (!result.canceled) {
-            setImage(result.assets[0].uri);
-            setCheckImage(false);
+        if (!result.canceled && result.assets.length > 0) {
+            setChoseImageStation(result.assets[0].uri);
+            setImageStation(result.assets[0].uri);
         }
-    };
+    }
+
+    const uploadImageToFirebase = async () => {
+        try {
+            const { uri } = await FileSystem.getInfoAsync(choseImageStation);
+            const blob = await new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.onload = () => {
+                    resolve(xhr.response);
+                };
+                xhr.onerror = () => {
+                    reject(new TypeError('Request failed !'));
+                };
+                xhr.responseType = 'blob';
+                xhr.open('GET', uri, true);
+                xhr.send(null);
+            });
+
+            const fileName = choseImageStation.substring(choseImageStation.lastIndexOf('/') + 1);
+            const ref = firebase.storage().ref().child(fileName);
+
+            await ref.put(blob);
+            blob.close && blob.close();
+
+            const url = await ref.getDownloadURL();
+            setUrlImageStation(url);
+            setChoseImageStation(null);
+            setImageStation(url);
+            return url;
+        } catch (error) {
+            console.log(error);
+            return null;
+        }
+    }
 
     // kiêm tra number
     const onChangeTextKw = (value) => { if (+value || value == '') setValuePower(value.trim()); };
@@ -515,20 +580,20 @@ const FormStation = () => {
                             flex: 1,
                             justifyContent: 'center',
                             alignItems: 'center',
-                            width: '90%',
+                            width: '100%',
                             height: 170,
                             borderStyle: 'dashed',
-                            borderWidth: 3,
+                            borderWidth: 2,
                             margin: '5%',
                             marginBottom: '0%',
                             borderColor: COLOR.green3,
                             borderRadius: 30
                         }} >
                         {
-                            checkImage ? <Text style={{ fontSize: 18, fontWeight: '500', color: COLOR.green3 }}>Thêm hình ảnh</Text> : null
-                        }
-                        {
-                            image ? <Image source={{ uri: image }} style={{ width: '110%', height: 170, borderRadius: 30, }} /> : null
+                            imageStation ?
+                                <Image source={{ uri: imageStation }} style={{ width: '100%', height: 170, borderRadius: 30, }} />
+                                :
+                                <Image source={require('../../../assets/icon/plus.png')} style={{ width: 70, height: 70, borderRadius: 30 }} />
                         }
                     </TouchableOpacity>
                 </View>

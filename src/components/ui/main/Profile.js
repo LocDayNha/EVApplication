@@ -1,33 +1,110 @@
-import { StyleSheet, Text, View, ScrollView, Image, ToastAndroid } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Image, ToastAndroid, TouchableOpacity } from 'react-native';
 import React, { useState, useContext, useEffect } from 'react';
 import { TextInputProfile, CustomButton } from '../../item/Item';
 import { AppContext } from '../../axios/AppContext';
 import AxiosInstance from '../../axios/AxiosInstance';
+import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
+import { firebase } from '../../../../config';
 
 const Profile = () => {
 
   const { infoUser, idUser, setInfoUser } = useContext(AppContext);
-  const { name, email, phoneNumber, image } = infoUser;
+  const { name, email, phoneNumber } = infoUser;
+  const image = infoUser?.image || 'https://vivureviews.com/wp-content/uploads/2022/08/avatar-vo-danh-6.png';
 
   const [nameUser, setNameUser] = useState(null);
   const [emailUser, setEmailUser] = useState(null);
   const [phoneNumberUser, setPhoneNumberUser] = useState(null);
   const [imageUser, setImageUser] = useState(null);
+  const [choseImage, setChoseImage] = useState(null);
+  const [urlImage, setUrlImage] = useState(null);
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1
+    });
+
+    if (!result.canceled && result.assets.length > 0) {
+      setChoseImage(result.assets[0].uri);
+      setImageUser(result.assets[0].uri);
+    }
+  }
+
+  const uploadImageToFirebase = async () => {
+    try {
+      const { uri } = await FileSystem.getInfoAsync(choseImage);
+      const blob = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = () => {
+          resolve(xhr.response);
+        };
+        xhr.onerror = () => {
+          reject(new TypeError('Request failed !'));
+        };
+        xhr.responseType = 'blob';
+        xhr.open('GET', uri, true);
+        xhr.send(null);
+      });
+
+      const fileName = choseImage.substring(choseImage.lastIndexOf('/') + 1);
+      const ref = firebase.storage().ref().child(fileName);
+
+      await ref.put(blob);
+      blob.close && blob.close();
+
+      const url = await ref.getDownloadURL();
+      setUrlImage(url);
+      setChoseImage(null);
+      setImageUser(url);
+      return url;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
 
   const updateInforUser = async () => {
     try {
+      let newImageUrl = imageUser;
+
+      if (choseImage) {
+        const uploadedImageUrl = await uploadImageToFirebase();
+        if (uploadedImageUrl) {
+          newImageUrl = uploadedImageUrl;
+
+          if (infoUser.image) {
+            try {
+              const storageRef = firebase.storage().refFromURL(infoUser.image);
+              await storageRef.delete();
+              console.log("Xóa ảnh cũ thành công!");
+            } catch (error) {
+              console.log("Lỗi khi xóa ảnh cũ:", error);
+            }
+          } else {
+            console.log("không có ảnh cũ");
+          }
+        } else {
+          console.log("Lỗi khi upload ảnh mới!");
+          return;
+        }
+      }
+
       const data = await AxiosInstance().post('/user/updateInforUser', {
-        id: idUser, name: nameUser, phoneNumber: phoneNumberUser, image: imageUser
+        id: idUser, name: nameUser, phoneNumber: phoneNumberUser, image: newImageUrl
       });
-      console.log(data.user);
       if (data) {
-        console.log('Cập nhật thành công');
+        console.log('Cập nhật thành công:');
         setInfoUser(data.user);
       } else {
         console.log('Cập nhật thất bại');
       }
+
     } catch (error) {
-      console.log(error);
+      console.log('Lỗ hệ thống:', error);
     }
   }
 
@@ -43,7 +120,12 @@ const Profile = () => {
     <ScrollView style={{ backgroundColor: 'white' }}>
       <View style={styles.user}>
         <View style={styles.viewUser}>
-          <Image style={styles.imguser} source={{ uri: imageUser }} />
+          <TouchableOpacity onPress={pickImage}>
+            <Image
+              style={styles.imguser}
+              source={{ uri: imageUser }}
+            />
+          </TouchableOpacity>
           <Text style={styles.textNameuser} >{nameUser}</Text>
         </View>
       </View>

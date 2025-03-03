@@ -39,6 +39,9 @@ const Login = () => {
       );
 
       if (response && response.returnData.data && response.returnData.data.user.isVerified) {
+
+        Keyboard.dismiss();
+
         const { token, user } = response.returnData.data;
 
         if (!token || !user) {
