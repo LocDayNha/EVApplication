@@ -6,6 +6,8 @@ import { useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AxiosInstance from '../../axios/AxiosInstance';
 import { AppContext } from '../../axios/AppContext';
+import { COLOR,SIZE } from "../../../assets/Theme/Theme";
+
 
 const ViewDetail = () => {
     const route = useRoute();
@@ -202,7 +204,7 @@ const ViewDetail = () => {
                                             <View style={styles.infoCharing}>
                                                 <View style={{ flexDirection: 'row', alignItems: 'center', }}>
                                                     <Image style={styles.imginfoCharing} source={require('../../../assets/icon/icons8-flash-50 (1).png')} />
-                                                    <Text style={[styles.textInfoCharing, { color: '#40A19C' }]}>  {item.kw < 20
+                                                    <Text style={[styles.textInfoCharing, { color: COLOR.green3 }]}>  {item.kw < 20
                                                         ? 'Sạc thường'
                                                         : item.kw < 50
                                                             ? 'Sạc nhanh'
@@ -210,7 +212,7 @@ const ViewDetail = () => {
                                                 </View>
                                                 <View style={{ flexDirection: 'row', alignItems: 'center', }}>
                                                     <Image style={styles.imginfoCharing} source={require('../../../assets/icon/icons8-socket-60.png')} />
-                                                    <Text style={[styles.textInfoCharing, { color: '#40A19C' }]}> {item.slot} Cổng sạc</Text>
+                                                    <Text style={[styles.textInfoCharing, { color: COLOR.green3 }]}> {item.slot} Cổng sạc</Text>
                                                 </View>
                                             </View>
                                         </View>
@@ -230,7 +232,7 @@ const ViewDetail = () => {
                             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }} >
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     <Text style={styles.textInfo}> Đánh giá </Text>
-                                    <Text style={{ color: '#40A19C', fontSize: 20 }}>({countRate(dataRating)})</Text>
+                                    <Text style={{ color: COLOR.green3, fontSize: SIZE.size18 }}>({countRate(dataRating)})</Text>
                                 </View>
 
                             </View>
@@ -297,7 +299,7 @@ const ViewDetail = () => {
                                     setModalVisible(false)
                                 }}
                                     style={styles.cancelButton}>
-                                    <Text style={{ color: '#40A19C' }}>Quay lại </Text>
+                                    <Text style={{ color: COLOR.green3 }}>Quay lại </Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     onPress={submitRating}
@@ -313,9 +315,9 @@ const ViewDetail = () => {
             {/* Bottom tab */}
             <View style={styles.containerBottom}>
                 <TouchableOpacity style={styles.buttonBottom} onPress={clickRating}>
-                    <Text style={[styles.textBottom, { color: '#40A19C' }]} >Đánh giá</Text>
+                    <Text style={[styles.textBottom, { color: COLOR.green3 }]} >Đánh giá</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={openGoogleMaps} style={[styles.buttonBottom, { backgroundColor: '#40A19C' }]}>
+                <TouchableOpacity onPress={openGoogleMaps} style={[styles.buttonBottom, { backgroundColor: COLOR.green3 }]}>
                     <Text style={[styles.textBottom, { color: 'white' }]}>Đến ngay</Text>
                 </TouchableOpacity>
             </View>
@@ -356,27 +358,27 @@ const styles = StyleSheet.create({
         borderColor: '#C7C6C5',
     },
     textName: {
-        fontSize: 24,
+        fontSize: SIZE.size18,
         fontWeight: 'bold',
         textAlign: 'center',
     },
 
 
     textMain: {
-        fontSize: 18,
+        fontSize: SIZE.size14,
         textAlign: 'center',
     },
     textMain22: {
-        fontSize: 18,
-        color: '#40A19C'
+        fontSize: SIZE.size14,
+        color: COLOR.green3
     },
     textInfo: {
-        fontSize: 20,
+        fontSize: SIZE.size14,
         fontWeight: 'bold',
         margin: '5%'
     },
     textInfoService: {
-        fontSize: 20,
+        fontSize: SIZE.size16,
         fontWeight: 'bold',
     },
     imgMain: {
@@ -455,21 +457,21 @@ const styles = StyleSheet.create({
         borderRadius: 20,
     },
     textInfoCharing: {
-        fontSize: 16,
+        fontSize: SIZE.size14,
         fontWeight: '500'
     },
     textService: {
-        fontSize: 18,
+        fontSize: SIZE.size14,
         marginLeft: '5%',
         fontWeight: '500'
     },
     textTypeCharing: {
-        fontSize: 18,
+        fontSize: SIZE.size14,
         fontWeight: '500'
     },
     textNote: {
         marginLeft: '5%',
-        fontSize: 16,
+        fontSize: SIZE.size14,
         fontWeight: '500',
         marginBottom: '5%'
     },
@@ -525,7 +527,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 30,
-        borderColor: '#40A19C',
+        borderColor: COLOR.green3,
         borderWidth: 1,
         margin: '5%',
         padding: '3%',
@@ -533,7 +535,7 @@ const styles = StyleSheet.create({
         marginBottom: '0%'
     },
     textBottom: {
-        fontSize: 16,
+        fontSize: SIZE.size14,
     },
     buttonBack: {
         position: 'absolute',
@@ -561,13 +563,13 @@ const styles = StyleSheet.create({
         maxHeight: '80%',
     },
     modalTitle: {
-        fontSize: 18,
+        fontSize: SIZE.size14,
         fontWeight: 'bold',
         marginBottom: 10,
         textAlign: 'center'
     },
     modalTitleSup: {
-        fontSize: 18,
+        fontSize: SIZE.size14,
         marginTop: 10,
         fontWeight: '600'
     },
@@ -579,10 +581,10 @@ const styles = StyleSheet.create({
         marginRight: 5,
         alignItems: 'center',
         borderWidth: 0.5,
-        borderColor: '#40A19C'
+        borderColor: COLOR.green3
     },
     applyButton: {
-        backgroundColor: '#40A19C',
+        backgroundColor: COLOR.green3,
         padding: 10,
         borderRadius: 20,
         flex: 1,
@@ -604,7 +606,7 @@ const styles = StyleSheet.create({
         padding: 10,
         backgroundColor: 'white',
         textAlignVertical: 'top',
-        fontSize: 16,
+        fontSize: SIZE.size14,
     }
 
 

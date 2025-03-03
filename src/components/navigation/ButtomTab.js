@@ -142,10 +142,10 @@ const ButtomTab = () => {
             <Stack.Screen name="SplashSceen" component={SplashScreen} />
             <Stack.Screen name="Screen" component={Screen} />
 
-            <Stack.Screen name="List" component={List} options={{ title: "Trạm sạc của bạn", headerStyle: { backgroundColor: "#40A19C" }, headerTintColor: "#fff", headerShown: true }} />
-            <Stack.Screen name="Profile" component={Profile} options={{ title: "Thông tin cá nhân", headerStyle: { backgroundColor: "#40A19C" }, headerTintColor: "#fff", headerShown: true }} />
-            <Stack.Screen name="ViewDetail" component={ViewDetail} options={{ title: "Chi tiết trạm sạc", headerStyle: { backgroundColor: "#40A19C" }, headerTintColor: "#fff", headerShown: true, }} />
-            <Stack.Screen name="FormStation" component={FormStation} options={{ title: "Thêm trạm sạc", headerStyle: { backgroundColor: "#40A19C" }, headerTintColor: "#fff", headerShown: true }} />
+            <Stack.Screen name="List" component={List} options={{ title: "Trạm sạc của bạn", headerStyle: { backgroundColor: COLOR.green3 }, headerTintColor: "#fff", headerShown: true }} />
+            <Stack.Screen name="Profile" component={Profile} options={{ title: "Thông tin cá nhân", headerStyle: { backgroundColor: COLOR.green3 }, headerTintColor: "#fff", headerShown: true }} />
+            <Stack.Screen name="ViewDetail" component={ViewDetail} options={{ title: "Chi tiết trạm sạc", headerStyle: { backgroundColor: COLOR.green3 }, headerTintColor: "#fff", headerShown: true, }} />
+            <Stack.Screen name="FormStation" component={FormStation} options={{ title: "Thêm trạm sạc", headerStyle: { backgroundColor: COLOR.green3 }, headerTintColor: "#fff", headerShown: true }} />
 
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="Register" component={Register} />

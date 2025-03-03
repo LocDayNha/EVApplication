@@ -1,9 +1,11 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Modal, View, Text, TouchableOpacity, FlatList, StyleSheet, ScrollView, Image } from "react-native";
-// import Slider from '@react-native-community/slider';
-import { COLOR } from '@/src/assets/Theme/Theme';
+ import Slider from '@react-native-community/slider';
+import { COLOR,SIZE } from '@/src/assets/Theme/Theme';
 // import Slider from "react-native-sliders";
 import MultiSlider from '@ptomasroos/react-native-multi-slider'
+import { LinearGradient } from 'expo-linear-gradient';
+
 
 // list nút vuông 
 export function ItemModalCheckBox({ checkModal, setModalVisible, data, selectedItems, setSelectedItems, title }) {
@@ -178,29 +180,32 @@ export function ItemSliderModal({ checkModal, setModalVisible, value, setValue, 
                             alignItems: 'center',
                             justifyContent: 'center',
                         }}>
-                            <Text style={{ fontSize: 18, color: 'white', textAlign: 'center' }}>{value}</Text>
-                            <Text style={{ fontSize: 18, color: 'white' }}>Km</Text>
+                            <Text style={{ fontSize: SIZE.size16, color: 'white', textAlign: 'center' }}>{value}</Text>
+                            <Text style={{ fontSize: SIZE.size16, color: 'white' }}>Km</Text>
                         </View>
                     </View>
                     <View style={{ alignItems: 'center' }}>
                         <MultiSlider
-                            style={{ width: '100%', height: 50 }}
+                            style={{ width: '90%', height: 50, }}
                             min={minValue}
                             max={maxValue}
                             step={1}
+                            sliderLength={250}
                             minimumTrackTintColor={COLOR.green4}
                             maximumTrackTintColor="grey"
                             thumbTintColor={COLOR.green4}
                             onValuesChange={setValue}
                             value={value}
                             snapped
+                            markerStyle={{ height: 20, width: 20, }}
+                            trackStyle={{ height: 4, }}
                             //values={[10, 80]}
                             allowOverlap={false}
                         />
                     </View>
                     <View style={{ justifyContent: 'space-between', flexDirection: 'row', marginHorizontal: '5%' }}>
-                        <Text style={{ fontSize: 18, }}>{minValue}Km</Text>
-                        <Text style={{ fontSize: 18, }}>{maxValue}Km</Text>
+                        <Text style={{ fontSize: SIZE.size16, }}>{minValue}Km</Text>
+                        <Text style={{ fontSize: SIZE.size16, }}>{maxValue}Km</Text>
                     </View>
 
                     <View style={styles.buttonRow}>
@@ -229,7 +234,7 @@ export function ItemSlider({ values, setValues, minValue, maxValue }) {
 
         <View style={{ alignItems: 'center' }}>
             <View>
-                <Text style={{ fontSize: 18 }}>
+                <Text style={{ fontSize: SIZE.size16 }}>
                     {values?.[0] ?? 0}Kw - {values?.[1] ?? 0}Kw
                 </Text>
             </View>
@@ -249,8 +254,8 @@ export function ItemSlider({ values, setValues, minValue, maxValue }) {
                 trackStyle={{ height: 4, }}
             />
             <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-evenly' }}>
-                <Text style={{ fontSize: 18, marginHorizontal: '20%' }} >{minValue}Kw</Text>
-                <Text style={{ fontSize: 18, marginHorizontal: '20%' }} >{maxValue}Kw</Text>
+                <Text style={{ fontSize: SIZE.size16, marginHorizontal: '20%' }} >{minValue}Kw</Text>
+                <Text style={{ fontSize: SIZE.size16, marginHorizontal: '20%' }} >{maxValue}Kw</Text>
             </View>
         </View>
     );
@@ -394,7 +399,7 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     modalTitle: {
-        fontSize: 18,
+        fontSize: SIZE.size16,
         fontWeight: "bold",
         marginBottom: 10,
     },
@@ -426,7 +431,7 @@ const styles = StyleSheet.create({
         backgroundColor: COLOR.green3,
     },
     filterText: {
-        fontSize: 16,
+        fontSize: SIZE.size14,
     },
 
     buttonRow: {

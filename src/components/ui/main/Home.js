@@ -1,14 +1,28 @@
 import { StyleSheet, Modal, Text, TouchableWithoutFeedback, View, Image, Linking, ToastAndroid, Button, TouchableOpacity, FlatList, SectionList, ImageBase, TextInput, ScrollView } from 'react-native';
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { ItemRadioButton, ItemRadioButtonType, ItemStationMain } from '../../item/Item';
+import { ItemCheckBox, ItemCheckBoxImage, ItemRadioButton, ItemRadioButtonType, ItemRadioButtonVertical, ItemStationMain } from '../../item/Item';
 import AxiosInstance from '../../axios/AxiosInstance';
 import * as Location from 'expo-location';
-import { COLOR } from "../../../assets/Theme/Theme";
+import { COLOR, SIZE} from "../../../assets/Theme/Theme";
 import { AppContext } from '../../axios/AppContext';
 import { ItemListModal, ItemModalCheckBox, ItemModalRadioButton, ItemSliderModal, ItemSlider, ItemModalCheckBoxImage } from '../../item/Modal';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { LinearGradient } from 'expo-linear-gradient';
+import haversine from 'haversine-distance';
+
+const list = [
+    { _id: 0, name: 'Hãng trụ sạc' },
+    { _id: 1, name: 'Phương tiện' },
+    { _id: 2, name: 'Dòng điện' },
+    { _id: 3, name: 'Cổng sạc' },
+    { _id: 4, name: 'Dịch vụ' },
+];
+const Von = [
+    { _id: 'AC', name: 'AC' },
+    { _id: 'DC', name: 'DC' },
+
+];
 
 const Home = (props) => {
 
@@ -25,14 +39,19 @@ const Home = (props) => {
     const [modalKm, setModalKm] = useState(false);
 
     // luu id cua loai sac 
-    const [selectedVon, setSelectedVon] = useState('Tất cả');
+    const [selectedVon, setSelectedVon] = useState([]);
     const [selectedSocket, setSelectedSocket] = useState([]);
-    const [selectedKw, setSelectedKw] = useState('Tất cả');
     const [selectedVehicle, setSelectedVehicle] = useState([]);
-    const [selectedBrand, setSelectedBrand] = useState('');
-    const [selectedKm, setSelectedKm] = useState('Tất cả');
+    const [selectedBrand, setSelectedBrand] = useState([]);
     const [selectedService, setSelectedService] = useState([]);
-
+    //console.log('Dòng điện' + selectedVon);
+    //console.log('Loại đầu sạc ' + selectedSocket);
+    //console.log(' Loại xe' + selectedVehicle);
+    //console.log(' Hãng xe '+selectedBrand);
+    //console.log('dịch vụ ' + selectedService);
+    // phan bo sung 
+    const [selectedKw, setSelectedKw] = useState('Tất cả');
+    const [selectedKm, setSelectedKm] = useState('Tất cả');
 
     const [defaultValueKm, setDefaultValueKm] = useState(5);
     const [valueKm, setValueKm] = useState(defaultValueKm);
@@ -42,12 +61,42 @@ const Home = (props) => {
     const [minValueKw, setMinValueKw] = useState(1);
     const [maxValueKw, setMaxValueKw] = useState(200);
 
+    // check 
+    const [selectedStatus, setSelectedStatus] = useState();
 
 
+    // danh muc lisst bo loc
+    const [selectedFilter, setSelectedFliter] = useState(0);
+    const handleFilterSelect = (selected) => {
+        setSelectedFliter(selected);
+    };
+
+    // danh muc nhãn tramh
+    const handleBrandSelect = (selected) => {
+        setSelectedBrand(selected);
+    };
+    // danh muc phương tiện
+    const handleVehicalSelect = (VehicalId) => {
+        setSelectedVehicle(VehicalId);
+    };
+    // danh muc dòng điện
+    const handleVonSelect = (selected) => {
+        setSelectedVon(selected);
+    };
+    // danh muc loai công sac 
+    const handleSocketSelect = (selected) => {
+        setSelectedSocket(selected);
+    };
+    // danh muc dịch vụ
+    const handleServicesSelect = (selected) => {
+        setSelectedService(selected);
+    };
     //Lấy địa chỉ và định vị
     const [errorMsg, setErrorMsg] = useState('');
     const [address, setAddress] = useState('');
-    const { myLat, setMyLat, myLng, setMyLng } = useContext(AppContext);
+    const { myLat, setMyLat, myLng, setMyLng, infoUser } = useContext(AppContext);
+    const name = infoUser?.name || "Nguyễn Vô Danh";
+    const image = infoUser?.image || "https://vivureviews.com/wp-content/uploads/2022/08/avatar-vo-danh-6.png";
     const getYourLocation = async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
 
@@ -207,14 +256,37 @@ const Home = (props) => {
         getBrandDataStation();
     }, []);
 
-    const handleVehicalSelect = (VehicalId) => {
-        setSelectedVehicle(VehicalId);
-    };
-
     const [selectedEc, setSelectedEc] = useState([]);
     const handleEcSelect = (ecId) => {
         setSelectedEc(ecId);
     };
+
+    // kiểm tra dữ liệu bộ lọc 
+
+    const filteredItems = dataStation?.filter(item => {
+        const matchesBrand = !selectedBrand || selectedBrand.length === 0 || selectedBrand.includes(item.brand_id?._id);
+
+        const matchesVehicle = !selectedVehicle || selectedVehicle.length === 0 ||
+            item.specification.some(spec => selectedVehicle.includes(spec.specification_id.vehicle_id?._id));
+
+        const matchesPort = !selectedSocket || selectedSocket.length === 0 ||
+            item.specification.some(spec => selectedSocket.includes(spec.specification_id.port_id?._id));
+
+        const matchesService = !selectedService || selectedService.length === 0 ||
+            item.service.some(service => selectedService.includes(service.service_id?._id));
+
+        const matchesVon = !selectedVon || selectedVon.length === 0 ||
+            item.specification.some(spec => selectedVon.includes(spec.specification_id.port_id?.type));
+
+        return matchesBrand && matchesVehicle && matchesPort && matchesService && matchesVon;
+    });
+
+    // const point1 = { latitude: myLat, longitude: myLng };
+    // const point2 = { latitude: 11.3495, longitude: 106.0640 };
+    
+    // const distance = haversine(point1, point2); // Khoảng cách tính bằng mét
+    
+    // console.log(distance / 1000 + " km");
 
     return (
         <View style={{ height: '100%', backgroundColor: 'white' }}>
@@ -223,9 +295,9 @@ const Home = (props) => {
                 {
                     !modalSearch ?
                         (<View style={styles.inputSearch}>
-                            <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }} onPress={() => navigation.navigate("Profile")} >
-                                <Image style={styles.img} source={require('../../../assets/images/anhchandung.jpg')} />
-                                <Text style={styles.titleContainer}>Tùng</Text>
+                            <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', width: '50%' }} onPress={() => navigation.navigate("Profile")} >
+                                <Image style={styles.img} source={{ uri: image }} />
+                                <Text style={styles.titleContainer} numberOfLines={1} ellipsizeMode='head'>{name}</Text>
                             </TouchableOpacity>
                             <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
                                 <TouchableOpacity style={styles.boderIcon2} onPress={() => setModalSearch(true)}>
@@ -240,9 +312,9 @@ const Home = (props) => {
                         :
                         (<View style={styles.inputSearch}>
                             <View style={styles.boderSearch}>
-                                <TextInput numberOfLines={1} ellipsizeMode='tail' onChangeText={setAddressInput} style={{ fontSize: 16, width: '80%' }} placeholder='Tìm kiếm ' />
+                                <TextInput numberOfLines={1} ellipsizeMode='tail' onChangeText={setAddressInput} style={{ fontSize: SIZE.size12, width: '80%' }} placeholder='Tìm kiếm ' />
                                 <TouchableOpacity style={{ justifyContent: 'center', padding: 15, borderRadius: 30, }} onPress={() => setModalSearch(false)}>
-                                    <Image style={styles.iconFilter} source={require('../../../assets/icon/icons8-search-50.png')} />
+                                    <Image style={styles.iconFilter} source={require('../../../assets/icon/icons8-multiply-50.png')} />
                                 </TouchableOpacity>
                             </View>
                             <TouchableOpacity style={{ marginLeft: '2%', backgroundColor: 'white', justifyContent: 'center', padding: 15, borderRadius: 30, }} onPress={() => setModalVisible(true)}>
@@ -287,125 +359,100 @@ const Home = (props) => {
                     </View>
                     <View >
                         <FlatList
-                            data={dataStation}
+                            data={filteredItems}
                             scrollEnabled={false}
                             showsVerticalScrollIndicator={false}
                             keyExtractor={(item) => item._id}
                             renderItem={({ item }) => (
-                                <ItemStationMain data={item} />
+                                <View>
+                                    <ItemStationMain data={item} />
+                                </View>
                             )}
                         />
                     </View>
                 </View>
-
-
-                <ItemModalCheckBoxImage
-                    checkModal={modalBrands}
-                    setModalVisible={setModalBrands}
-                    data={dataBrandStation}
-                    selectedItems={selectedBrand}
-                    setSelectedItems={setSelectedBrand}
-                    title={'Hãng Xe'}
-                />
-                <ItemModalCheckBoxImage
-                    checkModal={modalSocKet}
-                    setModalVisible={setModalSocket}
-                    data={dataSocket}
-                    selectedItems={selectedSocket}
-                    setSelectedItems={setSelectedSocket}
-                    title={'Loại đầu sạc'}
-                />
-                <ItemModalCheckBoxImage
-                    checkModal={modalService}
-                    setModalVisible={setModalService}
-                    data={dataService}
-                    selectedItems={selectedService}
-                    setSelectedItems={setSelectedService}
-                    title={'Dịch vụ'}
-                />
-                <ItemSliderModal
-                    checkModal={modalKm}
-                    setModalVisible={setModalKm}
-                    value={valueKm}
-                    setValue={setValueKm}
-                    defaultValue={defaultValueKm}
-                    minValue={minValueKm}
-                    maxValue={maxValueKm}
-                    title={'Phạm vi tìm kiếm'}
-                />
-                <Modal transparent={true} visible={modalVisible} animationType="slide">
-                    <View style={styles.modalOverlay}>
-                        {/* <TouchableWithoutFeedback onPress={() => setModalVisible(false)} >
-                </TouchableWithoutFeedback> */}
-                        <View style={styles.modalContent}>
-                            <View style={styles.buttonRow}>
-                                <Text style={[styles.modalTitle, { textAlign: 'center' }]}> Bộ lọc chi tiết</Text>
-                                <TouchableOpacity style={styles.applyButton} onPress={() => setModalVisible(false)}>
-                                    <Image style={styles.iconExit} source={require('../../../assets/icon/icons8-x-80.png')} />
-                                </TouchableOpacity>
-                            </View>
-
-                            <ScrollView showsVerticalScrollIndicator={false} style={{ height: '100%' }}>
-                                {/* hãng trụ sạc  */}
-                                <View>
-                                    <Text style={styles.textTitleModal}>Hãng trụ sạc </Text>
-                                </View>
-                                <View style={{ alignItems: 'center' }}>
-                                    <TouchableOpacity style={styles.buttonItem} onPress={() => setModalBrands(true)} >
-                                        <Text > Chọn hãng trụ sạc </Text>
-                                        <Image style={styles.iconButton} source={require('../../../assets/icon/icons8-arrow-down-24.png')} />
-                                    </TouchableOpacity>
-                                </View>
-
-                                {/* loại phương tiện */}
-                                <View>
-                                    <Text style={styles.textTitleModal}>Loại phương tiện</Text>
-                                </View>
-                                <View>
-                                    <ItemRadioButton data={dataVehical} onSelect={handleVehicalSelect} selectedValue={selectedVehicle} />
-                                </View>
-                                {/* dòng điện */}
-                                <View>
-                                    <Text style={styles.textTitleModal}>Dòng điện</Text>
-                                </View>
-                                <View>
-                                    <ItemRadioButtonType data={dataSocket} onSelect={handleEcSelect} selectedValue={selectedEc} />
-                                </View>
-                                {/* Công Xuất  */}
-                                <View>
+            </ScrollView>
+            <Modal transparent={true} visible={modalVisible} animationType="slide">
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <View style={styles.buttonC}>
+                            <Text style={[styles.modalTitle, { textAlign: 'center' }]}> Bộ lọc chi tiết</Text>
+                            <TouchableOpacity style={styles.applyButtonC} onPress={() => setModalVisible(false)}>
+                                <Image style={styles.iconExit} source={require('../../../assets/icon/icons8-x-80.png')} />
+                            </TouchableOpacity>
+                        </View>
+                        {/* Công Xuất  */}
+                        {/* <View>
                                     <Text style={styles.textTitleModal}>Khoảng Kw</Text>
                                 </View>
                                 <View>
                                     <ItemSlider values={valuesKw} setValues={setValuesKw} minValue={minValueKw} maxValue={maxValueKw} />
-                                </View>
-                                {/* Loại cổng sạc */}
-                                <View>
-                                    <Text style={styles.textTitleModal}>Loại cổng sạc </Text>
-                                </View>
-                                <TouchableOpacity style={{ alignItems: 'center' }} onPress={() => setModalSocket(true)}>
-                                    <View style={styles.buttonItem}>
-                                        <Text > Chọn loại cổng sạc </Text>
-                                        <Image style={styles.iconButton} source={require('../../../assets/icon/icons8-arrow-down-24.png')} />
-                                    </View>
-                                </TouchableOpacity>
-                                {/* Chọn dịch vụ  */}
-                                <View>
-                                    <Text style={styles.textTitleModal}>Loại dịch vụ </Text>
-                                </View>
-                                <TouchableOpacity style={{ alignItems: 'center' }} onPress={() => setModalService(true)}>
-                                    <View style={styles.buttonItem}>
-                                        <Text > Chọn loại dịch vụ </Text>
-                                        <Image style={styles.iconButton} source={require('../../../assets/icon/icons8-arrow-down-24.png')} />
-                                    </View>
-                                </TouchableOpacity>
-
-                            </ScrollView>
-
+                                </View> */}
+                        <View style={{ flexDirection: 'row', width: '100%', height: '80%' }}>
+                            {/* danh muc */}
+                            <ItemRadioButton data={list} setSelectedValue={setSelectedFliter} selectedValue={selectedFilter} />
+                            {/* nooij dung */}
+                            {selectedFilter == 0 ? <ItemCheckBoxImage data={dataBrandStation} selectedItems={selectedBrand} setSelectedItems={setSelectedBrand} /> : null}
+                            {selectedFilter == 1 ? <ItemRadioButtonVertical data={dataVehical} onSelect={handleVehicalSelect} selectedValue={selectedVehicle} setSelectedValue={setSelectedVehicle} /> : null}
+                            {selectedFilter == 2 ? <ItemRadioButtonVertical data={Von} onSelect={handleVonSelect} selectedValue={selectedVon} setSelectedValue={setSelectedVon} /> : null}
+                            {selectedFilter == 3 ? <ItemCheckBoxImage data={dataSocket} selectedItems={selectedSocket} setSelectedItems={setSelectedSocket} /> : null}
+                            {selectedFilter == 4 ? <ItemCheckBoxImage data={dataService} selectedItems={selectedService} setSelectedItems={setSelectedService} /> : null}
+                        </View>
+                        <View style={styles.buttonRow}>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setModalVisible(false);
+                                }}
+                                style={styles.cancelButton}
+                            >
+                                <Text style={styles.cancelText}>Làm mới</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => setModalVisible(false)} // Added missing onPress
+                                style={styles.applyButton}
+                            >
+                                <Text style={styles.applyText}>Áp dụng</Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
+                </View>
+            </Modal>
 
-                </Modal>
-            </ScrollView>
+
+            <ItemModalCheckBoxImage
+                checkModal={modalBrands}
+                setModalVisible={setModalBrands}
+                data={dataBrandStation}
+                selectedItems={selectedBrand}
+                setSelectedItems={setSelectedBrand}
+                title={'Hãng Xe'}
+            />
+            <ItemModalCheckBoxImage
+                checkModal={modalSocKet}
+                setModalVisible={setModalSocket}
+                data={dataSocket}
+                selectedItems={selectedSocket}
+                setSelectedItems={setSelectedSocket}
+                title={'Loại đầu sạc'}
+            />
+            <ItemModalCheckBoxImage
+                checkModal={modalService}
+                setModalVisible={setModalService}
+                data={dataService}
+                selectedItems={selectedService}
+                setSelectedItems={setSelectedService}
+                title={'Dịch vụ'}
+            />
+            <ItemSliderModal
+                checkModal={modalKm}
+                setModalVisible={setModalKm}
+                value={valueKm}
+                setValue={setValueKm}
+                defaultValue={defaultValueKm}
+                minValue={minValueKm}
+                maxValue={maxValueKm}
+                title={'Phạm vi tìm kiếm'}
+            />
 
         </View>
 
@@ -417,8 +464,33 @@ export default Home
 
 const styles = StyleSheet.create({
 
-    boxHome: {
-
+    buttonRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+    },
+    cancelButton: {
+        backgroundColor: "#ccc",
+        padding: 15,
+        borderRadius: 5,
+        flex: 1,
+        marginRight: 10,
+        alignItems: "center",
+    },
+    cancelText: {
+        color: "black",
+        fontWeight: "bold",
+    },
+    applyButton: {
+        backgroundColor: COLOR.green3,
+        padding: 15,
+        borderRadius: 5,
+        flex: 1,
+        alignItems: "center",
+        marginHorizontal: '5%'
+    },
+    applyText: {
+        color: "white",
+        fontWeight: "bold",
     },
     containerUser: {
         backgroundColor: '#009558',
@@ -433,17 +505,17 @@ const styles = StyleSheet.create({
     },
     text: {
         color: 'rgb(0, 0, 0)',
-        fontSize: 16,
+        fontSize: SIZE.size12,
         fontWeight: 'bold',
     },
     title: {
         color: 'rgb(0, 0, 0)',
-        fontSize: 18,
+        fontSize: SIZE.size14,
         fontWeight: '500',
     },
     titleContainer: {
         color: 'rgb(255, 255, 255)',
-        fontSize: 20,
+        fontSize: SIZE.size16,
         fontWeight: 'bold',
         marginLeft: '5%',
     },
@@ -537,14 +609,14 @@ const styles = StyleSheet.create({
     },
     modalContent: {
         width: "100%",
-        maxHeight: '70%',
+        height: '80%',
         backgroundColor: "white",
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
         padding: 20,
     },
     modalTitle: {
-        fontSize: 20,
+        fontSize: SIZE.size16,
         fontWeight: "bold",
         marginBottom: 10,
     },
@@ -563,12 +635,14 @@ const styles = StyleSheet.create({
         elevation: 2,
         marginVertical: '2%'
     },
-    buttonRow: {
+    buttonC: {
         flexDirection: "row",
         justifyContent: "space-between",
     },
-    applyButton: {
+    applyButtonC: {
     },
+
+
     IconBrand: {
         width: 30,
         height: 30,
@@ -578,7 +652,7 @@ const styles = StyleSheet.create({
         width: 20,
     },
     textTitleModal: {
-        fontSize: 18,
+        fontSize: SIZE.size14,
         fontWeight: "500",
     },
 
@@ -618,10 +692,10 @@ const styles = StyleSheet.create({
         height: 55,
     },
     textBrand: {
-        fontSize: 16,
+        fontSize: SIZE.size12,
     },
     selectedTextBrand: {
-        fontSize: 18,
+        fontSize: SIZE.size14,
     }
 
 
