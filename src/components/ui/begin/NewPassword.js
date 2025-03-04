@@ -14,14 +14,6 @@ const NewPassword = () => {
     const navigation = useNavigation();
     const [showPassword, setShowPassword] = useState(false);
 
-    let [fontLoaded] = useFonts({
-        Roboto_500Medium,
-        Poppins_600SemiBold
-    })
-    if (!fontLoaded) {
-        return <AppLoading />
-    }
-
     const [password, setPassword] = useState(null);
     const [password2, setPassword2] = useState(null);
     const SetNewPassword = async () => {

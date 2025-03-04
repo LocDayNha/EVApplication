@@ -9,15 +9,6 @@ import AppLoading from 'expo-app-loading'
 const ForgotPass = () => {
     const navigation = useNavigation();
 
-    let [fontLoaded] = useFonts({
-
-        Roboto_500Medium,
-        Poppins_600SemiBold
-    })
-    if (!fontLoaded) {
-        return <AppLoading />
-    }
-
     const [email, setEmail] = useState(null);
 
     const SenCode = () => {

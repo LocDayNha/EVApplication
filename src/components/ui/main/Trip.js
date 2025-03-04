@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, ActivityIndicator, ScrollView, TouchableOpacity, Modal, FlatList } from 'react-native'
+import { StyleSheet, Text, View, Image, ActivityIndicator, ScrollView, TouchableOpacity, Modal, FlatList, ToastAndroid } from 'react-native'
 import React, { useState, useEffect, useRef } from 'react';
 import Slider from '@react-native-community/slider';
 import RNPickerSelect from 'react-native-picker-select';
@@ -15,12 +15,10 @@ const Trip = () => {
   const [modalMap, setModalMap] = useState(false);
 
   const [value, setValue] = useState(5);
-  const [valueTest, setValueTest] = useState();
-  const [valueKm, setValueKm] = useState();
+  const [valueTest, setValueTest] = useState('');
+  const [valueKm, setValueKm] = useState('');
 
   const maxValue = valueKm.length > 0 ? Math.max(...valueKm) : 0;
-  console.log("Giá trị cao nhất:", maxValue);
-  
 
   const [address, setAddress] = useState('');
   const [myLat, setMyLat] = useState('');
@@ -62,12 +60,24 @@ const Trip = () => {
       ToastAndroid.show('Không thể tải danh sách thông tin trạm sạc', ToastAndroid.SHORT);
     }
   };
-  const [selectedLocation, setSelectedLocation] = useState()
+  const [toLat, setToLat] = useState(null);
+  const [toLng, setToLng] = useState(null);
+  const [selectedLocation, setSelectedLocation] = useState(null);
   const handleMapPress = (event) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
     console.log("Vị trí đã chọn:", latitude, longitude);
+    setToLat(latitude);
+    setToLng(longitude);
     setSelectedLocation({ latitude, longitude });
   };
+
+  const Log = () => {
+    console.log('KW:', value);
+    console.log('My Lat:', myLat);
+    console.log('My Lng:', myLng);
+    console.log('To Lat:', toLat);
+    console.log('To Lng:', toLng);
+  }
 
   useEffect(() => {
     getYourLocation();
@@ -127,7 +137,7 @@ const Trip = () => {
         </TouchableOpacity>
       </View>
       <View style={{ alignItems: 'center', margin: '5%' }}>
-        <CustomButton label={'Tìm kiếm theo lộ trình'} />
+        <CustomButton label={'Tìm kiếm theo lộ trình'} onPress={Log}/>
       </View>
 
       <View >
@@ -143,8 +153,6 @@ const Trip = () => {
           )}
         />
       </View>
-
-
 
       <Modal transparent={true} visible={modalMap} animationType="slide">
         <View style={styles.modalOverlay}>

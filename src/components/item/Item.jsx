@@ -192,6 +192,10 @@ export function ItemStationMap(props) {
   const { data } = props;
   const navigation = useNavigation();
   const { myLat, myLng } = useContext(AppContext);
+  const point1 = { latitude: myLat, longitude: myLng };
+  const point2 = { latitude: data.lat, longitude: data.lng };
+
+  const distance = haversine(point1, point2) / 1000;
 
   const clickViewDetail = () => {
     navigation.navigate('ViewDetail', { id: data._id });
@@ -225,27 +229,43 @@ export function ItemStationMap(props) {
         <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail'>{data.time}</Text>
       </View>
       <View style={styles.viewInfoStation2}>
+        <View style={{ flexDirection: 'row' }}>
+          {(() => {
+            const portTypes = data?.specification
+              ?.map((item) => item?.specification_id?.port_id?.type)
+              .filter((type) => type === "AC" || type === "DC"); // Lọc chỉ lấy AC hoặc DC
+            const uniquePortTypes = [...new Set(portTypes)]; // Loại bỏ giá trị trùng lặp
+            const displayText = uniquePortTypes.length === 2 ? "AC/DC:" : `${uniquePortTypes[0]}: ` || "N/A";
 
-        {(() => {
-          const portTypes = data?.specification
-            ?.map((item) => item?.specification_id?.port_id?.type)
-            .filter((type) => type === "AC" || type === "DC"); // Lọc chỉ lấy AC hoặc DC
+            return (
+              <Text style={[styles.textItemLocation]} numberOfLines={1} ellipsizeMode="tail">
+                {displayText}
+              </Text>
+            );
+          })()}
 
-          const uniquePortTypes = [...new Set(portTypes)]; // Loại bỏ giá trị trùng lặp
+          {(() => {
+            const portTypes = data?.specification
+              ?.map((item) => item?.specification_id?.port_id?.name);
+            //.filter((type) => type === "AC" || type === "DC"); // Lọc chỉ lấy AC hoặc DC
+            const uniquePortTypes = [...new Set(portTypes)];
+            const limitedPortTypes = uniquePortTypes.slice(0, 3);
+            const displayText =
+              uniquePortTypes.length > 3
+                ? `${limitedPortTypes.join(" - ")} ...`
+                : limitedPortTypes.join(" - ") || "N/A";
 
-          const displayText = uniquePortTypes.length === 2 ? "AC/DC" : uniquePortTypes[0] || "N/A";
-
-          return (
-            <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode="tail">
-              {displayText}
-            </Text>
-          );
-        })()}
-
+            return (
+              <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode="tail">
+                {displayText}
+              </Text>
+            );
+          })()}
+        </View>
         <TouchableOpacity onPress={openGoogleMaps}>
           <LinearGradient colors={['#009558', '#5bdb5b',]} style={styles.viewButtonItem} >
             <Text style={{ color: 'white' }}>
-              Đến ngay
+              {distance.toFixed(1)} Km
             </Text>
             <Image style={styles.imgNext} source={require('../../assets/icon/icons8-arrow-64.png')} />
           </LinearGradient>
@@ -307,24 +327,42 @@ export function ItemStationMain(props) {
                 <Image style={{ width: 20, height: 20, marginRight: 5 }} source={require('../../assets/icon/icons8-time-48.png')} />
                 <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail'>{data.time}</Text>
               </View>
-
             </View>
+
             <View style={styles.viewInfoStation2}>
+              <View style={{ flexDirection: 'row' }}>
+                {(() => {
+                  const portTypes = data?.specification
+                    ?.map((item) => item?.specification_id?.port_id?.type)
+                    .filter((type) => type === "AC" || type === "DC"); // Lọc chỉ lấy AC hoặc DC
+                  const uniquePortTypes = [...new Set(portTypes)]; // Loại bỏ giá trị trùng lặp
+                  const displayText = uniquePortTypes.length === 2 ? "AC/DC:" : `${uniquePortTypes[0]}: ` || "N/A";
 
-              {(() => {
-                const portTypes = data?.specification
-                  ?.map((item) => item?.specification_id?.port_id?.type)
-                  .filter((type) => type === "AC" || type === "DC"); // Lọc chỉ lấy AC hoặc DC
-                const uniquePortTypes = [...new Set(portTypes)]; // Loại bỏ giá trị trùng lặp
-                const displayText = uniquePortTypes.length === 2 ? "AC/DC" : uniquePortTypes[0] || "N/A";
+                  return (
+                    <Text style={[styles.textItemLocation]} numberOfLines={1} ellipsizeMode="tail">
+                      {displayText}
+                    </Text>
+                  );
+                })()}
 
-                return (
-                  <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode="tail">
-                    {displayText}
-                  </Text>
-                );
-              })()}
+                {(() => {
+                  const portTypes = data?.specification
+                    ?.map((item) => item?.specification_id?.port_id?.name);
+                  //.filter((type) => type === "AC" || type === "DC"); // Lọc chỉ lấy AC hoặc DC
+                  const uniquePortTypes = [...new Set(portTypes)];
+                  const limitedPortTypes = uniquePortTypes.slice(0, 3);
+                  const displayText =
+                    uniquePortTypes.length > 3
+                      ? `${limitedPortTypes.join(" - ")} ...`
+                      : limitedPortTypes.join(" - ") || "N/A";
 
+                  return (
+                    <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode="tail">
+                      {displayText}
+                    </Text>
+                  );
+                })()}
+              </View>
               <TouchableOpacity onPress={openGoogleMaps}>
                 <LinearGradient colors={['#009558', '#5bdb5b',]} style={styles.viewButtonItem} >
                   <Text style={{ color: 'white' }}>
@@ -502,6 +540,39 @@ export function ItemStationList(props) {
         </View>
       </View>
       <View style={styles.viewInfoStation2}>
+        <View style={{ flexDirection: 'row' }}>
+          {(() => {
+            const portTypes = data?.specification
+              ?.map((item) => item?.specification_id?.port_id?.type)
+              .filter((type) => type === "AC" || type === "DC"); // Lọc chỉ lấy AC hoặc DC
+            const uniquePortTypes = [...new Set(portTypes)]; // Loại bỏ giá trị trùng lặp
+            const displayText = uniquePortTypes.length === 2 ? "AC/DC:" : `${uniquePortTypes[0]}: ` || "N/A";
+
+            return (
+              <Text style={[styles.textItemLocation]} numberOfLines={1} ellipsizeMode="tail">
+                {displayText}
+              </Text>
+            );
+          })()}
+
+          {(() => {
+            const portTypes = data?.specification
+              ?.map((item) => item?.specification_id?.port_id?.name);
+            //.filter((type) => type === "AC" || type === "DC"); // Lọc chỉ lấy AC hoặc DC
+            const uniquePortTypes = [...new Set(portTypes)];
+            const limitedPortTypes = uniquePortTypes.slice(0, 3);
+            const displayText =
+              uniquePortTypes.length > 3
+                ? `${limitedPortTypes.join(" - ")} ...`
+                : limitedPortTypes.join(" - ") || "N/A";
+
+            return (
+              <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode="tail">
+                {displayText}
+              </Text>
+            );
+          })()}
+        </View>
         <TouchableOpacity onPress={openGoogleMaps}>
           <LinearGradient colors={['#009558', '#5bdb5b',]} style={styles.viewButtonItem} >
             <Text style={{ color: 'white' }}>
@@ -1204,7 +1275,7 @@ const styles = StyleSheet.create({
     fontSize: SIZE.size14,
     marginBottom: '0.1%',
     marginTop: '0.1%',
-    marginRight: '5%'
+    marginRight: '3%'
   },
   viewButtonItem: {
     width: 100,

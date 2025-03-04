@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Modal, View, Text, TouchableOpacity, FlatList, StyleSheet, ScrollView, Image } from "react-native";
- import Slider from '@react-native-community/slider';
-import { COLOR,SIZE } from '@/src/assets/Theme/Theme';
+import Slider from '@react-native-community/slider';
+import { COLOR, SIZE } from '@/src/assets/Theme/Theme';
 // import Slider from "react-native-sliders";
 import MultiSlider from '@ptomasroos/react-native-multi-slider'
 import { LinearGradient } from 'expo-linear-gradient';
@@ -339,18 +339,20 @@ export function ItemModalRadioButtonImage({ checkModal, setModalVisible, data, s
                                     style={styles.filterItemImage}
                                     onPress={() => setSelectedItem([item._id, item.name])}
                                 >
-                                    <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                                        <View>
+                                    <View style={{ flexDirection: 'row' }}>
+                                        <View style={{ width: '20%' }}>
                                             <Image style={{ width: 30, height: 30 }} source={{ uri: item.image }} />
                                         </View>
-                                        <View style={{ marginHorizontal: '20%' }}>
+                                        <View style={{ width: '70%' }}>
                                             {item.type == null ?
                                                 <Text style={styles.filterText}>{item.name}</Text> : <Text style={styles.filterText}>{item.name} ({item.type})</Text>}
                                         </View>
                                     </View>
 
-                                    <View style={styles.radioButton}>
-                                        {selectedItem[0] === item._id ? <View style={styles.radioInner} /> : null}
+                                    <View style={{width:'10%'}}>
+                                        <View style={styles.radioButton}>
+                                            {selectedItem[0] === item._id ? <View style={styles.radioInner} /> : null}
+                                        </View>
                                     </View>
 
                                 </TouchableOpacity>

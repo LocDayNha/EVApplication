@@ -81,6 +81,14 @@ const Home = (props) => {
     const handleFilterSelect = (selected) => {
         setSelectedFliter(selected);
     };
+    // danh muc phương tiện
+    const handleVehicalSelect = (VehicalId) => {
+        setSelectedVehicle(VehicalId);
+    };
+    // danh muc dòng điện
+    const handleVonSelect = (selected) => {
+        setSelectedVon(selected);
+    };
 
     //Lấy địa chỉ và định vị
     const [errorMsg, setErrorMsg] = useState('');
@@ -276,7 +284,7 @@ const Home = (props) => {
         const matchesVon = !selectedVon || selectedVon.length === 0 ||
             item.specification.some(spec => selectedVon.includes(spec.specification_id.port_id?.type));
 
-        return (matchesBrand && matchesVehicle && matchesPort && matchesService && matchesVon && isValueNameLocation );
+        return (matchesBrand && matchesVehicle && matchesPort && matchesService && matchesVon && isValueNameLocation);
     });
 
     const goProfile = () => {
@@ -572,7 +580,7 @@ const styles = StyleSheet.create({
         borderColor: '#009558',
     },
     boderIcon2: {
-        
+
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 30,
