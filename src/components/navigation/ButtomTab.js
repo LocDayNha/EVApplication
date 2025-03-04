@@ -108,8 +108,8 @@ const Tabbar = () => {
                 }}
             />
             <Tab.Screen
-                name="Schedule"
-                component={Schedule}
+                name="Trip"
+                component={Trip}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <TabIcon focused={focused} icon={require('../../assets/icon/trip.png')} label="Lộ trình" />

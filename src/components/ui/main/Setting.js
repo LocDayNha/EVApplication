@@ -3,6 +3,7 @@ import React, { useContext, useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import { AppContext } from '../../axios/AppContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { COLOR, SIZE } from "../../../assets/Theme/Theme";
 
 const Setting = () => {
     const navigation = useNavigation();
@@ -31,7 +32,7 @@ const Setting = () => {
 
     return (
         <ScrollView >
-            <Text style={{ margin: '5%', fontSize: 30, fontWeight: 'bold' }} > Cài đặt </Text>
+            <Text style={{ margin: '5%', fontSize: SIZE.size20, fontWeight: 'bold' }} > Cài đặt </Text>
 
             {infoUser && idUser ?
                 <>
@@ -200,13 +201,13 @@ const styles = StyleSheet.create({
         tintColor:'#009558'
     },
     textNameuser: {
-        fontSize: 20,
+        fontSize: 24,
         fontWeight: 'bold',
 
     },
     textNameSetting: {
-        fontSize: 16,
-        fontWeight: 500
+        fontSize: 20,
+
     },
     boxSetting: {
         borderColor: '#C7C6C5',
