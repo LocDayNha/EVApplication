@@ -44,7 +44,7 @@ const Home = (props) => {
     const [selectedVehicle, setSelectedVehicle] = useState([]);
     const [selectedBrand, setSelectedBrand] = useState([]);
     const [selectedService, setSelectedService] = useState([]);
-
+    const [valueNameLocation, setValueNameLocation] = useState();
     const clearForm = () => {
         setSelectedVon([]);
         setSelectedBrand([]);
@@ -81,26 +81,6 @@ const Home = (props) => {
         setSelectedFliter(selected);
     };
 
-    // danh muc nhãn tramh
-    const handleBrandSelect = (selected) => {
-        setSelectedBrand(selected);
-    };
-    // danh muc phương tiện
-    const handleVehicalSelect = (VehicalId) => {
-        setSelectedVehicle(VehicalId);
-    };
-    // danh muc dòng điện
-    const handleVonSelect = (selected) => {
-        setSelectedVon(selected);
-    };
-    // danh muc loai công sac 
-    const handleSocketSelect = (selected) => {
-        setSelectedSocket(selected);
-    };
-    // danh muc dịch vụ
-    const handleServicesSelect = (selected) => {
-        setSelectedService(selected);
-    };
     //Lấy địa chỉ và định vị
     const [errorMsg, setErrorMsg] = useState('');
     const [address, setAddress] = useState('');
@@ -274,6 +254,14 @@ const Home = (props) => {
     // kiểm tra dữ liệu bộ lọc 
 
     const filteredItems = dataStation?.filter(item => {
+        const matchesName = !valueNameLocation || !valueNameLocation === 0 || item.name.toLowerCase().includes(valueNameLocation.toLowerCase());
+
+        const matchesBrandName = !valueNameLocation || !valueNameLocation === 0 || item.brand_id.name.toLowerCase().includes(valueNameLocation.toLowerCase());
+
+        const matchesLoactionName = !valueNameLocation || !valueNameLocation === 0 || item.location?.toLowerCase().includes(valueNameLocation.toLowerCase());
+
+        const isValueNameLocation = matchesName || matchesLoactionName || matchesBrandName;
+
         const matchesBrand = !selectedBrand || selectedBrand.length === 0 || selectedBrand.includes(item.brand_id?._id);
 
         const matchesVehicle = !selectedVehicle || selectedVehicle.length === 0 ||
@@ -288,7 +276,7 @@ const Home = (props) => {
         const matchesVon = !selectedVon || selectedVon.length === 0 ||
             item.specification.some(spec => selectedVon.includes(spec.specification_id.port_id?.type));
 
-        return matchesBrand && matchesVehicle && matchesPort && matchesService && matchesVon;
+        return (matchesBrand && matchesVehicle && matchesPort && matchesService && matchesVon && isValueNameLocation );
     });
 
     // const point1 = { latitude: myLat, longitude: myLng };
@@ -324,12 +312,17 @@ const Home = (props) => {
                         :
                         (<View style={styles.inputSearch}>
                             <View style={styles.boderSearch}>
-                                <TextInput numberOfLines={1} ellipsizeMode='tail' onChangeText={setAddressInput} style={{ fontSize: SIZE.size12, width: '80%' }} placeholder='Tìm kiếm ' />
-                                <TouchableOpacity style={{ justifyContent: 'center', padding: 15, borderRadius: 30, }} onPress={() => setModalSearch(false)}>
+                                <TextInput
+                                    numberOfLines={1}
+                                    ellipsizeMode='tail'
+                                    onChangeText={setValueNameLocation}
+                                    style={{ fontSize: SIZE.size12, width: '80%' }}
+                                    placeholder='Tìm kiếm ' />
+                                <TouchableOpacity style={{ justifyContent: 'center', padding: 10, borderRadius: 30, }} onPress={() => [setModalSearch(false), setValueNameLocation('')]}>
                                     <Image style={styles.iconFilter} source={require('../../../assets/icon/icons8-multiply-50.png')} />
                                 </TouchableOpacity>
                             </View>
-                            <TouchableOpacity style={{ marginLeft: '2%', backgroundColor: 'white', justifyContent: 'center', padding: 15, borderRadius: 30, }} onPress={() => setModalVisible(true)}>
+                            <TouchableOpacity style={{ marginLeft: '2%', backgroundColor: 'white', justifyContent: 'center', padding: 10, borderRadius: 30, }} onPress={() => setModalVisible(true)}>
                                 <Image style={styles.iconFilter} source={require('../../../assets/icon/icons8-filter-24.png')} />
                             </TouchableOpacity>
                         </View>)
@@ -528,13 +521,13 @@ const styles = StyleSheet.create({
     },
     titleContainer: {
         color: 'rgb(255, 255, 255)',
-        fontSize: SIZE.size16,
+        fontSize: SIZE.size14,
         fontWeight: 'bold',
         marginLeft: '5%',
     },
     img: {
-        width: 50,
-        height: 50,
+        width: 35,
+        height: 35,
         marginRight: '2%',
         borderRadius: 30,
     },
@@ -553,9 +546,8 @@ const styles = StyleSheet.create({
 
     },
     iconListBrand: {
-        height: 40,
-        width: 40,
-
+        height: 35,
+        width: 35,
     },
     iconButton: {
         height: 20,
@@ -572,8 +564,7 @@ const styles = StyleSheet.create({
         borderColor: '#009558',
     },
     boderIcon2: {
-        height: 50,
-        width: 50,
+        
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 30,
@@ -583,7 +574,7 @@ const styles = StyleSheet.create({
         marginLeft: '10%'
     },
     boderSearch: {
-        height: 50,
+        height: 40,
         width: '82%',
         backgroundColor: '#FFFFFF',
         justifyContent: 'space-between',
@@ -696,13 +687,13 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         marginHorizontal: 10,
         borderRadius: 10,
-        width: 100,
-        height: 55,
+        width: 80,
+        height: 40,
     },
     selectedItemBrand: {
         backgroundColor: 'rgba(0, 149, 88, 0.3)',
-        width: 100,
-        height: 55,
+        width: 80,
+        height: 40,
     },
     textBrand: {
         fontSize: SIZE.size12,

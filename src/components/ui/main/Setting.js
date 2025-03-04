@@ -3,6 +3,7 @@ import React, { useContext, useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import { AppContext } from '../../axios/AppContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { COLOR, SIZE } from "../../../assets/Theme/Theme";
 
 const Setting = () => {
     const navigation = useNavigation();
@@ -31,7 +32,7 @@ const Setting = () => {
 
     return (
         <ScrollView >
-            <Text style={{ margin: '5%', fontSize: 30, fontWeight: 'bold' }} > Cài đặt </Text>
+            <Text style={{ margin: '5%', fontSize: SIZE.size20, fontWeight: 'bold' }} > Cài đặt </Text>
 
             {infoUser && idUser ?
                 <>
@@ -70,7 +71,7 @@ const Setting = () => {
                             <Image style={{ width: 20, height: 20, }} source={require('../../../assets/icon/icons8-next-96.png')} />
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={()=> navigation.navigate('ForgotPass')} style={styles.boxContent}>
+                        <TouchableOpacity onPress={() => navigation.navigate('ForgotPass')} style={styles.boxContent}>
                             <View style={{ flexDirection: 'row', alignItems: 'center', }}>
                                 <Image style={styles.imgIcon} source={require('../../../assets/icon/icons8-password-96.png')} />
                                 <Text style={styles.textNameSetting}>Đổi mật khẩu</Text>
@@ -184,12 +185,12 @@ const styles = StyleSheet.create({
         marginRight: '5%'
     },
     textNameuser: {
-        fontSize: 24,
+        fontSize: SIZE.size18,
         fontWeight: 'bold',
 
     },
     textNameSetting: {
-        fontSize: 20,
+        fontSize: SIZE.size16,
 
     },
     boxSetting: {

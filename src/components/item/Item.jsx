@@ -343,6 +343,100 @@ export function ItemStationMain(props) {
 
   );
 }
+export function ItemStationTrip(props) {
+  const { data, Kilomet, setValueKm, valueKm ,maxValues } = props;
+  const navigation = useNavigation();
+  const { myLat, myLng } = useContext(AppContext);
+
+  const clickViewDetail = () => {
+    navigation.navigate('ViewDetail', { id: data._id });
+  };
+
+  const openGoogleMaps = async () => {
+    try {
+      const linkTrack = await AxiosInstance().post('/station/testGoogleMapTrack', {
+        lat1: myLat, lng1: myLng, lat2: data.lat, lng2: data.lng
+      });
+      if (linkTrack.url) {
+        Linking.openURL(linkTrack.url).catch(err => Alert.alert("Error", "Failed to open Google Maps"));
+      } else {
+        console.log('Không tìm thấy dữ liệu từ /station/testGoogleMapTrack');
+        ToastAndroid.show('Không thể chỉ đường', ToastAndroid.SHORT);
+      }
+    } catch (error) {
+      console.error('Lỗi khi lấy dữ liệu station:', error);
+      ToastAndroid.show('Không thể thực hiện chỉ đường do hẹ thống', ToastAndroid.SHORT);
+    }
+  };
+  const point1 = { latitude: myLat, longitude: myLng };
+  const point2 = { latitude: data.lat, longitude: data.lng };
+
+  const distance = haversine(point1, point2) / 1000;
+
+  const Update = () => {
+    setValueKm([...valueKm, distance]);
+  };
+
+  useEffect(() => {
+    if (distance <= Kilomet) {
+      setValueKm((prevKm) => Array.isArray(prevKm) ? [...prevKm, distance] : [distance]);
+    }
+  }, [distance]);
+  
+  return (
+    <View>
+      {
+        distance == maxValues ?
+          <TouchableOpacity activeOpacity={1} style={styles.listRow} key={data._id} onPress={clickViewDetail}>
+            <Image style={styles.imgStation} source={{ uri: data.image }} />
+            <View style={styles.viewInfoStation}>
+              <Text style={styles.textItemName} numberOfLines={1} ellipsizeMode='tail'>{data.brand_id.name} - {data.name}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Image style={{ width: 20, height: 20, marginRight: 5 }} source={require('../../assets/icon/icons8-location-94.png')} />
+                <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail'>{data.location}</Text>
+              </View>
+            </View>
+            <View style={styles.viewInfoStation}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Image style={{ width: 20, height: 20, marginRight: 5 }} source={require('../../assets/icon/icons8-time-48.png')} />
+                <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail'>{data.time}</Text>
+              </View>
+
+            </View>
+            <View style={styles.viewInfoStation2}>
+
+              {(() => {
+                const portTypes = data?.specification
+                  ?.map((item) => item?.specification_id?.port_id?.type)
+                  .filter((type) => type === "AC" || type === "DC"); // Lọc chỉ lấy AC hoặc DC
+                const uniquePortTypes = [...new Set(portTypes)]; // Loại bỏ giá trị trùng lặp
+                const displayText = uniquePortTypes.length === 2 ? "AC/DC" : uniquePortTypes[0] || "N/A";
+
+                return (
+                  <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode="tail">
+                    {displayText}
+                  </Text>
+                );
+              })()}
+
+              <TouchableOpacity onPress={openGoogleMaps}>
+                <LinearGradient colors={['#009558', '#5bdb5b',]} style={styles.viewButtonItem} >
+                  <Text style={{ color: 'white' }}>
+                    {distance.toFixed(1)} Km
+                  </Text>
+                  <Image style={styles.imgNext} source={require('../../assets/icon/icons8-arrow-64.png')} />
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+          </TouchableOpacity>
+          :
+          null
+      }
+    </View>
+
+
+  );
+}
 export function ItemStationList(props) {
   const { data } = props;
   const navigation = useNavigation();
@@ -1090,11 +1184,11 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 0.5,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.10,
+    shadowRadius: 0.84,
+    elevation: 2,
   },
   imgStation: {
     width: 'auto',
