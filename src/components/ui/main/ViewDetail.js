@@ -196,7 +196,7 @@ const ViewDetail = () => {
                                             <Image style={styles.imgSocket} source={{ uri: item.port_id.image }} />
 
                                             <View style={styles.infoCharing2}>
-                                                <Text style={styles.textTypeCharing}>{item.port_id.name}</Text>
+                                                <Text style={styles.textTypeCharing}>{item.port_id.name} - {item.port_id.type}</Text>
                                                 <Text style={styles.textInfoCharing}>{item.kw} Kw</Text>
                                                 <Text style={styles.textInfoCharing}>{item.price.toLocaleString("vi-VN")} đ/Kwh</Text>
                                             </View>

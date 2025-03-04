@@ -98,13 +98,16 @@ const Profile = () => {
       });
       if (data) {
         console.log('Cập nhật thành công:');
+        ToastAndroid.show('Cập nhật thành công', ToastAndroid.SHORT);
         setInfoUser(data.user);
       } else {
         console.log('Cập nhật thất bại');
+        ToastAndroid.show('Cập nhật thất bại', ToastAndroid.SHORT);
       }
 
     } catch (error) {
-      console.log('Lỗ hệ thống:', error);
+      console.log('Lỗi hệ thống:', error);
+      ToastAndroid.show('Lỗi hệ thống', ToastAndroid.SHORT);
     }
   }
 
