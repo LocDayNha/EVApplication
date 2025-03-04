@@ -45,8 +45,8 @@ const TabIcon = ({ focused, icon, label }) => (
         >
             <Image
                 style={{
-                    width: label === "" ? 30 : 20,
-                    height: label === "" ? 30 : 22,
+                    width: label === "" ? 36 : 26,
+                    height: label === "" ? 36 : 26,
                     tintColor: focused ? COLOR.green3 : COLOR.gray4,
                 }}
                 source={icon}
@@ -85,7 +85,7 @@ const Tabbar = () => {
                 component={Home}
                 options={{
                     tabBarIcon: ({ focused }) => (
-                        <TabIcon focused={focused} icon={require('../../assets/icon/station.png')} label="Trạm sạc" />
+                        <TabIcon focused={focused} icon={require('../../assets/images/imagebuttontab/station.png')} label="Trạm sạc" />
                     ),
                 }}
             />
@@ -94,7 +94,7 @@ const Tabbar = () => {
                 component={MapStation}
                 options={{
                     tabBarIcon: ({ focused }) => (
-                        <TabIcon focused={focused} icon={require('../../assets/icon/location.png')} label="Bản đồ" />
+                        <TabIcon focused={focused} icon={require('../../assets/images/imagebuttontab/map.png')} label="Bản đồ" />
                     ),
                 }}
             />
@@ -103,7 +103,7 @@ const Tabbar = () => {
                 component={UploadImage}
                 options={{
                     tabBarIcon: ({ focused }) => (
-                        <TabIcon focused={focused} icon={require('../../assets/icon/qr.png')} label="" />
+                        <TabIcon focused={focused} icon={require('../../assets/images/imagebuttontab/qr.png')} label="" />
                     ),
                 }}
             />
@@ -112,7 +112,7 @@ const Tabbar = () => {
                 component={Schedule}
                 options={{
                     tabBarIcon: ({ focused }) => (
-                        <TabIcon focused={focused} icon={require('../../assets/icon/trip.png')} label="Lộ trình" />
+                        <TabIcon focused={focused} icon={require('../../assets/images/imagebuttontab/trip.png')} label="Lộ trình" />
                     ),
                 }}
             />
@@ -121,7 +121,7 @@ const Tabbar = () => {
                 component={SettingScreen}
                 options={{
                     tabBarIcon: ({ focused }) => (
-                        <TabIcon focused={focused} icon={require('../../assets/icon/setting.png')} label="Cài đặt" />
+                        <TabIcon focused={focused} icon={require('../../assets/images/imagebuttontab/setting.png')} label="Cài đặt" />
                     ),
                 }}
             />

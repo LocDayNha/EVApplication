@@ -1,5 +1,5 @@
 import { StyleSheet, View, Text, TouchableOpacity, FlatList, Linking, ToastAndroid, TextInput, Image, Modal, ScrollView } from "react-native";
-import { COLOR,SIZE } from "../../assets/Theme/Theme";
+import { COLOR, SIZE } from "../../assets/Theme/Theme";
 import { useNavigate } from "react-router-native";
 import { useNavigation } from '@react-navigation/native';
 import React, { useState, useContext, useEffect } from 'react';
@@ -289,34 +289,51 @@ export function ItemStationMain(props) {
       <Image style={styles.imgStation} source={{ uri: data.image }} />
       <View style={styles.viewInfoStation}>
         <Text style={styles.textItemName} numberOfLines={1} ellipsizeMode='tail'>{data.brand_id.name} - {data.name}</Text>
-        <View style={{ flexDirection: 'row',alignItems: 'center' }}>
-          <Image style={{ width: 20, height: 20,marginRight:5 }} source={require('../../assets/icon/icons8-location-94.png')} />
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Image style={{ width: 20, height: 20, marginRight: 5 }} source={require('../../assets/icon/icons8-location-94.png')} />
           <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail'>{data.location}</Text>
         </View>
       </View>
       <View style={styles.viewInfoStation}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Image style={{ width: 20, height: 20,marginRight:5 }} source={require('../../assets/icon/icons8-time-48.png')} />
+          <Image style={{ width: 20, height: 20, marginRight: 5 }} source={require('../../assets/icon/icons8-time-48.png')} />
           <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail'>{data.time}</Text>
         </View>
-
       </View>
       <View style={styles.viewInfoStation2}>
+        <View style={{flexDirection:'row'}}>
+          {(() => {
+            const portTypes = data?.specification
+              ?.map((item) => item?.specification_id?.port_id?.type)
+              .filter((type) => type === "AC" || type === "DC"); // Lọc chỉ lấy AC hoặc DC
+            const uniquePortTypes = [...new Set(portTypes)]; // Loại bỏ giá trị trùng lặp
+            const displayText = uniquePortTypes.length === 2 ? "AC/DC: " : `${uniquePortTypes[0]}: ` || "N/A";
 
-        {(() => {
-          const portTypes = data?.specification
-            ?.map((item) => item?.specification_id?.port_id?.type)
-            .filter((type) => type === "AC" || type === "DC"); // Lọc chỉ lấy AC hoặc DC
-          const uniquePortTypes = [...new Set(portTypes)]; // Loại bỏ giá trị trùng lặp
-          const displayText = uniquePortTypes.length === 2 ? "AC/DC" : uniquePortTypes[0] || "N/A";
+            return (
+              <Text style={[styles.textItemLocation]} numberOfLines={1} ellipsizeMode="tail">
+                {displayText}
+              </Text>
+            );
+          })()}
 
-          return (
-            <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode="tail">
-              {displayText}
-            </Text>
-          );
-        })()}
+          {(() => {
+            const portTypes = data?.specification
+              ?.map((item) => item?.specification_id?.port_id?.name);
+            //.filter((type) => type === "AC" || type === "DC"); // Lọc chỉ lấy AC hoặc DC
+            const uniquePortTypes = [...new Set(portTypes)];
+            const limitedPortTypes = uniquePortTypes.slice(0, 3);
+            const displayText =
+              uniquePortTypes.length > 3
+                ? `${limitedPortTypes.join(" - ")} ...`
+                : limitedPortTypes.join(" - ") || "N/A";
 
+            return (
+              <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode="tail">
+                {displayText}
+              </Text>
+            );
+          })()}
+        </View>
         <TouchableOpacity onPress={openGoogleMaps}>
           <LinearGradient colors={['#009558', '#5bdb5b',]} style={styles.viewButtonItem} >
             <Text style={{ color: 'white' }}>
@@ -1022,7 +1039,7 @@ const styles = StyleSheet.create({
   },
   viewButtonItem: {
     width: 100,
-    height: 40,
+    height: 30,
     flexDirection: 'row',
     // backgroundColor: COLOR.green3,
     justifyContent: 'space-evenly',
@@ -1040,7 +1057,8 @@ const styles = StyleSheet.create({
     marginTop: 0,
   },
   viewInfoStation2: {
-    margin: '5%',
+    marginLeft: '5%',
+    marginRight: '5%',
     marginBottom: '3%',
     marginTop: 0,
     justifyContent: 'space-between',
