@@ -32,7 +32,7 @@ const Setting = () => {
 
     return (
         <ScrollView >
-            <Text style={{ margin: '5%', fontSize: SIZE.size20, fontWeight: 'bold' }} > Cài đặt </Text>
+            <Text style={{ margin: '5%', fontSize: SIZE.size16, fontWeight: 'bold' }} > Cài đặt </Text>
 
             {infoUser && idUser ?
                 <>
@@ -66,7 +66,7 @@ const Setting = () => {
                     null
                 }
 
-                <TouchableOpacity style={styles.boxContent}>
+                <TouchableOpacity style={styles.boxContent} onPress={() => navigation.navigate("MyCar")}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', }}>
                         <Image style={styles.imgIcon} source={require('../../../assets/icon/electric-car.png')} />
                         <Text style={styles.textNameSetting}>Phương tiện của bạn </Text>
@@ -201,12 +201,12 @@ const styles = StyleSheet.create({
         tintColor:'#009558'
     },
     textNameuser: {
-        fontSize: 24,
+        fontSize: SIZE.size16,
         fontWeight: 'bold',
 
     },
     textNameSetting: {
-        fontSize: 20,
+        fontSize: SIZE.size16,
 
     },
     boxSetting: {

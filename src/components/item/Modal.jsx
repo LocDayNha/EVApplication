@@ -109,12 +109,8 @@ export function ItemModalRadioButton({ checkModal, setModalVisible, data, select
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={styles.applyButton}
-                        >
+                            onPress={() => setModalVisible(false)}>
                             <Text
-                                onPress={() =>
-                                    setModalVisible(false)
-
-                                }
                                 style={styles.applyText}>Áp dụng</Text>
                         </TouchableOpacity>
                     </View>
@@ -349,7 +345,7 @@ export function ItemModalRadioButtonImage({ checkModal, setModalVisible, data, s
                                         </View>
                                     </View>
 
-                                    <View style={{width:'10%'}}>
+                                    <View style={{ width: '10%' }}>
                                         <View style={styles.radioButton}>
                                             {selectedItem[0] === item._id ? <View style={styles.radioInner} /> : null}
                                         </View>
@@ -371,18 +367,16 @@ export function ItemModalRadioButtonImage({ checkModal, setModalVisible, data, s
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={styles.applyButton}
+                            onPress={() => [
+                                setModalVisible(false)
+                            ]}
                         >
-                            <Text
-                                onPress={() => [
-                                    setModalVisible(false)
-                                ]
-                                }
-                                style={styles.applyText}>Áp dụng</Text>
+                            <Text style={styles.applyText}>Áp dụng</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
             </View>
-        </Modal>
+        </Modal >
     );
 }
 

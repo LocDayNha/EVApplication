@@ -1046,8 +1046,6 @@ export function ItemInputCharging({ value, onChangeText, placeholder, note }) {
 export function ItemRadioButtonType({ data = [], onSelect, selectedValue }) {
   const [selectedMethod, setSelectedMethod] = useState(selectedValue);
 
-
-
   useEffect(() => {
     setSelectedMethod(selectedValue);
   }, [selectedValue]);
