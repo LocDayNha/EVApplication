@@ -15,7 +15,7 @@ const list = [
     { _id: 0, name: 'Hãng trụ sạc' },
     { _id: 5, name: 'Hãng Xe' },
     { _id: 6, name: 'Địa điểm' },
-    { _id: 1, name: 'Loại phương tiện' },
+    { _id: 1, name: 'Phương tiện' },
     { _id: 2, name: 'Dòng điện' },
     { _id: 3, name: 'Cổng sạc' },
     { _id: 4, name: 'Dịch vụ' },

@@ -775,7 +775,7 @@ export function ItemCheckBoxImage({ data, selectedItems, setSelectedItems }) {
                 paddingVertical: 10,
                 paddingHorizontal: 10,
                 borderRadius: 8,
-                height: 50,
+                height: 55,
               }}
               onPress={() => toggleSelection(item._id)}
             >
