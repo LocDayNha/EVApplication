@@ -63,33 +63,9 @@ const MapStation = (props) => {
         focusOnLocation;
     }, []);
 
-    const locations = [
-        {
-            id: 1, latitude: 14.0583, longitude: 108.2772, title: "Trạm 1",
-            image: "https://www.pvoil.com.vn/media/1/he-thong-cua-hang-xang-dau.png", brand: "Honda", name: "Trạm Sạc Điện 1",
-            location: "Quận 1, TP.HCM", time: "24/7", type: ["Type1", "Type2"]
-        },
-        {
-            id: 2, latitude: 14.0600, longitude: 108.2800, title: "Trạm 2",
-            image: "https://via.placeholder.com/100", brand: "Yamaha", name: "Trạm Sạc Điện 2",
-            location: "Quận 3, TP.HCM", time: "7:00 - 22:00", type: ["Type3", "Type4"]
-        },
-        {
-            id: 3, latitude: 14.0620, longitude: 108.2850, title: "Trạm 3",
-            image: "https://via.placeholder.com/100", brand: "VinFast", name: "Trạm Sạc Điện 3",
-            location: "Quận 5, TP.HCM", time: "6:00 - 23:00", type: ["Type1", "Type3"]
-        }
-    ];
-
     return (
         <View style={styles.container}>
             <View style={styles.searchContainer}>
-                <TextInput
-                    style={styles.searchInput}
-                    placeholder="Nhập vị trí..."
-                    value={searchText}
-                    onChangeText={setSearchText}
-                />
                 <TouchableOpacity onPress={focusOnLocation} style={styles.buttonContainer}>
                     <Image style={{ width: 30, height: 30, }} source={require('../../../assets/icon/icons8-my-location-48.png')} />
                 </TouchableOpacity>
@@ -135,26 +111,6 @@ const MapStation = (props) => {
 
             {selectedStation && (
                 <View style={styles.stationInfo}>
-                    {/* <TouchableOpacity style={{
-                        backgroundColor: '#40A19C',
-                        margin: 10,
-                        padding: 10,
-                        paddingHorizontal: 30,
-                        borderRadius: 20,
-                        position: 'absolute',
-                        left: '80%',
-                        top: '-15%',
-                        shadowColor: "#000",
-                        shadowOffset: {
-                            width: 0,
-                            height: 2,
-                        },
-                        shadowOpacity: 0.25,
-                        shadowRadius: 3.84,
-                        elevation: 5,
-                    }} onPress={() => setSelectedStation(null)}>
-                        <Text style={styles.closeButton}>Đóng</Text>
-                    </TouchableOpacity> */}
                     <ItemStationMap data={selectedStation} />
 
                 </View>

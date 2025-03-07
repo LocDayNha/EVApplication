@@ -65,7 +65,6 @@ const TabIcon = ({ focused, icon, label }) => (
 const SettingScreen = () => {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Setting">
-
             <Stack.Screen name="Setting" component={Setting} />
             <Stack.Screen name="Home" component={Home} />
         </Stack.Navigator>
