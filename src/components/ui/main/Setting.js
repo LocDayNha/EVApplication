@@ -66,7 +66,7 @@ const Setting = () => {
                     null
                 }
 
-                <TouchableOpacity style={styles.boxContent} onPress={() => navigation.navigate("MyCar")}>
+                <TouchableOpacity style={styles.boxContent} >
                     <View style={{ flexDirection: 'row', alignItems: 'center', }}>
                         <Image style={styles.imgIcon} source={require('../../../assets/icon/electric-car.png')} />
                         <Text style={styles.textNameSetting}>Phương tiện của bạn </Text>

@@ -26,7 +26,6 @@ import Location from '../test/Location';
 import TestOpenGoogleMap from '../test/TestOpenGoogleMap';
 import TestGoogleMap from '../test/TestGoogleMap';
 import UploadImage from '../test/UploadImage';
-import MyCar from '../ui/setup/MyCar';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -153,7 +152,6 @@ const ButtomTab = () => {
             <Stack.Screen name="Verification" component={Verification} />
             <Stack.Screen name="NewPassword" component={NewPassword} />
             <Stack.Screen name="CompleteCreate" component={CompleteCreate} />
-            <Stack.Screen name="MyCar" component={MyCar} />
         </Stack.Navigator>
     );
 };

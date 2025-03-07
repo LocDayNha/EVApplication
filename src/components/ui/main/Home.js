@@ -13,7 +13,9 @@ import haversine from 'haversine-distance';
 
 const list = [
     { _id: 0, name: 'Hãng trụ sạc' },
-    { _id: 1, name: 'Phương tiện' },
+    { _id: 5, name: 'Hãng Xe' },
+    { _id: 6, name: 'Địa điểm' },
+    { _id: 1, name: 'Loại phương tiện' },
     { _id: 2, name: 'Dòng điện' },
     { _id: 3, name: 'Cổng sạc' },
     { _id: 4, name: 'Dịch vụ' },
@@ -46,7 +48,13 @@ const Home = (props) => {
     const [selectedBrand, setSelectedBrand] = useState([]);
     const [selectedService, setSelectedService] = useState([]);
     const [valueNameLocation, setValueNameLocation] = useState();
+    const [selectedBrandCar, setSelectedBrandCar] = useState([]);
+    const [selectedLocation, setSelectedLocation] = useState([]);
+
+
     const clearForm = () => {
+        setSelectedLocation([]);
+        setSelectedBrandCar([]);
         setSelectedVon([]);
         setSelectedBrand([]);
         setSelectedService([]);
@@ -72,15 +80,10 @@ const Home = (props) => {
 
     const [valueTest, setValueTest] = useState('test dư lieu ');
 
-    // check 
-    const [selectedStatus, setSelectedStatus] = useState();
 
 
     // danh muc lisst bo loc
     const [selectedFilter, setSelectedFliter] = useState(0);
-    const handleFilterSelect = (selected) => {
-        setSelectedFliter(selected);
-    };
     // danh muc phương tiện
     const handleVehicalSelect = (VehicalId) => {
         setSelectedVehicle(VehicalId);
@@ -197,6 +200,39 @@ const Home = (props) => {
             ToastAndroid.show('Không thể tải danh sách thông tin trạm sạc', ToastAndroid.SHORT);
         }
     };
+    // hãng xe 
+    const [dataBrandCar, setDataBrandCar] = useState([]);
+    const getBrandCar = async () => {
+        try {
+            const dataStation = await AxiosInstance().get('/brandcar/get');
+            if (dataStation.data && dataStation.data.length > 0) {
+                setDataBrandCar(dataStation.data);
+            } else {
+                console.log('Không tìm thấy dữ liệu từ /station/get');
+                ToastAndroid.show('Không có thông tin trạm sạc', ToastAndroid.SHORT);
+            }
+        } catch (error) {
+            console.error('Lỗi khi lấy dữ liệu station:', error);
+            ToastAndroid.show('Không thể tải danh sách thông tin trạm sạc', ToastAndroid.SHORT);
+        }
+    };
+
+        // hãng trụ sạc
+        const [dataLocationStation, setDataLocationStation] = useState([]);
+        const getLocation = async () => {
+            try {
+                const dataStation = await AxiosInstance().get('/location/get');
+                if (dataStation.data && dataStation.data.length > 0) {
+                    setDataLocationStation(dataStation.data);
+                } else {
+                    console.log('Không tìm thấy dữ liệu từ /station/get');
+                    ToastAndroid.show('Không có thông tin trạm sạc', ToastAndroid.SHORT);
+                }
+            } catch (error) {
+                console.error('Lỗi khi lấy dữ liệu station:', error);
+                ToastAndroid.show('Không thể tải danh sách thông tin trạm sạc', ToastAndroid.SHORT);
+            }
+        };
 
     const getDataStationByOption = async () => {
         try {
@@ -246,6 +282,8 @@ const Home = (props) => {
 
     // Hook effect khởi tạo dữ liệu
     useEffect(() => {
+        getLocation();
+        getBrandCar();
         getServiceData();
         getSocketData();
         getVehicalData();
@@ -272,6 +310,10 @@ const Home = (props) => {
 
         const matchesBrand = !selectedBrand || selectedBrand.length === 0 || selectedBrand.includes(item.brand_id?._id);
 
+        const matchesBrandCar = !selectedBrandCar || selectedBrandCar.length === 0 ||
+            (selectedBrand.includes("VinFast") && !["BYD", "Wuling"].includes(item.brand_id?.name));
+
+
         const matchesVehicle = !selectedVehicle || selectedVehicle.length === 0 ||
             item.specification.some(spec => selectedVehicle.includes(spec.specification_id.vehicle_id?._id));
 
@@ -297,12 +339,8 @@ const Home = (props) => {
 
     // const point1 = { latitude: myLat, longitude: myLng };
     // const point2 = { latitude: 11.3495, longitude: 106.0640 };
-
     // const distance = haversine(point1, point2); // Khoảng cách tính bằng mét
-
-    // console.log(distance / 1000 + " km");
-
-
+    // console.log(distance / 1000 + " km")
 
     return (
         <View style={{ height: '100%', backgroundColor: 'white' }}>
@@ -414,6 +452,8 @@ const Home = (props) => {
                             <ItemRadioButton data={list} setSelectedValue={setSelectedFliter} selectedValue={selectedFilter} />
                             {/* nooij dung */}
                             {selectedFilter == 0 ? <ItemCheckBoxImage data={dataBrandStation} selectedItems={selectedBrand} setSelectedItems={setSelectedBrand} /> : null}
+                            {selectedFilter == 5 ? <ItemCheckBoxImage data={dataBrandCar} selectedItems={selectedBrandCar} setSelectedItems={setSelectedBrandCar} /> : null}
+                            {selectedFilter == 6 ? <ItemCheckBoxImage data={dataLocationStation} selectedItems={selectedLocation} setSelectedItems={setSelectedLocation} /> : null}
                             {selectedFilter == 1 ? <ItemRadioButtonVertical data={dataVehical} onSelect={handleVehicalSelect} selectedValue={selectedVehicle} setSelectedValue={setSelectedVehicle} /> : null}
                             {selectedFilter == 2 ? <ItemRadioButtonVertical data={Von} onSelect={handleVonSelect} selectedValue={selectedVon} setSelectedValue={setSelectedVon} /> : null}
                             {selectedFilter == 3 ? <ItemCheckBoxImage data={dataSocket} selectedItems={selectedSocket} setSelectedItems={setSelectedSocket} /> : null}
