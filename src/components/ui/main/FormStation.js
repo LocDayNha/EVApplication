@@ -1,9 +1,10 @@
-import { StyleSheet, Text, View, ScrollView, Image, Modal, ToastAndroid, Alert, FlatList, TextInput, ActivityIndicator, TouchableOpacity, Button } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Image, Modal, ToastAndroid, Alert, FlatList, TextInput, ActivityIndicator, Platform, TouchableOpacity, Button } from 'react-native';
 import React, { useEffect, useRef, useState, useCallback, useContext } from 'react';
 import { COLOR } from "../../../assets/Theme/Theme";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import RNPickerSelect from 'react-native-picker-select';
 import MapView, { Marker, Callout } from 'react-native-maps';
+import { useNavigation } from '@react-navigation/native';
 import * as Location from 'expo-location';
 import { ItemBoxLocation, ItemCheckBox, ItemInputCharging, ItemRadioButton } from '../../item/Item';
 import { AppContext } from '../../axios/AppContext';
@@ -13,11 +14,25 @@ import * as FileSystem from 'expo-file-system';
 import { firebase } from '../../../../config';
 import { ItemListModal, ItemModalRadioButton, ItemModalCheckBox, ItemModalRadioButtonImage, ItemModalCheckBoxImage } from '../../item/Modal';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
+import Toast from 'react-native-toast-message';
 
 const API_BASE = 'https://online-gateway.ghn.vn/shiip/public-api/master-data';
 const TOKEN = '46f53dba-ecf6-11ef-a268-9e63d516feb9';
 
 const FormStation = () => {
+    const navigation = useNavigation();
+
+    const showToast = (message, type = 'info') => {
+        if (Platform.OS === 'android') {
+            ToastAndroid.show(message, ToastAndroid.SHORT);
+        } else {
+            Toast.show({
+                type,
+                text1: message,
+            });
+        }
+    };
+
     const [modalVisibleBrand, setModalVisibleBrand] = useState(false); // an hien bo loc 
     const [modalVisibleService, setModalVisibleSevice] = useState(false); // an hien bo loc 
     const [modalVisibleVehicle, setModalVisibleVehicle] = useState(false); // an hien bo loc 
@@ -160,31 +175,38 @@ const FormStation = () => {
             const locationString = `${locationDetail}, ${location.wardName}, ${location.districtName}, ${location.provinceName}`;
 
             if (!imageStation) {
-                ToastAndroid.show('Vui lòng chọn ảnh trạm!', ToastAndroid.SHORT);
+                showToast('Vui lòng chọn ảnh trạm!', 'error');
+                // ToastAndroid.show('Vui lòng chọn ảnh trạm!', ToastAndroid.SHORT);
                 return;
             }
             if (!nameStation) {
-                ToastAndroid.show('Vui lòng nhập tên trạm!', ToastAndroid.SHORT);
+                showToast('Vui lòng nhập tên trạm!', 'error');
+                // ToastAndroid.show('Vui lòng nhập tên trạm!', ToastAndroid.SHORT);
                 return;
             }
             if (!timeStart || !timeEnd) {
-                ToastAndroid.show('Vui lòng chọn thời gian hoạt động!', ToastAndroid.SHORT);
+                showToast('Vui lòng chọn thời gian hoạt động!', 'error');
+                // ToastAndroid.show('Vui lòng chọn thời gian hoạt động!', ToastAndroid.SHORT);
                 return;
             }
             if (!selectedBrand || selectedBrand.length === 0) {
-                ToastAndroid.show('Vui lòng chọn thương hiệu!', ToastAndroid.SHORT);
+                showToast('Vui lòng chọn thương hiệu!', 'error');
+                // ToastAndroid.show('Vui lòng chọn thương hiệu!', ToastAndroid.SHORT);
                 return;
             }
             if (!formattedServices || formattedServices.length === 0) {
-                ToastAndroid.show('Vui lòng chọn dịch vụ!', ToastAndroid.SHORT);
+                showToast('Vui lòng chọn dịch vụ!', 'error');
+                // ToastAndroid.show('Vui lòng chọn dịch vụ!', ToastAndroid.SHORT);
                 return;
             }
             if (!selectedLocation.latitude || !selectedLocation.longitude) {
-                ToastAndroid.show('Vui lòng chọn vị trí trạm!', ToastAndroid.SHORT);
+                showToast('Vui lòng chọn vị trí trạm!', 'error');
+                // ToastAndroid.show('Vui lòng chọn vị trí trạm!', ToastAndroid.SHORT);
                 return;
             }
             if (!formattedSpecifications || formattedSpecifications.length === 0) {
-                ToastAndroid.show('Vui lòng nhập thông số kỹ thuật!', ToastAndroid.SHORT);
+                showToast('Vui lòng nhập thông số kỹ thuật!', 'error');
+                // ToastAndroid.show('Vui lòng nhập thông số kỹ thuật!', ToastAndroid.SHORT);
                 return;
             }
 
@@ -211,7 +233,7 @@ const FormStation = () => {
                         });
 
                         if (dataStation) {
-                            ToastAndroid.show('Đã ghi nhận thông tin', ToastAndroid.SHORT);
+                            showToast('Đã ghi nhận thông tin', 'success');
                             setSelectedBrand([]);
                             setSelectedServices([]);
                             setListDataSpecification([]);
@@ -220,12 +242,13 @@ const FormStation = () => {
                             setTimeStart('00:00');
                             setTimeEnd('00:00');
                             setLoactionDetail(null);
+                            navigation.navigate('List');
                         } else {
-                            ToastAndroid.show('Có lỗi xảy ra, vui lòng kiểm tra lại', ToastAndroid.SHORT);
+                            showToast('Có lỗi xảy ra, vui lòng kiểm tra lại', 'error');
                         }
                     } else {
                         console.log("Lỗi khi upload ảnh mới!");
-                        ToastAndroid.show("Lỗi khi lưu ảnh!", ToastAndroid.SHORT);
+                        showToast('Lỗi khi lưu ảnh!', 'error');
                         return;
                     }
                 }
@@ -666,7 +689,7 @@ const FormStation = () => {
                 </View>
                 {checkLocation && <Text style={styles.errorText}>Vui lòng nhập đầy đủ thông tin</Text>}
             </View>
-            {/* hãng trạm sạc  */}            
+            {/* hãng trạm sạc  */}
             {/* dịch vụ */}
             <View style={{ width: '100%' }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-around', width: '100%' }}>

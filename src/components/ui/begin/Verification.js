@@ -7,12 +7,24 @@ import { Roboto_400Regular, Roboto_500Medium } from '@expo-google-fonts/roboto';
 import { Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
 import AppLoading from 'expo-app-loading';
 import AxiosInstance from '../../axios/AxiosInstance';
-
+import Toast from 'react-native-toast-message';
 
 const Verification = () => {
     const route = useRoute();
     const { email, name } = route.params;
     const navigation = useNavigation();
+
+    const showToast = (message, type = 'info') => {
+        if (Platform.OS === 'android') {
+            ToastAndroid.show(message, ToastAndroid.SHORT);
+        } else {
+            Toast.show({
+                type,
+                text1: message,
+            });
+        }
+    };
+
 
     const [otp, setOtp] = useState(new Array(4).fill(""));
     const inputRefs = useRef([]);
@@ -50,13 +62,16 @@ const Verification = () => {
             );
             if (code && code.verifyCode) {
                 setCodeResult(parseInt(code.verifyCode, 10));
-                ToastAndroid.show('Kiểm tra mã xác nhận ở Email', ToastAndroid.SHORT);
+                showToast('Kiểm tra mã xác nhận ở Email', 'success');
+                // ToastAndroid.show('Kiểm tra mã xác nhận ở Email', ToastAndroid.SHORT);
                 console.log('Gửi mã xác nhận thành công:', code.verifyCode)
             } else {
-                ToastAndroid.show('Đăng ký thất bại!', ToastAndroid.SHORT);
+                showToast('Đăng ký thất bại!', 'error');
+                // ToastAndroid.show('Đăng ký thất bại!', ToastAndroid.SHORT);
             }
         } catch (error) {
-            ToastAndroid.show('Có lỗi xảy ra, vui lòng thử lại', ToastAndroid.SHORT);
+            showToast('Có lỗi xảy ra, vui lòng thử lại', 'error');
+            // ToastAndroid.show('Có lỗi xảy ra, vui lòng thử lại', ToastAndroid.SHORT);
         }
     }
 

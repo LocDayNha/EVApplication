@@ -17,11 +17,14 @@ import { TextInputBegin, TextInputMain, CustomButton, TextInputProfile, ItemRati
 //import { useFonts, Roboto_400Regular, Roboto_700Bold, Roboto_500Medium_Italic, Roboto_500Medium} from '@expo-google-fonts/roboto';
 //import { useFonts, Inter_400Regular, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
 import { useFonts, Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
-import AppLoading from 'expo-app-loading'
+import AppLoading from 'expo-app-loading';
+import Toast from 'react-native-toast-message';
+
 export default function App() {
   return (
     <AppContextProvider>
       <ButtomTab />
+      <Toast />
     </AppContextProvider>
   );
 }

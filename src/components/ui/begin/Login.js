@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppLoading from 'expo-app-loading';
 import AxiosInstance from '../../axios/AxiosInstance';
 import { AppContext } from '../../axios/AppContext';
+import Toast from 'react-native-toast-message';
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -17,12 +18,23 @@ const Login = () => {
     navigation.navigate('Screen');
   }
 
+  const showToast = (message, type = 'info') => {
+    if (Platform.OS === 'android') {
+      ToastAndroid.show(message, ToastAndroid.SHORT);
+    } else {
+      Toast.show({
+        type,
+        text1: message,
+      });
+    }
+  };
+
   // login
   const { setIsLogin, setInfoUser, setIdUser, infoUser, idUser } = useContext(AppContext);
 
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
-  // const [rePassword, setRePassword] = useState(null);
+  const [messageError, setMessageError] = useState(null);
   const onLogin = async () => {
     try {
       const response = await AxiosInstance().post('/user/login',
@@ -46,25 +58,24 @@ const Login = () => {
         navigateToMain();
 
       } else if (response && response.returnData.data && response.returnData.data.user.isVerified === false) {
-        ToastAndroid.show('Cần xác nhận tài khoản', ToastAndroid.SHORT);
+        showToast('Cần xác nhận tài khoản', 'info');
         navigation.navigate('Verification', { email: email, name: 'Login' })
       } else {
-        ToastAndroid.show('Thông tin đăng nhập sai', ToastAndroid.SHORT);
+        showToast('Thông tin đăng nhập sai', 'error');
+        setMessageError()
       }
     } catch (error) {
-      ToastAndroid.show(
-        error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại',
-        ToastAndroid.SHORT,
-      );
+      showToast(error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại', 'error');
+      setMessageError(error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại', 'error');
     }
   };
 
   return (
     <KeyboardAvoidingView
-    behavior={Platform.OS ==='ios' ? "padding" : null}
+      behavior={Platform.OS === 'ios' ? "padding" : null}
     >
       <View style={styles.container} >
-        <View style={{ width:'100%', height:'30%', justifyContent:'center', alignItems:'center'}} onTouchStart={()=> Keyboard.dismiss()}>
+        <View style={{ width: '100%', height: '30%', justifyContent: 'center', alignItems: 'center' }} onTouchStart={() => Keyboard.dismiss()}>
           <Text style={styles.logoText}>LOGO</Text>
         </View>
         <Text style={styles.title}>Đăng nhập tài khoản</Text>
@@ -93,7 +104,7 @@ const Login = () => {
               <Image source={require('../../../assets/icon/eye.png')} style={styles.img} />
             </TouchableOpacity>
           </View>
-          <TouchableOpacity style={{width:'100%'}}>
+          <TouchableOpacity style={{ width: '100%' }}>
             <Text style={styles.forgotText} onPress={() => navigation.navigate('ForgotPass')}>Quên mật khẩu?</Text>
           </TouchableOpacity>
         </View>

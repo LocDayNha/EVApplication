@@ -19,7 +19,10 @@ const Setting = () => {
 
     const Logout = async () => {
         try {
-            await AsyncStorage.removeItem('token');
+            await AsyncStorage.removeItem('isLogin');
+            await AsyncStorage.removeItem('infoUser');
+            await AsyncStorage.removeItem('idUser');
+
             setIsLogin(false);
             setInfoUser(null);
             setIdUser(null);
@@ -133,7 +136,7 @@ const Setting = () => {
                 <>
                     <View style={styles.boxSetting}>
                         <TouchableOpacity style={styles.boxContent2} onPress={Logout}>
-                            <Image style={styles.imgIcon} source={require('../../../assets/icon/logout.png')} />
+                            <Image style={[styles.imgIcon, { tintColor: null }]} source={require('../../../assets/icon/logout.png')} />
                             <Text style={styles.textNameSetting}>Đăng xuất tài khoản</Text>
                         </TouchableOpacity>
                     </View>
@@ -142,7 +145,7 @@ const Setting = () => {
                 <>
                     <View style={styles.boxSetting}>
                         <TouchableOpacity style={styles.boxContent2} onPress={() => navigation.navigate('Login')}>
-                            <Image style={styles.imgIcon} source={require('../../../assets/icon/login.png')} />
+                            <Image style={[styles.imgIcon, { tintColor: null }]} source={require('../../../assets/icon/login.png')} />
                             <Text style={styles.textNameSetting}>Đăng nhập tài khoản</Text>
                         </TouchableOpacity>
                     </View>
@@ -198,7 +201,7 @@ const styles = StyleSheet.create({
         height: '30',
         //    borderRadius:30,
         marginRight: '5%',
-        tintColor:'#009558'
+        tintColor: '#009558'
     },
     textNameuser: {
         fontSize: 24,

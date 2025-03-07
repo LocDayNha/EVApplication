@@ -7,11 +7,23 @@ import { Roboto_400Regular, Roboto_500Medium } from '@expo-google-fonts/roboto';
 import { Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
 import AppLoading from 'expo-app-loading';
 import AxiosInstance from '../../axios/AxiosInstance';
+import Toast from 'react-native-toast-message';
 
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigation = useNavigation();
+
+  const showToast = (message, type = 'info') => {
+    if (Platform.OS === 'android') {
+      ToastAndroid.show(message, ToastAndroid.SHORT);
+    } else {
+      Toast.show({
+        type,
+        text1: message,
+      });
+    }
+  };
 
   // register
   const [email, setEmail] = useState(null);
@@ -28,13 +40,15 @@ const Register = () => {
       if (response && response.status) {
         navigation.navigate('Verification', { email: email, name: 'Register' });
       } else {
-        ToastAndroid.show('Đăng ký thất bại!', ToastAndroid.SHORT);
+        // ToastAndroid.show('Đăng ký thất bại!', ToastAndroid.SHORT);
+        showToast('Cần xác nhận tài khoản', 'error');
       }
     } catch (error) {
-      ToastAndroid.show(
-        error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại',
-        ToastAndroid.SHORT,
-      );
+      showToast(error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại', 'error');
+      // ToastAndroid.show(
+      //   error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại',
+      //   ToastAndroid.SHORT,
+      // );
     }
   };
 

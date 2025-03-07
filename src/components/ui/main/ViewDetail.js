@@ -6,7 +6,7 @@ import { useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AxiosInstance from '../../axios/AxiosInstance';
 import { AppContext } from '../../axios/AppContext';
-import { COLOR,SIZE } from "../../../assets/Theme/Theme";
+import { COLOR, SIZE } from "../../../assets/Theme/Theme";
 
 
 const ViewDetail = () => {
@@ -130,24 +130,36 @@ const ViewDetail = () => {
                             <Image style={{ width: '100%', height: 300 }} source={{ uri: dataStation.image }} />
                         </View>
                         <View style={styles.boxMain}>
-                            <Text style={styles.textName}>{dataStation.name}</Text>
+                            <Text style={styles.textName}>{dataStation.brand_id.name} - {dataStation.name}</Text>
                             <View style={styles.detailStation}>
                                 <Image style={styles.imgIconMain} source={require('../../../assets/icon/icons8-location-94.png')} />
                                 <Text style={styles.textMain}>{dataStation.location}</Text>
                             </View>
 
-                            <View style={styles.detailStation}>
-                                <Image style={styles.imgIconMain} source={require('../../../assets/icon/icons8-charging-station-64.png')} />
-                                <Text style={styles.textMain22}> Đang hoạt Động</Text>
+                            <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-between' }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Image style={{ width: 24, height: 24 }} source={require('../../../assets/icon/map-location.png')} />
+                                    <Text> Trung tâm thương mại</Text>
+                                </View>
+                                <View style={styles.detailStation}>
+                                    <Image style={[styles.imgIconMain, { width: 24, height: 24 }]} source={require('../../../assets/icon/public-safety.png')} />
+                                    <Text style={[styles.textMain22, { color: 'black' }]}> Công cộng</Text>
+                                </View>
                             </View>
-                            <View style={styles.detailStation}>
-                                <Image style={styles.imgIconMain} source={require('../../../assets/icon/icons8-time-50.png')} />
-                                <Text style={styles.textMain}>{dataStation.time}</Text>
+                            <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-between' }}>
+                                <View style={[styles.detailStation, { justifyContent: 'center', alignItems: 'center' }]}>
+                                    <Image style={[styles.imgIconMain, { width: 24, height: 24 }]} source={require('../../../assets/icon/icons8-time-48.png')} />
+                                    <Text style={styles.textMain}> {dataStation.time}</Text>
+                                </View>
+                                <View style={styles.detailStation}>
+                                    <Image style={[styles.imgIconMain, { width: 24, height: 24 }]} source={require('../../../assets/icon/charging-station.png')} />
+                                    <Text style={styles.textMain22}> Đang hoạt động</Text>
+                                </View>
                             </View>
                         </View>
                         {/* Dich Vu  */}
                         <View style={{
-                            margin: '5%',marginTop:0, backgroundColor: 'white', borderRadius: 10, paddingTop: 10, shadowColor: "#000",
+                            margin: '5%', marginTop: 0, backgroundColor: 'white', borderRadius: 10, paddingTop: 10, shadowColor: "#000",
                             shadowOffset: {
                                 width: 0,
                                 height: 2,
@@ -334,7 +346,7 @@ export default ViewDetail
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor:'white'
+        backgroundColor: 'white'
     },
     containerCharging: {
         backgroundColor: 'white',
@@ -390,7 +402,7 @@ const styles = StyleSheet.create({
         width: 20,
         justifyContent: 'center',
         alignItems: 'center',
-        marginHorizontal:'1%'
+        marginHorizontal: '1%'
     },
     imgSocket: {
         width: 70,
@@ -402,7 +414,6 @@ const styles = StyleSheet.create({
     },
     boxMain: {
         alignItems: 'center',
-
         marginTop: '15%',
         margin: '5%',
         padding: '5%',

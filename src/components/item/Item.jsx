@@ -90,12 +90,9 @@ export function ItemRating({ data }) {
     <View style={styles.viewRatingContainer} key={data._id}>
       {optionRating ?
         <>
-          <View style={{ position: 'absolute', top: '3.5%', right: '0%', width: 50, justifyContent: 'space-between', alignItems: 'center' }}>
-            <TouchableOpacity>
-              <Text style={{ fontSize: SIZE.size12, fontWeight: 500 }}>Sửa</Text>
-            </TouchableOpacity>
+          <View style={{ position: 'absolute', top: 5, right: 5, width: 20 }}>
             <TouchableOpacity onPress={() => deleteRating(data._id)}>
-              <Text style={{ fontSize: SIZE.size12, fontWeight: 500, color: 'red' }}>Xóa</Text>
+              <Image style={{ width: 18, height: 18 }} source={require('../../assets/icon/close.png')} />
             </TouchableOpacity>
           </View>
         </>
@@ -104,7 +101,7 @@ export function ItemRating({ data }) {
       }
       {idUser && idUser === data.user_id._id && optionRating !== true ?
         <>
-          <TouchableOpacity onPress={() => setOptionRating(true)} style={{ width: 24, height: 24, position: 'absolute', top: 0, right: 5 }}>
+          <TouchableOpacity onPress={() => setOptionRating(true)} style={{ width: 26, height: 26, position: 'absolute', top: 0, right: 3 }}>
             <Image source={require('../../assets/icon/icons8-more-50.png')} style={{ width: 24, height: 24 }} />
           </TouchableOpacity>
         </>
@@ -223,10 +220,16 @@ export function ItemStationMap(props) {
       <Image style={styles.imgStation} source={{ uri: data.image }} />
       <View style={styles.viewInfoStation}>
         <Text style={styles.textItemName} numberOfLines={1} ellipsizeMode='tail'>{data.brand_id.name} - {data.name}</Text>
-        <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail'>{data.location}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Image style={{ width: 20, height: 20, marginRight: 5 }} source={require('../../assets/icon/icons8-location-94.png')} />
+          <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail'>{data.location}</Text>
+        </View>
       </View>
       <View style={styles.viewInfoStation}>
-        <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail'>{data.time}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Image style={{ width: 20, height: 20, marginRight: 5 }} source={require('../../assets/icon/icons8-time-48.png')} />
+          <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail'>{data.time}</Text>
+        </View>
       </View>
       <View style={styles.viewInfoStation2}>
         <View style={{ flexDirection: 'row' }}>
@@ -249,7 +252,7 @@ export function ItemStationMap(props) {
               ?.map((item) => item?.specification_id?.port_id?.name);
             //.filter((type) => type === "AC" || type === "DC"); // Lọc chỉ lấy AC hoặc DC
             const uniquePortTypes = [...new Set(portTypes)];
-            const limitedPortTypes = uniquePortTypes.slice(0, 3);
+            const limitedPortTypes = uniquePortTypes.slice(0, 2);
             const displayText =
               uniquePortTypes.length > 3
                 ? `${limitedPortTypes.join(" - ")} ...`

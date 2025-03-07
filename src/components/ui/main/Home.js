@@ -378,19 +378,28 @@ const Home = (props) => {
                         </TouchableOpacity>
 
                     </View>
-                    <View >
-                        <FlatList
-                            data={filteredItems}
-                            scrollEnabled={false}
-                            showsVerticalScrollIndicator={false}
-                            keyExtractor={(item) => item._id}
-                            renderItem={({ item }) => (
-                                <View>
-                                    <ItemStationMain data={item} Kilomet={valueKm} />
-                                </View>
-                            )}
-                        />
+                    <View>
+                        {filteredItems && filteredItems.length > 0 ?
+                            <View >
+                                <FlatList
+                                    data={filteredItems}
+                                    scrollEnabled={false}
+                                    showsVerticalScrollIndicator={false}
+                                    keyExtractor={(item) => item._id}
+                                    renderItem={({ item }) => (
+                                        <View>
+                                            <ItemStationMain data={item} Kilomet={valueKm} />
+                                        </View>
+                                    )}
+                                />
+                            </View>
+                            :
+                            <View style={{ justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%', }}>
+                                <Text style={{ fontWeight: '500', color: 'black', fontSize: 16 }}>Không có dữ liệu</Text>
+                            </View>
+                        }
                     </View>
+
                 </View>
             </ScrollView>
             <Modal transparent={true} visible={modalVisible} animationType="slide">

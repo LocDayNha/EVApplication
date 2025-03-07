@@ -25,7 +25,11 @@ import TestAPILocationVN from '../test/TestAPILocationVN';
 import Location from '../test/Location';
 import TestOpenGoogleMap from '../test/TestOpenGoogleMap';
 import TestGoogleMap from '../test/TestGoogleMap';
-import UploadImage from '../test/UploadImage'
+import UploadImage from '../test/UploadImage';
+import MyCar from '../ui/main/mycar/MyCar';
+import MyBrandCar from '../ui/main/mycar/MyBrandCar';
+import MyVehicleCar from '../ui/main/mycar/MyVehicleCar';
+import MyPortCar from '../ui/main/mycar/MyPortCar';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -52,7 +56,7 @@ const TabIcon = ({ focused, icon, label }) => (
                 source={icon}
             />
         </ImageBackground>
-        <Text style={{ color: focused ? COLOR.green3 : COLOR.gray4, fontSize: 16, fontWeight: '500' }}>
+        <Text style={{ color: focused ? COLOR.green3 : COLOR.gray4, fontSize: 13, fontWeight: '500' }}>
             {label}
         </Text>
     </View>
@@ -100,7 +104,7 @@ const Tabbar = () => {
             />
             <Tab.Screen
                 name="QR"
-                component={UploadImage}
+                component={MyCar}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <TabIcon focused={focused} icon={require('../../assets/images/imagebuttontab/qr.png')} label="" />
@@ -140,6 +144,12 @@ const ButtomTab = () => {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="SplashSceen" component={SplashScreen} />
+            
+            <Stack.Screen name="MyCar" component={MyCar} />
+            <Stack.Screen name="MyBrandCar" component={MyBrandCar} />
+            <Stack.Screen name="MyVehicleCar" component={MyVehicleCar} />
+            <Stack.Screen name="MyPortCar" component={MyPortCar} />
+
             <Stack.Screen name="Screen" component={Screen} />
 
             <Stack.Screen name="List" component={List} options={{ title: "Trạm sạc của bạn", headerStyle: { backgroundColor: COLOR.green3 }, headerTintColor: "#fff", headerShown: true }} />

@@ -7,12 +7,24 @@ import { Roboto_400Regular, Roboto_500Medium } from '@expo-google-fonts/roboto';
 import { Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
 import AppLoading from 'expo-app-loading';
 import AxiosInstance from '../../axios/AxiosInstance';
+import Toast from 'react-native-toast-message';
 
 const NewPassword = () => {
     const route = useRoute();
     const { email } = route.params;
     const navigation = useNavigation();
     const [showPassword, setShowPassword] = useState(false);
+
+    const showToast = (message, type = 'info') => {
+        if (Platform.OS === 'android') {
+            ToastAndroid.show(message, ToastAndroid.SHORT);
+        } else {
+            Toast.show({
+                type,
+                text1: message,
+            });
+        }
+    };
 
     const [password, setPassword] = useState(null);
     const [password2, setPassword2] = useState(null);
@@ -24,16 +36,19 @@ const NewPassword = () => {
                 }
             );
             if (response) {
+                showToast('Cập nhật mật khẩu thành công', 'success');
                 navigation.navigate('CompleteCreate');
                 console.log('Cập nhật mật khẩu thành công')
             } else {
-                ToastAndroid.show('Cập nhật mật khẩu thất bại!', ToastAndroid.SHORT);
+                showToast('Cập nhật mật khẩu thất bại!', 'error');
+                // ToastAndroid.show('Cập nhật mật khẩu thất bại!', ToastAndroid.SHORT);
             }
         } catch (error) {
-            ToastAndroid.show(
-                error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại',
-                ToastAndroid.SHORT,
-            );
+            showToast(error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại', 'error');
+            // ToastAndroid.show(
+            //     error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại',
+            //     ToastAndroid.SHORT,
+            // );
         }
     }
 
@@ -95,8 +110,8 @@ const styles = StyleSheet.create({
     },
     image: {
         marginBottom: 5,
-        width:250,
-        height:250
+        width: 250,
+        height: 250
     },
 
     img: {

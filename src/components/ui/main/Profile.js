@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, Image, ToastAndroid, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Image, ToastAndroid, TouchableOpacity, Platform } from 'react-native';
 import React, { useState, useContext, useEffect } from 'react';
 import { TextInputProfile, CustomButton } from '../../item/Item';
 import { AppContext } from '../../axios/AppContext';
@@ -6,6 +6,7 @@ import AxiosInstance from '../../axios/AxiosInstance';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 import { firebase } from '../../../../config';
+import Toast from 'react-native-toast-message';
 
 const Profile = () => {
 
@@ -19,6 +20,17 @@ const Profile = () => {
   const [imageUser, setImageUser] = useState(null);
   const [choseImage, setChoseImage] = useState(null);
   const [urlImage, setUrlImage] = useState(null);
+
+  const showToast = (message, type = 'info') => {
+    if (Platform.OS === 'android') {
+      ToastAndroid.show(message, ToastAndroid.SHORT);
+    } else {
+      Toast.show({
+        type,
+        text1: message,
+      });
+    }
+  };
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -98,16 +110,16 @@ const Profile = () => {
       });
       if (data) {
         console.log('Cập nhật thành công:');
-        ToastAndroid.show('Cập nhật thành công', ToastAndroid.SHORT);
+        showToast('Cập nhật thành công','success')
         setInfoUser(data.user);
       } else {
         console.log('Cập nhật thất bại');
-        ToastAndroid.show('Cập nhật thất bại', ToastAndroid.SHORT);
+        showToast('Cập nhật thất bại','error')
       }
 
     } catch (error) {
       console.log('Lỗi hệ thống:', error);
-      ToastAndroid.show('Lỗi hệ thống', ToastAndroid.SHORT);
+      showToast('Lỗi hệ thống','error')
     }
   }
 

@@ -1,12 +1,23 @@
-import { StyleSheet, Text, View, Image } from 'react-native'
-import React, { useEffect } from 'react'
+import { StyleSheet, Text, View, Image } from 'react-native';
+import React, { useEffect, useContext, useState } from 'react';
+import { AppContext } from '../../axios/AppContext';
 
 const SplashScreen = ({ navigation }) => {
-    useEffect(() => {
+    const { myCar } = useContext(AppContext);
+
+    const netPage = async () => {
         setTimeout(() => {
-            navigation.replace('Screen');
-        }, 2000); // chuyển trang sau 2 giây
-    }, []);
+            if (myCar || myCar === 'Bỏ qua') {
+                navigation.replace('Screen');
+            } else {
+                navigation.replace('MyCar');
+            }
+        }, 2000);
+    }
+
+    useEffect(() => {
+        netPage();
+    }, [myCar]);
     return (
         <View style={styles.container}>
             <Image source={require('../../../assets/images/Splash (2).png')} />
