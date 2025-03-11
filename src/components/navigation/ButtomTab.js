@@ -14,7 +14,7 @@ import Verification from '../ui/begin/Verification';
 import CompleteCreate from '../ui/begin/CompleteCreate';
 import NewPassword from '../ui/begin/NewPassword';
 import List from '../ui/main/ListStation'
-import Track from '../ui/main/Track';
+import QR from '../ui/main/QR';
 import Trip from '../ui/main/Trip';
 import MapStation from '../ui/main/MapStation';
 import Setting from '../ui/main/Setting';
@@ -104,7 +104,7 @@ const Tabbar = () => {
             />
             <Tab.Screen
                 name="QR"
-                component={Car}
+                component={QR}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <TabIcon focused={focused} icon={require('../../assets/images/imagebuttontab/qr.png')} label="" />

@@ -2,21 +2,16 @@ import { StyleSheet, Text, View, ScrollView, Image, Modal, ToastAndroid, Switch,
 import React, { useEffect, useRef, useState, useCallback, useContext } from 'react';
 import { COLOR, SIZE } from "../../../assets/Theme/Theme";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import RNPickerSelect from 'react-native-picker-select';
 import MapView, { Marker, Callout } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { ItemBoxLocation, ItemCheckBox, ItemInputCharging, ItemRadioButton } from '../../item/Item';
 import { AppContext } from '../../axios/AppContext';
 import AxiosInstance from '../../axios/AxiosInstance';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 import { firebase } from '../../../../config';
 import { ItemListModal, ItemModalRadioButton, ItemModalCheckBox, ItemModalRadioButtonImage, ItemModalCheckBoxImage } from '../../item/Modal';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { ItemButton1, ItemForList, ItemText1, ItemTitle1, ItemTextInput1 } from '../../item/ItemList';
-import { navigate } from 'expo-router/build/global-state/routing';
-import { useNavigation } from 'react-router-native';
-
+import { useNavigation } from '@react-navigation/native';
 
 const API_BASE = 'https://online-gateway.ghn.vn/shiip/public-api/master-data';
 const TOKEN = '46f53dba-ecf6-11ef-a268-9e63d516feb9';
@@ -159,7 +154,6 @@ const FormStation = () => {
                 setListDataSpecification(prevList =>
                     prevList.map(item => item._id === id ? response.data : item)
                 );
-                navigation.goBack()
             } else {
                 console.error('Thất bại');
             }
@@ -248,6 +242,7 @@ const FormStation = () => {
                             setTimeStart('00:00');
                             setTimeEnd('00:00');
                             setLoactionDetail(null);
+                            navigation.goBack();
                         } else {
                             showAlert('Trạm sạc', 'Thêm trạm sạc thất bại');
                         }

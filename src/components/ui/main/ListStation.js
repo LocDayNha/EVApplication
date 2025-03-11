@@ -71,7 +71,7 @@ const ListStation = (props) => {
             </View>
             <ScrollView showsVerticalScrollIndicator={false}  >
                 <View style={styles.buttonSearchContainer}>
-                    <TouchableOpacity style={styles.buttonSearch} onPress={() => [setModalVisible(true), navigation.navigate('FormStation')]}>
+                    <TouchableOpacity style={styles.buttonSearch} onPress={() => navigation.navigate('FormStation')}>
                         {/* <Image source={require('../../../assets/icon/icons8-add-64.png')} /> */}
                         <Text style={{ color: COLOR.green3 }}>Thêm trạm sạc </Text>
                     </TouchableOpacity>
@@ -101,8 +101,8 @@ const ListStation = (props) => {
                             </>
                             :
                             <>
-                                <View style={{justifyContent:'center', alignItems:'center', width:'100%', height:'100%'}}>
-                                    <Text style={{fontWeight:'500', color:'black', fontSize:16}}>Không có dữ liệu</Text>
+                                <View style={{ justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
+                                    <Text style={{ fontWeight: '500', color: 'black', fontSize: 16 }}>Không có dữ liệu</Text>
                                 </View>
                             </>
                     }
