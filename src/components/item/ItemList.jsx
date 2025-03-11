@@ -58,7 +58,7 @@ export function ItemButton1({ title, onPress }) {
 
 export function ItemText1({ title }) {
     return (
-        <View style={{ backgroundColor: COLOR.gray2, padding: 15, width: '45%', borderRadius: 5, alignItems: 'center' }}>
+        <View style={{  padding: 15, width: '45%', borderRadius: 5, alignItems: 'center' }}>
             <View >
                 <Text style={{ fontSize: SIZE.size14 }}>
                     {title}
