@@ -24,17 +24,25 @@ const MyCar = () => {
 
     const netPage = async () => {
         if (vehicle && vehicle.length > 0 && vehicle === 'Xe máy điện') {
-            await setMyCar(vehicle);
+            await setMyCar([{
+                vehicleCar: vehicle,
+                modelCar: 'Không có',
+                chargingCar: 'Không có'
+            }]);
             navigation.navigate('Screen');
         } else if (vehicle && vehicle.length > 0 && vehicle === 'Ô tô điện') {
-            navigation.navigate('MyBrandCar', { myCar: vehicle });
+            navigation.navigate('MyBrandCar', { myVehicleCar: vehicle });
         } else {
             showToast('Vui lòng chọn loại phương tiện của bạn', 'error');
         }
     }
 
     const skip = async () => {
-        await setMyCar('Bỏ qua');
+        await setMyCar({
+            vehicleCar: 'Không có',
+            modelCar: 'Không có',
+            chargingCar: 'Không có'
+        });
         navigation.navigate('Screen');
     }
 

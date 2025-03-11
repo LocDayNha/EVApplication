@@ -9,9 +9,9 @@ import { AppContext } from '../../../axios/AppContext';
 
 const MyPortCar = () => {
     const route = useRoute();
-    const { idMyVehicleCar, myCar } = route.params;
+    const { idMyVehicleCar, myVehicleCar } = route.params;
     const navigation = useNavigation();
-    const { setMyCar } = useContext(AppContext);
+    const { myCar, setMyCar } = useContext(AppContext);
 
     const showToast = (message, type = 'info') => {
         if (Platform.OS === 'android') {
@@ -42,16 +42,12 @@ const MyPortCar = () => {
     };
 
     const netPage = async () => {
-        console.log('My Car:', myCar);
-        console.log('My Vehicle Car:', idMyVehicleCar);
-        console.log('My Port Car:', dataSelectedPortCar);
-
-        if (dataSelectedPortCar && dataSelectedPortCar.length > 0 && idMyVehicleCar && idMyVehicleCar.length > 0 && dataSelectedPortCar && dataSelectedPortCar.length > 0) {
-            await setMyCar({
-                myCar,
-                idMyVehicleCar,
-                dataSelectedPortCar
-            });
+        if (dataSelectedPortCar && typeof dataSelectedPortCar === 'object' && dataSelectedPortCar._id) {
+            await setMyCar([{
+                vehicleCar: myVehicleCar,
+                modelCar: idMyVehicleCar,
+                chargingCar: dataSelectedPortCar
+            }]);
             navigation.navigate('SplashSceen');
         } else {
             showToast('Vui lòng chọn loại đầu sạc xe của bạn', 'error');
@@ -83,10 +79,10 @@ const MyPortCar = () => {
                         keyExtractor={(item) => item._id}
                         renderItem={({ item }) => (
                             <View style={styles.viewList}>
-                                <TouchableOpacity onPress={() => setDataSelectedPortCar(item._id)}>
+                                <TouchableOpacity onPress={() => setDataSelectedPortCar(item)}>
                                     <View style={{
                                         flexDirection: 'row', width: '100%', padding: '5%', borderRadius: 15,
-                                        backgroundColor: dataSelectedPortCar === item._id ? '#D9D9D9' : 'white',
+                                        backgroundColor: dataSelectedPortCar === item ? '#D9D9D9' : 'white',
                                     }}>
                                         <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center' }}>
                                             <Image source={{ uri: item.image }} style={{ width: 60, height: 60 }} />

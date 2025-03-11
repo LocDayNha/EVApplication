@@ -7,7 +7,7 @@ const SplashScreen = ({ navigation }) => {
 
     const netPage = async () => {
         setTimeout(() => {
-            if (myCar || myCar === 'Bỏ qua') {
+            if (myCar) {
                 navigation.replace('Screen');
             } else {
                 navigation.replace('MyCar');

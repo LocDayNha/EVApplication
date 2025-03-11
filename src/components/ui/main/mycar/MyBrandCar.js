@@ -8,7 +8,7 @@ import { useRoute } from '@react-navigation/native';
 
 const MyBrandCar = () => {
     const route = useRoute();
-    const { myCar } = route.params;
+    const { myVehicleCar } = route.params;
     const navigation = useNavigation();
 
     const showToast = (message, type = 'info') => {
@@ -40,7 +40,7 @@ const MyBrandCar = () => {
 
     const netPage = async () => {
         if (dataSelectedBrandCar && dataSelectedBrandCar.length > 0) {
-            navigation.navigate('MyVehicleCar', { id: dataSelectedBrandCar, myCar: myCar });
+            navigation.navigate('MyVehicleCar', { id: dataSelectedBrandCar, myVehicleCar: myVehicleCar });
         } else {
             showToast('Vui lòng chọn hãng xe của bạn', 'error');
         }

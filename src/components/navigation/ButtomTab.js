@@ -30,6 +30,7 @@ import MyCar from '../ui/main/mycar/MyCar';
 import MyBrandCar from '../ui/main/mycar/MyBrandCar';
 import MyVehicleCar from '../ui/main/mycar/MyVehicleCar';
 import MyPortCar from '../ui/main/mycar/MyPortCar';
+import Car from '../ui/main/Car';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -103,7 +104,7 @@ const Tabbar = () => {
             />
             <Tab.Screen
                 name="QR"
-                component={MyCar}
+                component={Car}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <TabIcon focused={focused} icon={require('../../assets/images/imagebuttontab/qr.png')} label="" />
@@ -152,6 +153,7 @@ const ButtomTab = () => {
             <Stack.Screen name="Screen" component={Screen} />
 
             <Stack.Screen name="List" component={List} options={{ title: "Trạm sạc của bạn", headerStyle: { backgroundColor: COLOR.green3 }, headerTintColor: "#fff", headerShown: true }} />
+            <Stack.Screen name="Car" component={Car} options={{ title: "Phương tiện cá nhân", headerStyle: { backgroundColor: COLOR.green3 }, headerTintColor: "#fff", headerShown: true }} />
             <Stack.Screen name="Profile" component={Profile} options={{ title: "Thông tin cá nhân", headerStyle: { backgroundColor: COLOR.green3 }, headerTintColor: "#fff", headerShown: true }} />
             <Stack.Screen name="ViewDetail" component={ViewDetail} options={{ title: "Chi tiết trạm sạc", headerStyle: { backgroundColor: COLOR.green3 }, headerTintColor: "#fff", headerShown: true, }} />
             <Stack.Screen name="FormStation" component={FormStation} options={{ title: "Thêm trạm sạc", headerStyle: { backgroundColor: COLOR.green3 }, headerTintColor: "#fff", headerShown: true }} />

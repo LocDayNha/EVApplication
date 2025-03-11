@@ -8,7 +8,7 @@ import { useRoute } from '@react-navigation/native';
 
 const MyVehicleCar = () => {
     const route = useRoute();
-    const { id, myCar } = route.params;
+    const { id, myVehicleCar } = route.params;
     const navigation = useNavigation();
 
     const showToast = (message, type = 'info') => {
@@ -42,8 +42,8 @@ const MyVehicleCar = () => {
     };
 
     const netPage = async () => {
-        if (dataSelectedCar && dataSelectedCar.length > 0) {
-            navigation.navigate('MyPortCar', { idMyVehicleCar: dataSelectedCar, myCar: myCar });
+        if (dataSelectedCar && typeof dataSelectedCar === 'object' && dataSelectedCar._id) {
+            navigation.navigate('MyPortCar', { idMyVehicleCar: dataSelectedCar, myVehicleCar: myVehicleCar });
         } else {
             showToast('Vui lòng chọn dòng xe của bạn', 'error');
         }
@@ -77,14 +77,14 @@ const MyVehicleCar = () => {
                         keyExtractor={(item) => item._id}
                         renderItem={({ item }) => (
                             <View style={styles.viewList}>
-                                <TouchableOpacity onPress={() => setDataSelectedDataCar(item._id)}>
+                                <TouchableOpacity onPress={() => setDataSelectedDataCar(item)}>
                                     <View style={{ flexDirection: 'row', width: '100%', marginTop: '3%' }}>
                                         <View style={{ flexDirection: 'row', width: '80%' }}>
                                             <Text style={{ marginLeft: '5%', fontSize: 16, fontWeight: 500 }}>{item.name}</Text>
                                         </View>
                                         <View style={{ width: '20%', alignItems: 'center' }}>
                                             <View style={{ borderRadius: 20, width: 20, height: 20, borderWidth: 2, justifyContent: 'center', alignItems: 'center' }}>
-                                                {dataSelectedCar === item._id ? <View style={{ borderRadius: 20, width: 13, height: 13, backgroundColor: 'gray' }}></View> : null}
+                                                {dataSelectedCar === item ? <View style={{ borderRadius: 20, width: 13, height: 13, backgroundColor: 'gray' }}></View> : null}
                                             </View>
                                         </View>
                                     </View>
