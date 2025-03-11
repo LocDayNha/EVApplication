@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, Image, Modal, ToastAndroid, Switch, Alert, FlatList, TextInput, ActivityIndicator, TouchableOpacity, Button } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Image, Modal, ToastAndroid, Switch, Alert, FlatList, TextInput, ActivityIndicator, TouchableOpacity, Button, Platform } from 'react-native';
 import React, { useEffect, useRef, useState, useCallback, useContext } from 'react';
 import { COLOR, SIZE } from "../../../assets/Theme/Theme";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -14,12 +14,15 @@ import { firebase } from '../../../../config';
 import { ItemListModal, ItemModalRadioButton, ItemModalCheckBox, ItemModalRadioButtonImage, ItemModalCheckBoxImage } from '../../item/Modal';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { ItemButton1, ItemForList, ItemText1, ItemTitle1, ItemTextInput1 } from '../../item/ItemList';
+import { navigate } from 'expo-router/build/global-state/routing';
+import { useNavigation } from 'react-router-native';
 
 
 const API_BASE = 'https://online-gateway.ghn.vn/shiip/public-api/master-data';
 const TOKEN = '46f53dba-ecf6-11ef-a268-9e63d516feb9';
 
 const FormStation = () => {
+    const navigation = useNavigation();
     const [modalVisibleImage, setModalVisibleImage] = useState(false); // an hien bo loc 
     const [modalNameStation, setModalNameStation] = useState(false); // an hien bo loc 
     const [modalTimeStation, setModalTimeStation] = useState(false); // an hien bo loc 
@@ -29,9 +32,6 @@ const FormStation = () => {
     const [modalNoteStation, setModalNoteStation] = useState(false); // an hien bo loc 
 
     // an hien bo loc 
-
-
-
 
     const [modalVisibleBrand, setModalVisibleBrand] = useState(false); // an hien bo loc 
     const [modalVisibleService, setModalVisibleSevice] = useState(false); // an hien bo loc 
@@ -101,6 +101,7 @@ const FormStation = () => {
 
     // add Specification
     const [listDataSpecification, setListDataSpecification] = useState([]); // gộp dataSpecification thành 1 mảng
+    // console.log(listDataSpecification)
     const [dataSpecification, setDataSpecification] = useState(null);
     const addNewSpecification = async () => {
         try {
@@ -142,6 +143,32 @@ const FormStation = () => {
     }
 
     // update Specification
+    const updateSpecificationById = async (id) => {
+        try {
+            const updatedData = {
+                kw: valuePower,
+                slot: valuePorts,
+                price: valuePrice,
+                vehicle_id: selectedVehical[0],
+                port_id: selectedSocket[0]
+            };
+            console.log(id)
+            const response = await AxiosInstance().post('/specification/update', { id, ...updatedData });
+            console.log(response.data)
+            if (response) {
+                setListDataSpecification(prevList =>
+                    prevList.map(item => item._id === id ? response.data : item)
+                );
+                navigation.goBack()
+            } else {
+                console.error('Thất bại');
+            }
+        } catch (error) {
+            console.error("Lỗi khi cập nhật Specification:", error.response?.data || error.message);
+        }
+    };
+
+
 
     // delete Specification
     const deleteSpecificationById = async (id) => {
@@ -172,34 +199,20 @@ const FormStation = () => {
                 specification_id: item._id
             }));
 
-            const locationString = `${locationDetail}, ${location.wardName}, ${location.districtName}, ${location.provinceName}`;
-
-            if (!imageStation) {
-                ToastAndroid.show('Vui lòng chọn ảnh trạm!', ToastAndroid.SHORT);
-                return;
-            }
-            if (!nameStation) {
-                ToastAndroid.show('Vui lòng nhập tên trạm!', ToastAndroid.SHORT);
-                return;
-            }
-            if (!timeStart || !timeEnd) {
-                ToastAndroid.show('Vui lòng chọn thời gian hoạt động!', ToastAndroid.SHORT);
-                return;
-            }
-            if (!selectedBrand || selectedBrand.length === 0) {
-                ToastAndroid.show('Vui lòng chọn thương hiệu!', ToastAndroid.SHORT);
-                return;
-            }
-            if (!formattedServices || formattedServices.length === 0) {
-                ToastAndroid.show('Vui lòng chọn dịch vụ!', ToastAndroid.SHORT);
-                return;
-            }
-            if (!selectedLocation.latitude || !selectedLocation.longitude) {
-                ToastAndroid.show('Vui lòng chọn vị trí trạm!', ToastAndroid.SHORT);
-                return;
-            }
-            if (!formattedSpecifications || formattedSpecifications.length === 0) {
-                ToastAndroid.show('Vui lòng nhập thông số kỹ thuật!', ToastAndroid.SHORT);
+            if (!imageStation ||
+                !nameStation ||
+                !timeStation ||
+                !selectedBrand ||
+                selectedBrand.length === 0 ||
+                !formattedServices ||
+                formattedServices.length === 0 ||
+                address.length === 0 ||
+                !selectedLocation.latitude ||
+                !selectedLocation.longitude ||
+                !formattedSpecifications ||
+                formattedSpecifications.length === 0
+            ) {
+                showAlert('Thông tin', 'Vui lòng nhập đầy đủ thông tin');
                 return;
             }
 
@@ -218,15 +231,15 @@ const FormStation = () => {
                             service: formattedServices,
                             image: newImageUrl,
                             name: nameStation,
-                            location: locationString,
+                            location: address,
                             lat: selectedLocation.latitude,
                             lng: selectedLocation.longitude,
-                            time: `${timeStart} - ${timeEnd}`,
+                            time: timeStation,
                             note: valueNote
                         });
 
                         if (dataStation) {
-                            ToastAndroid.show('Đã ghi nhận thông tin', ToastAndroid.SHORT);
+                            showAlert('Trạm sạc', 'Thêm trạm sạc thành công');
                             setSelectedBrand([]);
                             setSelectedServices([]);
                             setListDataSpecification([]);
@@ -236,7 +249,7 @@ const FormStation = () => {
                             setTimeEnd('00:00');
                             setLoactionDetail(null);
                         } else {
-                            ToastAndroid.show('Có lỗi xảy ra, vui lòng kiểm tra lại', ToastAndroid.SHORT);
+                            showAlert('Trạm sạc', 'Thêm trạm sạc thất bại');
                         }
                     } else {
                         console.log("Lỗi khi upload ảnh mới!");
@@ -254,6 +267,12 @@ const FormStation = () => {
             console.error('Lỗi khi thêm mới dữ liệu Station:', error);
         }
     }
+
+    const showAlert = (title, content) => {
+        Alert.alert(title, content, [
+            { text: "OK" },
+        ]);
+    };
 
     const logData = () => {
         console.log('nameStation:', nameStation);
@@ -280,15 +299,29 @@ const FormStation = () => {
 
     const getAddressFromCoords = async (latitude, longitude) => {
         try {
+            let { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                console.warn('Quyền vị trí bị từ chối');
+                setAddress('Không có quyền truy cập vị trí');
+                return;
+            }
             let response = await Location.reverseGeocodeAsync({ latitude, longitude });
+
             if (response.length > 0) {
-                setAddress(response[0].formattedAddress);
+                if (Platform.OS === 'ios') {
+                    setAddress(response[0].district + ', ' + response[0].subregion + ', ' + response[0].city);
+                } else {
+                    setAddress(response[0].formattedAddress);
+                }
+            } else {
+                setAddress('Không tìm thấy địa chỉ');
             }
         } catch (error) {
             console.warn("Lỗi lấy địa chỉ:", error);
             setAddress('Không thể lấy địa chỉ');
         }
     };
+
 
     const handleMapPress = async (event) => {
         const { latitude, longitude } = event.nativeEvent.coordinate;
@@ -335,72 +368,44 @@ const FormStation = () => {
     const [valueNote, setValueNote] = useState(null);
     const [chargingDetails, setChargingDetails] = useState([]);
 
-
     // địa điểm 
     const [location, setLocation] = useState({
         provinceName: '',
         districtName: '',
         wardName: ''
     });
-    const handleLocationSelect = (selectedLocation) => {
-        setLocation(selectedLocation);
-    };
-
-    // dịch vụ 
     const [selectedServices, setSelectedServices] = useState([]);
-    const handleServiceSelect = (selected) => {
-        setSelectedServices(selected);
-    };
-
-    // thương hiệu
     const [selectedBrand, setSelectedBrand] = useState([]);
-    const handleBrandSelect = (brandId) => {
-        setSelectedBrand(brandId);
-    };
-
-    // phương tiện
     const [selectedVehical, setSelectedVehical] = useState([]);
-    const handleVehicalSelect = (VehicalId) => {
-        setSelectedVehical(VehicalId);
-    };
     const [selectedSocket, setSelectedSocket] = useState([]);
-    //dau sac 
-    const handleSocketSelect = (ScoketId) => {
-        setSelectedSocket(ScoketId);
-    };
 
 
+    const editDetail = (id) => {
+        const item = listDataSpecification.find(spec => spec._id === id);
 
-    const [invisible, setInvisible] = useState(false);
-    //luu tram sac
-    const addOrUpdateDetail = () => {
-        const newDetail = { id: dataSpecification._id, power: dataSpecification.kw, ports: dataSpecification.slot, price: dataSpecification.price, vehicle: dataSpecification.vehicle_id.name, type: dataSpecification.port_id.name };
-        if (editIndex !== null) {
-            const updatedList = [...chargingDetails];
-            updatedList[editIndex] = newDetail;
-            setChargingDetails(updatedList);
-            setEditIndex(null);
-        } else {
-            setChargingDetails([...chargingDetails, newDetail]);
+        if (!item) {
+            console.error("Không tìm thấy dữ liệu với ID:", id);
+            return;
         }
-        clearForm();
-        setInvisible(true);
+        setValuePower(item.kw?.toString() || "");
+        setValuePorts(item.slot?.toString() || "");
+        setValuePrice(item.price?.toString() || "");
+
+        setSelectedVehical([
+            item.vehicle_id?._id || "",
+            item.vehicle_id?.name || "Không xác định"
+        ]);
+
+        setSelectedSocket([
+            item.port_id?._id || "",
+            item.port_id?.name || "Loại đầu sạc"
+        ]);
+
+        setEditIndex(id);
+        setModalDetailStation(true);
     };
 
-    const editDetail = (index) => {
-        const item = chargingDetails[index];
-        setValuePower(item.power);
-        setValuePorts(item.ports);
-        setValuePrice(item.price);
-        setSelectedVehical(item.vehicle);
-        setSelectedSocket(item.type);
-        setEditIndex(index);
-        setInvisible(false);
-    };
 
-    const deleteDetail = (index) => {
-        setChargingDetails(chargingDetails.filter((_, i) => i !== index));
-    };
 
     const clearForm = () => {
         setValuePower('');
@@ -408,7 +413,20 @@ const FormStation = () => {
         setValuePrice('');
         setSelectedVehical([]);
         setSelectedSocket([]);
+        setEditIndex(null);
     };
+
+    const cancelForm = () => {
+        setValuePower('');
+        setValuePorts('');
+        setValuePrice('');
+        setSelectedVehical([]);
+        setSelectedSocket([]);
+        setEditIndex(null);
+        setModalDetailStation(false)
+    };
+
+
 
     //thoi gian
     const [timeStart, setTimeStart] = useState('00:00');
@@ -525,9 +543,6 @@ const FormStation = () => {
     // Kiểm tra thông tin trạm sạc
     const validateStation = () => {
         let isValid = true;
-
-
-
         if (nameStation.length < 10 || nameStation.length > 50) {
             setCheckNameStation(true);
             isValid = false;
@@ -548,7 +563,7 @@ const FormStation = () => {
             isValid = false;
         } else setCheckLocation(false);
 
-        if (chargingDetails.length === 0) {
+        if (listDataSpecification.length === 0 || !listDataSpecification) {
             setCheckCharging(true);
             isValid = false;
         } else {
@@ -559,7 +574,6 @@ const FormStation = () => {
         return isValid;
     };
 
-    // Kiểm tra thông tin bộ sạc
     const validateCharger = () => {
         let isValid = true;
 
@@ -578,18 +592,21 @@ const FormStation = () => {
             isValid = false;
         } else setCheckPrice(false);
 
-        if (!selectedSocket || selectedSocket.length===0) {
+        if (!selectedSocket || selectedSocket.length === 0) {
             setCheckSocket(true);
             isValid = false;
         } else setCheckSocket(false);
 
         if (isValid) {
-            addNewSpecification();
+            if (editIndex) {
+                updateSpecificationById(editIndex);
+            } else {
+                addNewSpecification();
+            }
+            setModalDetailStation(false);
+            setEditIndex(null);
         }
-
-        return isValid;
     };
-
     // Gọi để kiểm tra tất cả
     const handleValidation = () => {
         if (validateStation()) {
@@ -612,8 +629,8 @@ const FormStation = () => {
             <ItemForList title={'Vị trí'} content={address ? address : 'Chưa đặt địa chỉ'} checkActive={address ? true : false} setModal={setModalVisibleMap} />
             <ItemForList title={'Hãng sạc'} content={!selectedBrand || selectedBrand.length === 0 ? 'Chưa có hãng sạc' : selectedBrand[1]} checkActive={!selectedBrand || selectedBrand.length === 0 ? false : true} setModal={setModalVisibleBrand} />
             <ItemForList title={'Dịch vụ'} content={selectedServices.length === 0 || !selectedBrand ? 'Chưa thêm thêm dịch vụ' : 'Đã thêm dịch vụ'} checkActive={selectedServices.length === 0 || !selectedBrand ? false : true} setModal={setModalVisibleSevice} />
-            <ItemForList title={'Trụ sạc'} content={'Tối thiểu cần một trụ sạc'} checkActive={checkImg} setModal={setModalListStation} />
-            <ItemForList title={'Ghi chú'} content={valueNote ? valueNote : 'Chưa ghi chú'} checkActive={valueNote ? true:false} setModal={setModalNoteStation} />
+            <ItemForList title={'Trụ sạc'} content={!listDataSpecification || listDataSpecification.length === 0 ? 'Cần tối thiểu 1 trụ sạc' : 'Đã thêm trụ sạc'} checkActive={!listDataSpecification || listDataSpecification.length === 0 ? false : true} setModal={setModalListStation} />
+            <ItemForList title={'Ghi chú'} content={valueNote ? valueNote : 'Chưa ghi chú'} checkActive={valueNote ? true : false} setModal={setModalNoteStation} />
 
             {/* nút thêm trạm sạc  */}
             <View style={{ alignItems: 'center' }}>
@@ -849,9 +866,7 @@ const FormStation = () => {
                     <View style={styles.modalContent}>
                         <View style={styles.buttonRow}>
                             <TouchableOpacity
-                                onPress={() => {
-                                    setModalDetailStation(false);
-                                }}
+                                onPress={cancelForm}
                                 style={styles.applyButton}>
                                 <Text style={styles.applyText}>Hủy</Text>
                             </TouchableOpacity>
@@ -877,7 +892,7 @@ const FormStation = () => {
                                     Chọn phương tiện
                                 </Text>
                             </TouchableOpacity>
-                            <ItemTextInput1 value={selectedVehical?.[1] || "Tất cả"}  />
+                            <ItemTextInput1 value={selectedVehical?.[1] || "Tất cả"} />
                         </View>
                         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginHorizontal: '5%' }}>
 
@@ -905,7 +920,7 @@ const FormStation = () => {
                                 }}>
                                 <Text
                                     style={{ color: COLOR.green3, textAlign: 'center', fontWeight: '700' }}>
-                                    {editIndex !== null ? "Cập nhật" : "Lưu trụ sạc"}
+                                    {editIndex ? "Cập nhật" : "Lưu trụ sạc"}
                                 </Text>
                             </TouchableOpacity>
 
@@ -920,14 +935,8 @@ const FormStation = () => {
 
                     <View style={styles.modalContent}>
 
-                        <View style={styles.buttonRow}>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    setModalListStation(false);
-                                }}
-                                style={styles.applyButton}>
-                                <Text style={styles.applyText}>Hủy</Text>
-                            </TouchableOpacity>
+                        <View style={[styles.buttonRow, { justifyContent: 'flex-end' }]}>
+
                             <TouchableOpacity
                                 onPress={() => {
                                     setModalListStation(false);
@@ -940,7 +949,7 @@ const FormStation = () => {
                         <FlatList
                             style={{ width: '100%' }}
                             data={listDataSpecification}
-                            scrollEnabled={false}
+
                             renderItem={({ item, index }) => (
                                 item ? (
                                     <View style={styles.containerList}>
@@ -982,6 +991,9 @@ const FormStation = () => {
                                         </View>
                                         <TouchableOpacity onPress={() => deleteSpecificationById(item._id)} style={{ position: 'absolute', top: 10, right: 10, width: 24, height: 24 }}>
                                             <Image source={require('../../../assets/icon/close.png')} style={{ width: 24, height: 24 }} />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => editDetail(item._id)} style={{ position: 'absolute', top: 50, right: 10, width: 24, height: 24 }}>
+                                            <Image source={require('../../../assets/icon/pencil.png')} style={{ width: 24, height: 24 }} />
                                         </TouchableOpacity>
                                     </View>
                                 ) : null
