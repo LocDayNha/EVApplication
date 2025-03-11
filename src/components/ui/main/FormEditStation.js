@@ -16,7 +16,7 @@ import { ItemButton1, ItemForList, ItemText1, ItemTitle1, ItemTextInput1 } from 
 const API_BASE = 'https://online-gateway.ghn.vn/shiip/public-api/master-data';
 const TOKEN = '46f53dba-ecf6-11ef-a268-9e63d516feb9';
 
-const FormStation = () => {
+const FormEditStation = () => {
     const navigation = useNavigation();
     const { idUser } = useContext(AppContext);
 
@@ -977,7 +977,7 @@ const FormStation = () => {
     )
 }
 
-export default FormStation
+export default FormEditStation
 
 const styles = StyleSheet.create({
     modalOverlay: {

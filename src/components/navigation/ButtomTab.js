@@ -21,6 +21,7 @@ import Setting from '../ui/main/Setting';
 import Schedule from '../ui/main/Schedule';
 import Profile from '../ui/main/Profile';
 import FormStation from '../ui/main/FormStation';
+import FormEditStation from '../ui/main/FormEditStation';
 import TestAPILocationVN from '../test/TestAPILocationVN';
 import Location from '../test/Location';
 import TestOpenGoogleMap from '../test/TestOpenGoogleMap';
@@ -157,6 +158,7 @@ const ButtomTab = () => {
             <Stack.Screen name="Profile" component={Profile} options={{ title: "Thông tin cá nhân", headerStyle: { backgroundColor: COLOR.green3 }, headerTintColor: "#fff", headerShown: true }} />
             <Stack.Screen name="ViewDetail" component={ViewDetail} options={{ title: "Chi tiết trạm sạc", headerStyle: { backgroundColor: COLOR.green3 }, headerTintColor: "#fff", headerShown: true, }} />
             <Stack.Screen name="FormStation" component={FormStation} options={{ title: "Thêm trạm sạc", headerStyle: { backgroundColor: COLOR.green3 }, headerTintColor: "#fff", headerShown: true }} />
+            <Stack.Screen name="FormEditStation" component={FormEditStation} options={{ title: "Thêm trạm sạc", headerStyle: { backgroundColor: COLOR.green3 }, headerTintColor: "#fff", headerShown: true }} />
 
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="Register" component={Register} />
