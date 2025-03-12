@@ -360,22 +360,21 @@ const FormStation = () => {
 
     const logData = () => {
         const formattedServices = selectedServices.map(id => ({ service_id: id }));
-        // console.log('nameStation:', nameStation);
-        // console.log('time:', `${timeStart} - ${timeEnd}`);
-        // console.log('Location:', `${locationDetail}, ${location.wardName}, ${location.districtName}, ${location.provinceName}`);
-        // console.log('Brand:', selectedBrand[0]);
+        console.log('nameStation:', nameStation);
+        console.log('time:', `${timeStart} - ${timeEnd}`);
+        console.log('Location:', `${locationDetail}, ${location.wardName}, ${location.districtName}, ${location.provinceName}`);
+        console.log('Brand:', selectedBrand[0]);
         console.log('Services:', formattedServices);
-        // console.log('Lat:', selectedLocation.latitude);
-        // console.log('Lng:', selectedLocation.longitude);
-        // console.log('Specification:', formattedSpecifications);
-
-        // console.log('kw:', valuePower);
-        // console.log('slot:', valuePorts);
-        // console.log('price:', valuePrice);
-        // console.log('vehicle_id:', selectedVehical[0]);
-        // console.log('port_id:', selectedSocket[0]);
+        console.log('Lat:', selectedLocation.latitude);
+        console.log('Lng:', selectedLocation.longitude);
+        console.log('Specification:', formattedSpecifications);
+        console.log('kw:', valuePower);
+        console.log('slot:', valuePorts);
+        console.log('price:', valuePrice);
+        console.log('vehicle_id:', selectedVehical[0]);
+        console.log('port_id:', selectedSocket[0]);
         console.log(selectedBrandCar);
-        console.log(selectedPlace)
+        console.log(selectedPlace);
     }
 
     // Location
@@ -487,11 +486,12 @@ const FormStation = () => {
         });
 
         if (!result.canceled) {
+            setChoseImageStation(result.assets[0].uri);
             setImageStation(result.assets[0].uri);
         }
     };
     const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
+        const result = await ImagePicker.launchImageLibraryAsync({
             allowsEditing: true,
             aspect: [4, 3],
             quality: 1
