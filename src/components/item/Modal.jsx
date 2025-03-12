@@ -358,6 +358,7 @@ export function ItemModalRadioButtonImage({ checkModal, setModalVisible, data, s
                     <View style={styles.buttonRow}>
                         <TouchableOpacity
                             onPress={() => [
+                                setSelectedItem([]),
                                 setModalVisible(false),
                             ]
                             }

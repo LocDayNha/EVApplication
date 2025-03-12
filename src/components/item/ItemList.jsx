@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, TouchableOpacity, FlatList, Linking, ToastAndroid, TextInput, Image, Modal, ScrollView, Touchable } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, FlatList, Linking, ToastAndroid, TextInput, Image, Modal, ScrollView, Touchable, ActivityIndicator } from "react-native";
 import { COLOR, SIZE } from "../../assets/Theme/Theme";
 import { useNavigate } from "react-router-native";
 import { useNavigation } from '@react-navigation/native';
@@ -10,12 +10,12 @@ import RNPickerSelect from 'react-native-picker-select';
 import { LinearGradient } from 'expo-linear-gradient';
 import haversine from 'haversine-distance';
 
-export function ItemForList({ title, content, setModal,checkActive }) {
-    const [check,setCheck] = useState(checkActive)
+export function ItemForList({ title, content, setModal, checkActive }) {
+    const [check, setCheck] = useState(checkActive)
     return (
         <TouchableOpacity onPress={() => setModal(true)} style={{ marginHorizontal: '5%', marginVertical: '2%' }} >
             <View style={{ backgroundColor: 'white', justifyContent: 'space-between', padding: 15, paddingHorizontal: 20, borderRadius: 5, flexDirection: 'row' }}>
-                <View style={{width:'85%'}} >
+                <View style={{ width: '85%' }} >
                     <Text style={{ fontSize: SIZE.size14 }}>
                         {title}
                     </Text>
@@ -24,14 +24,14 @@ export function ItemForList({ title, content, setModal,checkActive }) {
                     </Text>
                 </View>
 
-                <View style={{alignItems:'center',justifyContent:'center'}}>
+                <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                     {
-                        checkActive? 
-                        <Image style={{ width: 20, height: 20 }} source={require('../../assets/icon/icons8-approved-48.png')} />
-                        :
-                        <Image style={{ width: 20, height: 20 }} source={require('../../assets/icon/icons8-remove-26.png')} />
+                        checkActive ?
+                            <Image style={{ width: 20, height: 20 }} source={require('../../assets/icon/icons8-approved-48.png')} />
+                            :
+                            <Image style={{ width: 20, height: 20 }} source={require('../../assets/icon/icons8-remove-26.png')} />
                     }
-                    
+
                 </View>
             </View>
 
@@ -55,10 +55,24 @@ export function ItemButton1({ title, onPress }) {
         </TouchableOpacity>
     )
 }
+export function ItemButton2({ title, onPress }) {
+
+    return (
+        <TouchableOpacity onPress={() => onPress()} style={{ width: '40%', }} >
+            <View style={{ backgroundColor: COLOR.gray2, padding: 15, width: '100%', alignItems: 'center', borderRadius: 5 }}>
+                <View >
+                    <Text style={{ fontSize: SIZE.size14 }}>
+                        {title}
+                    </Text>
+                </View>
+            </View>
+        </TouchableOpacity>
+    )
+}
 
 export function ItemText1({ title }) {
     return (
-        <View style={{  padding: 15, width: '45%', borderRadius: 5, alignItems: 'center' }}>
+        <View style={{ padding: 15, width: '45%', borderRadius: 5, alignItems: 'center' }}>
             <View >
                 <Text style={{ fontSize: SIZE.size14 }}>
                     {title}
@@ -81,13 +95,13 @@ export function ItemTitle1({ title }) {
     )
 }
 
-export function ItemTextInput1({ value, onChangeValue,checkValue }) {
+export function ItemTextInput1({ value, onChangeValue, checkValue }) {
     return (
         <View style={{ width: '45%', padding: 15 }}>
             <TextInput
                 style={{
                     borderBottomWidth: 1,
-                    borderColor: checkValue? 'red' : COLOR.green3,
+                    borderColor: checkValue ? 'red' : COLOR.green3,
                     textAlign: "center",
                     color: 'black',
                     fontWeight: '700',
@@ -99,6 +113,27 @@ export function ItemTextInput1({ value, onChangeValue,checkValue }) {
         </View>
     )
 }
+
+export function ItemLoading({ text = 'Đang tải...', size = 'large', color = '#007bff' ,checkValue}) {
+    return (
+        <Modal transparent={true} visible={checkValue} animationType="slide">
+            <View style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'rgba(0,0,0,0.1)',
+            }}>
+                <ActivityIndicator size={size} color={color} />
+                <Text style={{
+                    marginTop: 10,
+                    fontSize: 16,
+                    color: '#333',
+                }}>{text}</Text>
+            </View>
+        </Modal>
+
+    );
+};
 
 const styles = StyleSheet.create({
 
