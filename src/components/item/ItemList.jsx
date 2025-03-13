@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, TouchableOpacity, FlatList, Linking, ToastAndroid, TextInput, Image, Modal, ScrollView, Touchable, ActivityIndicator } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, Switch, FlatList, Linking, ToastAndroid, TextInput, Image, Modal, ScrollView, Touchable, ActivityIndicator } from "react-native";
 import { COLOR, SIZE } from "../../assets/Theme/Theme";
 import { useNavigate } from "react-router-native";
 import { useNavigation } from '@react-navigation/native';
@@ -9,6 +9,8 @@ import { MaterialIcons } from "@expo/vector-icons";
 import RNPickerSelect from 'react-native-picker-select';
 import { LinearGradient } from 'expo-linear-gradient';
 import haversine from 'haversine-distance';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+
 
 export function ItemForList({ title, content, setModal, checkActive }) {
     const [check, setCheck] = useState(checkActive)
@@ -114,7 +116,7 @@ export function ItemTextInput1({ value, onChangeValue, checkValue }) {
     )
 }
 
-export function ItemLoading({ text = 'Đang tải...', size = 'large', color = '#007bff' ,checkValue}) {
+export function ItemLoading({ text = 'Đang tải...', size = 'large', color = '#007bff', checkValue }) {
     return (
         <Modal transparent={true} visible={checkValue} animationType="slide">
             <View style={{
@@ -134,6 +136,370 @@ export function ItemLoading({ text = 'Đang tải...', size = 'large', color = '
 
     );
 };
+
+export function ItemTextInput2({ title, content, value, onChangeText, checkValue, placeholder, widthBody, center, number }) {
+    return (
+        <View style={{ width: widthBody, paddingHorizontal: 15, paddingVertical: 5 }}>
+            <View style={{ alignItems: center ? 'center' : null ,}}>
+                {title ? <Text style={{ fontSize: SIZE.size16 }}>{title}</Text> : <Text style={{ fontSize: SIZE.size14 }}>{content}</Text>}
+            </View>
+
+            <TextInput
+                style={{
+                    borderColor: checkValue ? 'red' : COLOR.gray2,
+                    color: 'black',
+                    fontSize: 14,
+                    borderWidth: 1,
+                    borderRadius: 10,
+                    marginVertical: '1%',
+                    height: 50,
+                    paddingHorizontal: 10,
+                    textAlignVertical: 'center',
+                    textAlign: center ? 'center' : null
+                }}
+                onChangeText={onChangeText}
+                placeholder={placeholder}
+                value={value}
+                numberOfLines={1}
+                keyboardType={number ? "numeric" : null}
+            />
+        </View>
+    )
+}
+
+export function ItemText2({ title, value, setCheckModal, checkValue, placeholder, widthBody }) {
+    return (
+        <View style={{ width: widthBody, paddingHorizontal: 15, paddingVertical: 5, }}>
+            <Text style={{ fontSize: SIZE.size16 }}>{title}</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Text
+                    style={{
+                        borderColor: checkValue ? 'red' : COLOR.gray2,
+                        color: 'black',
+                        fontSize: 14,
+                        borderWidth: 1,
+                        marginVertical: '1%',
+                        borderRadius: 10,
+                        height: 50,
+                        paddingHorizontal: 10,
+                        width: '80%',
+                        textAlignVertical: 'center'
+                    }}
+                    numberOfLines={1}
+                >
+                    {value}
+                </Text>
+                <TouchableOpacity
+                    style={{
+                        width: 50,
+                        padding: 10,
+                        borderColor: COLOR.green3,
+                        borderWidth: 1,
+                        borderRadius: 30,
+                        backgroundColor: 'white',
+                        height: 50,
+                    }}
+                    onPress={() => setCheckModal(true)}
+                >
+                    <Image style={{ width: 30, height: 30, }} source={require('../../assets/icon/icons8-my-location-48.png')} />
+                </TouchableOpacity>
+            </View>
+
+
+        </View>
+    )
+}
+
+export function ItemTimePicker({ time, setTime, title, timeVisible, setTimeVisible }) {
+    const showTimePicker = () => setTimeVisible(true);
+    const hideTimePicker = () => setTimeVisible(false);
+
+    const handleConfirmTimeStart = (date) => {
+        const dt = new Date(date);
+        setTime(dt.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" }));
+        hideTimePicker();
+    };
+    return (
+        <View style={{ paddingHorizontal: 15, paddingVertical: 5, }}>
+            <Text style={{}} >
+                {title}
+            </Text>
+            <TouchableOpacity
+                onPress={showTimePicker}
+                style={{
+                    marginVertical: '1%',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: 50,
+                    borderBottomWidth: 1,
+                    borderColor: COLOR.green3,
+                }}
+            >
+                <Text
+                    style={{ fontSize: SIZE.size16 }}
+                >
+                    {time}
+                </Text>
+            </TouchableOpacity>
+            <DateTimePickerModal
+                isVisible={timeVisible}
+                mode="time"
+                onConfirm={handleConfirmTimeStart}
+                onCancel={hideTimePicker}
+            />
+        </View>
+    )
+}
+export function ItemButtonSwitch({ value, onChangeValue }) {
+    return (
+        <Switch
+            trackColor={{ false: '#767577', true: '#42E529FF' }}
+            thumbColor={value ? '#FFFFFFFF' : '#f4f3f4'}
+            ios_backgroundColor="#3e3e3e"
+            onValueChange={onChangeValue}
+            value={value}
+        />
+    )
+}
+
+export function ItemDropDownRadioButton({ title, content, data, selectedValue, setSelectedValue, openDropdown, setOpenDropdown }) {
+    const lowercaseTitle = title ? title.toLowerCase() : content.toLowerCase();
+    return (
+        <View style={{ width: '45%', marginVertical: '1%' }}>
+            <View style={{ marginBottom: '3%' }}>
+                {title ? <Text style={{ fontSize: SIZE.size16 }}>{title}</Text> : <Text style={{ fontSize: SIZE.size14 }}>{content}</Text>}
+            </View>
+
+
+            {openDropdown ?
+                <View>
+                    <TouchableOpacity
+                        onPress={() => setOpenDropdown(false)}
+                        style={{
+                            marginVertical: '1%',
+                            width: '100%',
+                            height: 50,
+                            borderWidth: 1,
+                            borderColor: '#CCCCCC',
+                            padding: '2%',
+                            backgroundColor: 'white',
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            borderTopLeftRadius: 10,
+                            borderTopRightRadius: 10,
+                            paddingHorizontal: '5%',
+                        }}>
+                        <Text style={{}}>{!selectedValue || selectedValue.length > 0 ? 'Đã chọn ' + lowercaseTitle : 'Chọn ' + lowercaseTitle}</Text>
+                        <View activeOpacity={1} style={{}} >
+                            <Image source={require('../../assets/icon/up.png')} style={{ width: 24, height: 24 }} />
+                        </View>
+                    </TouchableOpacity>
+
+                    <View style={{
+                        position: 'absolute',
+                        top: 50,
+                        width: '100%',
+                        maxHeight: 200,
+                        borderWidth: 1,
+                        borderColor: '#CCCCCC',
+                        paddingHorizontal: '5%',
+                        borderBottomLeftRadius: 10,
+                        borderBottomRightRadius: 10,
+                        backgroundColor: 'white',
+                        zIndex: 999,
+                    }}>
+                        <ScrollView style={{ maxHeight: 200, flex: 1 }}
+                            showsVerticalScrollIndicator={false}
+                            nestedScrollEnabled={true}
+                            contentContainerStyle={{ flexGrow: 1 }}>
+                            {data.map((item) => (
+                                <TouchableOpacity
+                                    key={item._id}
+                                    style={{
+                                        flexDirection: "row",
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        height: 40,
+                                    }}
+                                    onPress={() => setSelectedValue(item._id)}
+                                >
+                                    <View style={{ flexDirection: "row", alignItems: 'center', width: '70%' }}>
+                                        {item.image ? <Image style={{ width: 25, height: 25 }} source={{ uri: item.image }} /> : null}
+                                        <View style={{ marginLeft: '5%' }}>
+                                            <Text style={{}}>
+                                                {item.name}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                    <View style={{
+                                        width: 20,
+                                        height: 20,
+                                        borderRadius: 12.5,
+                                        borderWidth: 2,
+                                        borderColor: selectedValue === item._id ? '#009558' : 'gray',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}>
+                                        {selectedValue === item._id && (
+                                            <View style={{
+                                                width: 12,
+                                                height: 12,
+                                                borderRadius: 6,
+                                                backgroundColor: '#009558',
+                                            }} />
+                                        )}
+                                    </View>
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
+                    </View>
+                </View>
+                :
+                <TouchableOpacity
+                    onPress={() => setOpenDropdown(true)}
+                    style={{
+                        width: '100%',
+                        height: 50,
+                        borderWidth: 1,
+                        borderColor: '#CCCCCC',
+                        backgroundColor: 'white',
+                        padding: '2%',
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        borderRadius: 10,
+                        alignItems: 'center',
+                        paddingHorizontal: '5%',
+                    }}>
+                    <Text style={{}}>{!selectedValue || selectedValue.length > 0 ? 'Đã chọn ' + lowercaseTitle : 'Chọn ' + lowercaseTitle}</Text>
+                    <View activeOpacity={1} style={{}} >
+                        <Image source={require('../../assets/icon/up.png')} style={{ width: 24, height: 24, transform: [{ rotate: '180deg' }] }} />
+                    </View>
+                </TouchableOpacity>
+            }
+        </View>
+    );
+}
+export function ItemDropDownCheckBox({ title, content, data, selectedValues, setSelectedValues, openDropdown, setOpenDropdown }) {
+    const lowercaseTitle = title.toLowerCase();
+
+    // Hàm xử lý chọn/bỏ chọn mục
+    const toggleSelection = (id) => {
+        if (selectedValues.includes(id)) {
+            setSelectedValues(selectedValues.filter((item) => item !== id)); // Bỏ chọn
+        } else {
+            setSelectedValues([...selectedValues, id]); // Thêm vào danh sách chọn
+        }
+    };
+
+    return (
+        <View style={{ width: '45%', marginVertical: '1%' }}>
+            <View style={{ marginBottom: '3%' }}>
+                {title ? <Text style={{ fontSize: SIZE.size16 }}>{title}</Text> : <Text style={{ fontSize: SIZE.size14 }}>{content}</Text>}
+            </View>
+            {openDropdown ? (
+                <View>
+                    <TouchableOpacity
+                        onPress={() => setOpenDropdown(false)}
+                        style={{
+                            width: '100%',
+                            height: 50,
+                            borderWidth: 1,
+                            borderColor: '#CCCCCC',
+                            padding: '2%',
+                            backgroundColor: 'white',
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            borderTopLeftRadius: 10,
+                            borderTopRightRadius: 10,
+                            paddingHorizontal: '5%',
+                        }}>
+                        <Text>{Array.isArray(selectedValues) && selectedValues.length > 0 ? `Đã chọn ${lowercaseTitle}` : `Chọn ${lowercaseTitle}`}</Text>
+                        <View activeOpacity={1} >
+                            <Image source={require('../../assets/icon/up.png')} style={{ width: 24, height: 24 }} />
+                        </View>
+                    </TouchableOpacity>
+
+                    <View style={{
+                        position: 'absolute',
+                        top: 50,
+                        width: '100%',
+                        maxHeight: 200,
+                        borderWidth: 1,
+                        borderColor: '#CCCCCC',
+                        paddingHorizontal: '5%',
+                        borderBottomLeftRadius: 10,
+                        borderBottomRightRadius: 10,
+                        backgroundColor: 'white',
+                        zIndex: 999,
+                    }}>
+                        <ScrollView style={{ maxHeight: 200, flex: 1 }}
+                            showsVerticalScrollIndicator={false}
+                            nestedScrollEnabled={true}
+                            contentContainerStyle={{ flexGrow: 1 }}>
+                            {data.map((item) => (
+                                <TouchableOpacity
+                                    key={item._id}
+                                    style={{
+                                        flexDirection: "row",
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        height: 40,
+                                    }}
+                                    onPress={() => toggleSelection(item._id)}
+                                >
+                                    <View style={{ flexDirection: "row", alignItems: 'center', width: '70%' }}>
+                                        <Image style={{ width: 25, height: 25 }} source={{ uri: item.image }} />
+                                        <View style={{ marginLeft: '5%' }}>
+                                            <Text>{item.name}</Text>
+                                        </View>
+                                    </View>
+                                    {/* Hiển thị checkbox */}
+                                    <View style={{
+                                        width: 20,
+                                        height: 20,
+                                        borderRadius: 5,
+                                        borderWidth: 2,
+                                        borderColor: selectedValues.includes(item._id) ? '#009558' : 'gray',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}>
+                                        {selectedValues.includes(item._id) && (
+                                            <Text style={{ color: '#009558' }}>✓</Text>
+                                        )}
+                                    </View>
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
+                    </View>
+                </View>
+            ) : (
+                <TouchableOpacity
+                    onPress={() => setOpenDropdown(true)}
+                    style={{
+                        width: '100%',
+                        height: 50,
+                        borderWidth: 1,
+                        borderColor: '#CCCCCC',
+                        backgroundColor: 'white',
+                        padding: '2%',
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        borderRadius: 10,
+                        alignItems: 'center',
+                        paddingHorizontal: '5%',
+                    }}>
+                    <Text>{Array.isArray(selectedValues) && selectedValues.length > 0 ? `Đã chọn ${lowercaseTitle}` : `Chọn ${lowercaseTitle}`}</Text>
+                    <View activeOpacity={1} >
+                        <Image source={require('../../assets/icon/up.png')} style={{ width: 24, height: 24, transform: [{ rotate: '180deg' }] }} />
+                    </View>
+                </TouchableOpacity>
+            )}
+        </View>
+    );
+}
+
 
 const styles = StyleSheet.create({
 

@@ -11,7 +11,7 @@ import { COLOR, SIZE } from "../../../assets/Theme/Theme";
 import { AppContext } from '../../axios/AppContext';
 import { firebase } from '../../../../config';
 import { ItemModalRadioButton, ItemModalRadioButtonImage, ItemModalCheckBoxImage } from '../../item/Modal';
-import { ItemButton1, ItemForList, ItemText1, ItemTitle1, ItemTextInput1, ItemButton2, ItemLoading } from '../../item/ItemList';
+import { ItemButton1, ItemForList, ItemText1, ItemTitle1, ItemTextInput1, ItemButton2, ItemLoading, ItemTextInput2, ItemText2, ItemTimePicker, ItemButtonSwitch, ItemDropDownCheckBox, ItemDropDownRadioButton, ItemTextInput3 } from '../../item/ItemList';
 
 const API_BASE = 'https://online-gateway.ghn.vn/shiip/public-api/master-data';
 const TOKEN = '46f53dba-ecf6-11ef-a268-9e63d516feb9';
@@ -33,17 +33,6 @@ const FormStation = () => {
         setSelectedVehical([]);
         setSelectedSocket([]);
         setEditIndex(null);
-    };
-
-    const cancelForm = () => {
-        setValuePower('');
-        setValuePorts('');
-        setValuePrice('');
-        setSelectedVehical([]);
-        setSelectedSocket([]);
-        setEditIndex(null);
-        setModalDetailStation(false)
-        setModalListStation(true)
     };
 
     const clearFormStation = () => {
@@ -79,22 +68,14 @@ const FormStation = () => {
     const [checkSocket, setCheckSocket] = useState(false);
     const [checkLoading, setCheckLoading] = useState(false);
 
-
     // open/close item
-    const [modalVisibleImage, setModalVisibleImage] = useState(false);
-    const [modalNameStation, setModalNameStation] = useState(false);
-    const [modalTimeStation, setModalTimeStation] = useState(false);
-    const [modalDetailStation, setModalDetailStation] = useState(false);
-    const [modalListStation, setModalListStation] = useState(false);
-    const [modalNoteStation, setModalNoteStation] = useState(false);
-    const [modalVisibleBrand, setModalVisibleBrand] = useState(false);
-    const [modalVisibleService, setModalVisibleSevice] = useState(false);
-    const [modalVisibleVehicle, setModalVisibleVehicle] = useState(false);
-    const [modalVisiblePort, setModalVisiblePort] = useState(false);
     const [modalVisibleMap, setModalVisibleMap] = useState(false);
-    const [modalVisibleBrandCar, setModalVisibleBrandCar] = useState(false);
-    const [modalVisiblePlace, setModalVisiblePlace] = useState(false);
-
+    const [openDropdownPlace, setOpenDropdownPlace] = useState(false);
+    const [openDropdownBrandCar, setOpenDropdownBrandCar] = useState(false);
+    const [openDropdownBrandStation, setOpenDropdownBrandStation] = useState(false);
+    const [openDropdownServices, setOpenDropdownServices] = useState(false);
+    const [openDropdownVehical, setOpenDropdownVehical] = useState(false);
+    const [openDropdownSocket, setOpenDropdownSocket] = useState(false);
 
     // selected data
     const [selectedLocation, setSelectedLocation] = useState(null);
@@ -187,13 +168,15 @@ const FormStation = () => {
     };
     // Specification
     const [listDataSpecification, setListDataSpecification] = useState([]); // gộp dataSpecification thành 1 mảng
+
     const addNewSpecification = async () => {
         try {
-            if (valuePower && valuePorts && valuePrice && selectedVehical[0] && selectedSocket[0]) {
+            if (valuePower && valuePorts && valuePrice && selectedVehical && selectedSocket) {
                 const dataSpecification = await AxiosInstance().post('/specification/addNew',
                     {
-                        user_id: idUser, vehicle_id: selectedVehical[0], port_id: selectedSocket[0], kw: valuePower, slot: valuePorts, price: valuePrice
+                        user_id: idUser, vehicle_id: selectedVehical, port_id: selectedSocket, kw: valuePower, slot: valuePorts, price: valuePrice
                     });
+
                 if (dataSpecification.data) {
                     setListDataSpecification(prevList => [...prevList, dataSpecification.data]);
                     clearForm();
@@ -205,6 +188,7 @@ const FormStation = () => {
             console.error('Lỗi khi lấy dữ liệu Specification:', error);
         }
     };
+
     const editDetail = (id) => {
         const item = listDataSpecification.find(spec => spec._id === id);
 
@@ -227,8 +211,6 @@ const FormStation = () => {
         ]);
 
         setEditIndex(id);
-        setModalListStation(false);
-        setModalDetailStation(true);
     };
     const updateSpecificationById = async (id) => {
         try {
@@ -241,11 +223,11 @@ const FormStation = () => {
             };
             console.log(id)
             const response = await AxiosInstance().post('/specification/update', { id, ...updatedData });
-            console.log(response.data)
             if (response) {
                 setListDataSpecification(prevList =>
                     prevList.map(item => item._id === id ? response.data : item)
                 );
+                clearForm();
             } else {
                 console.error('Thất bại');
             }
@@ -276,7 +258,8 @@ const FormStation = () => {
     // Station
     const addNewStaion = async () => {
         try {
-            setCheckLoading(true)
+            setCheckLoading(true);
+            CheckTime();
             const formattedServices = selectedServices.map(id => ({ service_id: id }));
             const formattedSpecifications = listDataSpecification.map(item => ({
                 specification_id: item._id
@@ -297,8 +280,8 @@ const FormStation = () => {
                 formattedSpecifications.length === 0 ||
                 selectedBrandCar.length === 0 ||
                 selectedPlace.length === 0
-
-            ) {
+            ) 
+            {
                 setCheckLoading(false)
                 showAlert('Thông tin', 'Vui lòng nhập đầy đủ thông tin');
                 return;
@@ -314,7 +297,7 @@ const FormStation = () => {
 
                         const dataStation = await AxiosInstance().post('/station/addNew', {
                             user_id: idUser,
-                            brand_id: selectedBrand[0],
+                            brand_id: selectedBrand,
                             specification: formattedSpecifications,
                             service: formattedServices,
                             image: newImageUrl,
@@ -324,7 +307,7 @@ const FormStation = () => {
                             lng: selectedLocation.longitude,
                             time: timeStation,
                             note: valueNote,
-                            address: selectedPlace[0],
+                            address: selectedPlace,
                             brandcar: formattedBrandCar,
                         });
 
@@ -359,23 +342,24 @@ const FormStation = () => {
     }
 
     const logData = () => {
-        const formattedServices = selectedServices.map(id => ({ service_id: id }));
-        console.log('nameStation:', nameStation);
-        console.log('time:', `${timeStart} - ${timeEnd}`);
-        console.log('Location:', `${locationDetail}, ${location.wardName}, ${location.districtName}, ${location.provinceName}`);
-        console.log('Brand:', selectedBrand[0]);
-        console.log('Services:', formattedServices);
-        console.log('Lat:', selectedLocation.latitude);
-        console.log('Lng:', selectedLocation.longitude);
-        console.log('Specification:', formattedSpecifications);
+        // const formattedServices = selectedServices.map(id => ({ service_id: id }));
+        // console.log('nameStation:', nameStation);
+        // console.log('time:', `${timeStart} - ${timeEnd}`);
+        // console.log('Location:', `${locationDetail}, ${location.wardName}, ${location.districtName}, ${location.provinceName}`);
+        // console.log('Brand:', selectedBrand[0]);
+        // console.log('Services:', formattedServices);
+        // console.log('Lat:', selectedLocation.latitude);
+        // console.log('Lng:', selectedLocation.longitude);
+        // console.log('Specification:', formattedSpecifications);
         console.log('kw:', valuePower);
         console.log('slot:', valuePorts);
         console.log('price:', valuePrice);
         console.log('vehicle_id:', selectedVehical[0]);
         console.log('port_id:', selectedSocket[0]);
-        console.log(selectedBrandCar);
-        console.log(selectedPlace);
+        // console.log(selectedBrandCar);
+        // console.log(selectedPlace);
     }
+
 
     // Location
     const [address, setAddress] = useState(null);
@@ -442,30 +426,13 @@ const FormStation = () => {
     const [isTimeEndVisible, setTimeEndVisibility] = useState(false);
     const [isEnabled, setIsEnabled] = useState(false);
 
-    const showTimeStartPicker = () => setTimeStartVisibility(true);
-    const hideTimeStartPicker = () => setTimeStartVisibility(false);
-    const showTimeEndPicker = () => setTimeEndVisibility(true);
-    const hideTimeEndPicker = () => setTimeEndVisibility(false);
-
-    const handleConfirmTimeStart = (date) => {
-        const dt = new Date(date);
-        setTimeStart(dt.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" }));
-        hideTimeStartPicker();
-    };
-    const handleConfirmTimeEnd = (date) => {
-        const dt = new Date(date);
-        setTimeEnd(dt.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" }));
-        hideTimeEndPicker();
-    };
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
     const CheckTime = () => {
         if (isEnabled) {
             setTimeStation('24/7')
-            setModalTimeStation(false);
         }
         else {
             setTimeStation(timeStart + ' - ' + timeEnd)
-            setModalTimeStation(false);
         }
 
     }
@@ -561,15 +528,13 @@ const FormStation = () => {
 
         if (isValid) {
             if (editIndex !== null) {
+
                 updateSpecificationById(editIndex);
             } else {
 
                 addNewSpecification();
             }
             setEditIndex(null);
-            setModalDetailStation(false);
-            setModalListStation(true)
-
         }
     };
 
@@ -583,17 +548,164 @@ const FormStation = () => {
     }, [])
 
     return (
-        <ScrollView style={styles.container}>
-            <ItemForList title={'Hình ảnh'} content={imageStation ? 'Đã có ảnh' : 'Chưa thêm ảnh '} checkActive={imageStation ? true : false} setModal={setModalVisibleImage} />
-            <ItemForList title={'Tên trạm sạc'} content={nameStation ? nameStation : 'Chưa đặt tên '} checkActive={nameStation ? true : false} setModal={setModalNameStation} />
-            <ItemForList title={'Thời gian'} content={timeStation ? timeStation : 'Chưa đặt '} checkActive={timeStation ? true : false} setModal={setModalTimeStation} />
-            <ItemForList title={'Vị trí'} content={address ? address : 'Chưa đặt địa chỉ'} checkActive={address ? true : false} setModal={setModalVisibleMap} />
-            <ItemForList title={'Hãng sạc'} content={!selectedBrand || selectedBrand.length === 0 ? 'Chưa có hãng sạc' : selectedBrand[1]} checkActive={!selectedBrand || selectedBrand.length === 0 ? false : true} setModal={setModalVisibleBrand} />
-            <ItemForList title={'Hãng Xe'} content={!selectedBrandCar || selectedBrandCar.length === 0 ? 'Chưa chọn hãng xe' : 'Đã chọn hãng xe'} checkActive={!selectedBrandCar || selectedBrandCar.length === 0 ? false : true} setModal={setModalVisibleBrandCar} />
-            <ItemForList title={'Địa điểm'} content={!selectedPlace || selectedPlace.length === 0 ? 'Chưa chọn địa điểm' : selectedPlace[1]} checkActive={!selectedPlace || selectedPlace.length === 0 ? false : true} setModal={setModalVisiblePlace} />
-            <ItemForList title={'Dịch vụ'} content={selectedServices.length === 0 || !selectedBrand ? 'Chưa thêm thêm dịch vụ' : 'Đã thêm dịch vụ'} checkActive={selectedServices.length === 0 || !selectedBrand ? false : true} setModal={setModalVisibleSevice} />
-            <ItemForList title={'Trụ sạc'} content={!listDataSpecification || listDataSpecification.length === 0 ? 'Cần tối thiểu 1 trụ sạc' : 'Đã thêm trụ sạc'} checkActive={!listDataSpecification || listDataSpecification.length === 0 ? false : true} setModal={setModalListStation} />
-            <ItemForList title={'Ghi chú'} content={valueNote ? valueNote : 'Chưa ghi chú'} checkActive={valueNote ? true : false} setModal={setModalNoteStation} />
+        <ScrollView style={{ backgroundColor: 'white' }}>
+            <ItemTextInput2 title={'Tên trạm sạc'} placeholder={'Nhập tên trạm sạc'} onChangeText={setNameStation} value={nameStation} checkValue={false} widthBody={'100%'} />
+            <ItemText2 title={'Địa chỉ trụ sạc'} value={address} checkValue={false} setCheckModal={setModalVisibleMap} widthBody={'100%'} />
+
+            <View style={{ paddingHorizontal: 15, paddingVertical: 5, flexDirection: 'row', justifyContent: 'space-between' }}>
+                <ItemDropDownRadioButton data={dataPlace} title={'Địa điểm'} selectedValue={selectedPlace} setSelectedValue={setSelectedPlace} openDropdown={openDropdownPlace} setOpenDropdown={setOpenDropdownPlace} />
+                <ItemDropDownCheckBox data={dataBrandCar} title={'Hãng xe'} selectedValues={selectedBrandCar} setSelectedValues={setSelectedBrandCar} openDropdown={openDropdownBrandCar} setOpenDropdown={setOpenDropdownBrandCar} />
+            </View>
+            <View style={{ paddingHorizontal: 15, paddingVertical: 5, flexDirection: 'row', justifyContent: 'space-between' }}>
+                <ItemDropDownRadioButton data={dataBrand} title={'Hãng trụ sạc'} selectedValue={selectedBrand} setSelectedValue={setSelectedBrand} openDropdown={openDropdownBrandStation} setOpenDropdown={setOpenDropdownBrandStation} />
+                <ItemDropDownCheckBox data={dataService} title={'Hãng dịch vụ'} selectedValues={selectedServices} setSelectedValues={setSelectedServices} openDropdown={openDropdownServices} setOpenDropdown={setOpenDropdownServices} />
+            </View>
+            <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
+                <Text style={{ fontSize: SIZE.size16 }}>Thời gian</Text>
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <View style={{ alignItems: 'center', paddingHorizontal: 15, paddingVertical: 5, }}>
+                    <Text style={{}}> 24/7</Text>
+                    <View style={{ justifyContent: 'center', alignItems: 'center', marginVertical: '1%', height: 50, }}>
+                        <ItemButtonSwitch value={isEnabled} onChangeValue={toggleSwitch} />
+                    </View>
+                </View>
+                <ItemTimePicker title={'Thời gian bắt đầu'} timeVisible={isTimeStartVisible} setTimeVisible={setTimeStartVisibility} time={timeStart} setTime={setTimeStart} />
+                <ItemTimePicker title={'Thời gian kết thúc'} timeVisible={isTimeEndVisible} setTimeVisible={setTimeEndVisibility} time={timeEnd} setTime={setTimeEnd} />
+
+            </View>
+
+            {/* tru sac  */}
+
+            <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
+                <Text style={{ fontSize: SIZE.size16 }}>Trụ sạc</Text>
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <ItemTextInput2 content={'Công suất'} placeholder={'Kw'} onChangeText={onChangeTextKw} value={valuePower} checkValue={checkKw} widthBody={'30%'} center={true} number={true} />
+                <ItemTextInput2 content={'Cổng sạc'} placeholder={'Số cổng'} onChangeText={onChangeTextChager} value={valuePorts} checkValue={checkCharger} widthBody={'30%'} center={true} number={true} />
+                <ItemTextInput2 content={'Vnd/Kwh'} placeholder={'Giá tiền'} onChangeText={onChangeTextPrice} value={valuePrice} checkValue={checkPrice} widthBody={'30%'} center={true} number={true} />
+            </View>
+            <View style={{ paddingHorizontal: 15, paddingVertical: 5, flexDirection: 'row', justifyContent: 'space-between' }}>
+                <ItemDropDownRadioButton data={dataVehicle} content={'Phương tiện'} selectedValue={selectedVehical} setSelectedValue={setSelectedVehical} openDropdown={openDropdownVehical} setOpenDropdown={setOpenDropdownVehical} />
+                <ItemDropDownRadioButton data={dataPort} content={'Loại sạc'} selectedValue={selectedSocket} setSelectedValue={setSelectedSocket} openDropdown={openDropdownSocket} setOpenDropdown={setOpenDropdownSocket} />
+            </View>
+
+            <View style={{ alignItems: 'center' }}>
+                <TouchableOpacity
+                    onPress={validateCharger}
+                    style={{
+                        margin: '5%',
+                        padding: '3%',
+                        marginBottom: '2%',
+                        width: '40%',
+                        justifyContent: 'center',
+                        borderRadius: 10,
+                        height: 50,
+                        borderWidth: 1,
+                        borderColor: COLOR.green3,
+                    }}>
+                    <Text
+                        style={{ color: COLOR.green3, textAlign: 'center', fontWeight: '700' }}>
+                        {editIndex ? "Cập nhật" : "Lưu trụ sạc"}
+                    </Text>
+                </TouchableOpacity>
+
+            </View>
+            <FlatList
+                style={{ width: '100%' }}
+                data={listDataSpecification}
+                scrollEnabled={false}
+                renderItem={({ item, index }) => (
+                    item ? (
+                        <View style={styles.containerList}>
+
+                            <View style={styles.centerColumn}>
+                                <View style={styles.infoRow}>
+                                    <Image style={styles.icon} source={require('../../../assets/icon/icons8-flash-50 (1).png')} />
+                                    <Text style={styles.textList}>{item.kw} Kw</Text>
+                                </View>
+                                <View style={styles.infoRow}>
+                                    <Image style={styles.icon} source={require('../../../assets/icon/icons8-car-charger-48.png')} />
+                                    <Text style={styles.textList}>{item.slot} Cổng sạc</Text>
+                                </View>
+                                <View style={styles.infoRow}>
+                                    <Image style={{ width: 32, height: 32, marginLeft: '-4%', marginRight: 5 }} source={require('../../../assets/imageSocket/power-plug.png')} />
+                                    <Text style={styles.textList}>{item.port_id?.name || "Không xác định"}</Text>
+                                </View>
+                                <View style={styles.infoRow}>
+                                    <Image style={styles.icon} source={require('../../../assets/icon/icons8-money-50 (1).png')} />
+                                    <Text style={styles.textList}>
+                                        {parseInt(item.price, 10).toLocaleString('vi-VN')} đ/KWh
+                                    </Text>
+                                </View>
+                                <View style={styles.infoRow}>
+                                    {item.vehicle_id.name === 'Xe máy điện' ?
+                                        <>
+                                            <Image style={styles.icon} source={require('../../../assets/icon/electric-scooter.png')} />
+                                        </>
+                                        :
+                                        <>
+                                            <Image style={styles.icon} source={require('../../../assets/icon/icons8-car-50 (1).png')} />
+                                        </>
+
+                                    }
+                                    <Text style={styles.textList}>{item.vehicle_id.name}</Text>
+                                </View>
+                            </View>
+                            <View style={styles.rightColumn}>
+                            </View>
+                            <TouchableOpacity onPress={() => deleteSpecificationById(item._id)} style={{ position: 'absolute', top: 10, right: 10, width: 24, height: 24 }}>
+                                <Image source={require('../../../assets/icon/close.png')} style={{ width: 24, height: 24 }} />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => editDetail(item._id)} style={{ position: 'absolute', top: 50, right: 10, width: 24, height: 24 }}>
+                                <Image source={require('../../../assets/icon/pencil.png')} style={{ width: 24, height: 24 }} />
+                            </TouchableOpacity>
+                        </View>
+                    ) : null
+                )}
+                keyExtractor={(item, index) => index.toString()}
+            />
+
+            <View style={{ paddingHorizontal: 15, paddingVertical: 5, }}>
+                <Text style={{ fontSize: SIZE.size16 }}>Ghi chú</Text>
+                <TextInput
+                    style={{
+                        marginVertical: '2%',
+                        textAlignVertical: 'top',
+                        height: 100,
+                        borderColor: COLOR.gray2,
+                        borderWidth: 1,
+                        borderRadius: 10,
+                    }}
+                    placeholder={'Ghi chú'}
+                    multiline
+                    onChangeText={setValueNote}
+                />
+            </View>
+            <View style={{ paddingHorizontal: 15, paddingVertical: 5, }}>
+                <View style={{ alignItems: 'center' }}>
+                    <TouchableOpacity
+                        style={{
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            width: '75%',
+                            margin: '5%',
+                        }} >
+                        {
+                            imageStation ?
+                                <Image source={{ uri: imageStation }} style={{ width: '100%', height: 170, borderRadius: 30, }} />
+                                :
+                                null
+                        }
+                    </TouchableOpacity>
+
+
+                </View>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                    <ItemButton2 title={'Thư viện'} onPress={pickImage} />
+                    <ItemButton2 title={'Chụp Ảnh'} onPress={takePhoto} />
+                </View>
+            </View>
 
             {/* nút thêm trạm sạc  */}
             <View style={{ alignItems: 'center' }}>
@@ -673,410 +785,6 @@ const FormStation = () => {
 
                 </View>
             </Modal>
-
-            {/* thêm ảnh  */}
-            <Modal transparent={true} visible={modalVisibleImage} animationType="slide">
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        {/* thêm ảnhảnh */}
-                        <View style={styles.buttonRow}>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    setModalVisibleImage(false);
-                                    setImageStation(null)
-                                }}
-                                style={styles.applyButton}>
-                                <Text style={styles.applyText}>Làm mới</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    setModalVisibleImage(false);
-                                }}
-                                style={styles.applyButton}>
-                                <Text style={styles.applyText}>Đồng ý </Text>
-                            </TouchableOpacity>
-                        </View>
-                        <Text style={styles.textTitleInput}>Thêm hình ảnh</Text>
-
-
-                        <View style={{ alignItems: 'center' }}>
-                            <TouchableOpacity
-                                style={{
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    width: '75%',
-                                    margin: '5%',
-                                }} >
-                                {
-                                    imageStation ?
-                                        <Image source={{ uri: imageStation }} style={{ width: '100%', height: 170, borderRadius: 30, }} />
-                                        :
-                                        null
-                                }
-                            </TouchableOpacity>
-
-
-                        </View>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-                            <ItemButton2 title={'Thư viện'} onPress={pickImage} />
-                            <ItemButton2 title={'Chụp Ảnh'} onPress={takePhoto} />
-                        </View>
-
-                    </View>
-                </View>
-            </Modal>
-
-            {/* Tên trạm sạc */}
-            <Modal transparent={true} visible={modalNameStation} animationType="slide">
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <View style={styles.buttonRow}>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    setModalNameStation(false);
-                                    setNameStation(null);
-                                }}
-                                style={styles.applyButton}>
-                                <Text style={styles.applyText}>Làm mới</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    setModalNameStation(false);
-                                }}
-                                style={styles.applyButton}>
-                                <Text style={styles.applyText}>Đồng ý </Text>
-                            </TouchableOpacity>
-                        </View>
-
-                        <Text style={styles.textTitleInput}>Tên trạm sạc</Text>
-                        <View
-                            style={{
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                paddingHorizontal: '5%'
-                            }}>
-                            <TextInput onChangeText={setNameStation} value={nameStation} style={styles.textInput} placeholder={'Nhập tên'} />
-                        </View>
-                    </View>
-                </View>
-            </Modal>
-            {/* thời gian  */}
-
-            <Modal transparent={true} visible={modalTimeStation} animationType="slide">
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <View style={styles.buttonRow}>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    setModalTimeStation(false);
-                                    setTimeStation(null);
-                                    setIsEnabled(false);
-                                }}
-                                style={styles.applyButton}>
-                                <Text style={styles.applyText}>Làm mới</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={CheckTime}
-                                style={styles.applyButton}>
-                                <Text style={styles.applyText}>Đồng ý </Text>
-                            </TouchableOpacity>
-                        </View>
-                        <Text style={styles.textTitleInput}>Thiết lập thời gian trạm sạc</Text>
-                        <View style={{ marginHorizontal: '5%', marginTop: '3%', flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-                            <Text style={{ marginHorizontal: '2%' }}> 24/7</Text>
-                            <Switch
-                                trackColor={{ false: '#767577', true: '#42E529FF' }}
-                                thumbColor={isEnabled ? '#FFFFFFFF' : '#f4f3f4'}
-                                ios_backgroundColor="#3e3e3e"
-                                onValueChange={toggleSwitch}
-                                value={isEnabled}
-                            />
-                        </View>
-                        <View style={styles.viewInput}>
-                            <ItemTitle1 title={'Thời gian bắt đầu'} />
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: '2%' }}>
-                                <ItemButton1 title={'Chọn giờ '} onPress={showTimeStartPicker} />
-                                <ItemText1 title={timeStart ? timeStart : "Chọn giờ"} />
-
-                            </View>
-                            <ItemTitle1 title={'Thời gian kết thúc'} />
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: '2%' }}>
-                                <ItemButton1 title={'Chọn giờ '} onPress={showTimeEndPicker} />
-                                <ItemText1 title={timeEnd ? timeEnd : "Chọn giờ"} />
-                            </View>
-
-                            <DateTimePickerModal
-                                isVisible={isTimeStartVisible}
-                                mode="time"
-                                onConfirm={handleConfirmTimeStart}
-                                onCancel={hideTimeStartPicker}
-                            />
-                            <DateTimePickerModal
-                                isVisible={isTimeEndVisible}
-                                mode="time"
-                                onConfirm={handleConfirmTimeEnd}
-                                onCancel={hideTimeEndPicker}
-                            />
-                        </View>
-
-
-                    </View>
-                </View>
-            </Modal>
-
-            {/* thêm trụ sạc */}
-            <Modal transparent={true} visible={modalDetailStation} animationType="slide">
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <View style={styles.buttonRow}>
-                            <TouchableOpacity
-                                onPress={cancelForm}
-                                style={styles.applyButton}>
-                                <Text style={styles.applyText}>Làm mới</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginHorizontal: '5%' }}>
-                            <ItemText1 title={'Công suất'} />
-                            <ItemTextInput1 value={valuePower} onChangeValue={onChangeTextKw} checkValue={checkKw} />
-                        </View>
-                        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginHorizontal: '5%' }}>
-                            <ItemText1 title={'Cổng sạc'} />
-                            <ItemTextInput1 value={valuePorts} onChangeValue={onChangeTextChager} checkValue={checkCharger} />
-                        </View>
-                        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginHorizontal: '5%' }}>
-                            <ItemText1 title={'Giá tiền'} />
-                            <ItemTextInput1 value={valuePrice} onChangeValue={onChangeTextPrice} checkValue={checkPrice} />
-                        </View>
-                        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginHorizontal: '5%' }}>
-
-                            <TouchableOpacity
-                                onPress={() => {
-                                    setModalVisibleVehicle(true)
-                                }}
-                                style={{ backgroundColor: COLOR.green3, padding: 15, paddingHorizontal: 5, width: '45%', borderRadius: 5, alignItems: 'center' }}>
-                                <Text style={{ fontSize: SIZE.size14, color: 'white' }}>
-                                    Chọn phương tiện
-                                </Text>
-                            </TouchableOpacity>
-                            <ItemText1 title={selectedVehical?.[1] || "Tất cả"} />
-                        </View>
-                        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginHorizontal: '5%' }}>
-
-                            <TouchableOpacity
-                                onPress={() => {
-                                    setModalVisiblePort(true)
-                                }}
-                                style={{ backgroundColor: COLOR.green3, padding: 15, paddingHorizontal: 5, width: '45%', borderRadius: 5, alignItems: 'center' }}>
-                                <Text style={{ fontSize: 14, color: 'white' }} >Loại đầu sạc</Text>
-
-                            </TouchableOpacity>
-                            <ItemText1 title={selectedSocket && selectedSocket.length > 0 ? selectedSocket[1] : 'Loại đầu sạc'} checkValue={selectedSocket && selectedSocket.length > 0 ? false : true} />
-                        </View>
-                        <View style={{ alignItems: 'center' }}>
-                            <TouchableOpacity
-                                onPress={validateCharger}
-                                style={{
-                                    margin: '5%',
-                                    padding: '3%',
-                                    marginBottom: '2%',
-                                    width: '40%',
-                                    justifyContent: 'center',
-                                    borderRadius: 10,
-                                    height: 50,
-                                    borderWidth: 1,
-                                    borderColor: COLOR.green3,
-                                }}>
-                                <Text
-                                    style={{ color: COLOR.green3, textAlign: 'center', fontWeight: '700' }}>
-                                    {editIndex ? "Cập nhật" : "Lưu trụ sạc"}
-                                </Text>
-                            </TouchableOpacity>
-
-                        </View>
-                    </View>
-
-                    <ItemModalRadioButton
-                        checkModal={modalVisibleVehicle}
-                        setModalVisible={setModalVisibleVehicle}
-                        data={dataVehicle}
-                        selectedItem={selectedVehical}
-                        setSelectedItem={setSelectedVehical}
-                        title={'Loại phương tiện'}
-                    />
-
-                    <ItemModalRadioButtonImage
-                        checkModal={modalVisiblePort}
-                        setModalVisible={setModalVisiblePort}
-                        data={dataPort}
-                        selectedItem={selectedSocket}
-                        setSelectedItem={setSelectedSocket}
-                        title={'Loại đầu sạc'}
-                    />
-
-                </View>
-            </Modal>
-
-            {/* list trụ sạc */}
-            <Modal transparent={true} visible={modalListStation} animationType="slide">
-                <View style={styles.modalOverlay}>
-
-                    <View style={styles.modalContent}>
-
-                        <View style={[styles.buttonRow, { justifyContent: 'flex-end' }]}>
-
-                            <TouchableOpacity
-                                onPress={() => {
-                                    setModalListStation(false);
-                                }}
-                                style={styles.applyButton}>
-                                <Text style={styles.applyText}>Đồng ý </Text>
-                            </TouchableOpacity>
-                        </View>
-
-                        <FlatList
-                            style={{ width: '100%' }}
-                            data={listDataSpecification}
-
-                            renderItem={({ item, index }) => (
-                                item ? (
-                                    <View style={styles.containerList}>
-
-                                        <View style={styles.centerColumn}>
-                                            <View style={styles.infoRow}>
-                                                <Image style={styles.icon} source={require('../../../assets/icon/icons8-flash-50 (1).png')} />
-                                                <Text style={styles.textList}>{item.kw} Kw</Text>
-                                            </View>
-                                            <View style={styles.infoRow}>
-                                                <Image style={styles.icon} source={require('../../../assets/icon/icons8-car-charger-48.png')} />
-                                                <Text style={styles.textList}>{item.slot} Cổng sạc</Text>
-                                            </View>
-                                            <View style={styles.infoRow}>
-                                                <Image style={{ width: 32, height: 32, marginLeft: '-4%', marginRight: 5 }} source={require('../../../assets/imageSocket/power-plug.png')} />
-                                                <Text style={styles.textList}>{item.port_id?.name || "Không xác định"}</Text>
-                                            </View>
-                                            <View style={styles.infoRow}>
-                                                <Image style={styles.icon} source={require('../../../assets/icon/icons8-money-50 (1).png')} />
-                                                <Text style={styles.textList}>
-                                                    {parseInt(item.price, 10).toLocaleString('vi-VN')} đ/KWh
-                                                </Text>
-                                            </View>
-                                            <View style={styles.infoRow}>
-                                                {item.vehicle_id.name === 'Xe máy điện' ?
-                                                    <>
-                                                        <Image style={styles.icon} source={require('../../../assets/icon/electric-scooter.png')} />
-                                                    </>
-                                                    :
-                                                    <>
-                                                        <Image style={styles.icon} source={require('../../../assets/icon/icons8-car-50 (1).png')} />
-                                                    </>
-
-                                                }
-                                                <Text style={styles.textList}>{item.vehicle_id.name}</Text>
-                                            </View>
-                                        </View>
-                                        <View style={styles.rightColumn}>
-                                        </View>
-                                        <TouchableOpacity onPress={() => deleteSpecificationById(item._id)} style={{ position: 'absolute', top: 10, right: 10, width: 24, height: 24 }}>
-                                            <Image source={require('../../../assets/icon/close.png')} style={{ width: 24, height: 24 }} />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => editDetail(item._id)} style={{ position: 'absolute', top: 50, right: 10, width: 24, height: 24 }}>
-                                            <Image source={require('../../../assets/icon/pencil.png')} style={{ width: 24, height: 24 }} />
-                                        </TouchableOpacity>
-                                    </View>
-                                ) : null
-                            )}
-                            keyExtractor={(item, index) => index.toString()}
-                        />
-                        <TouchableOpacity
-                            onPress={() => {
-                                setModalListStation(false)
-                                setModalDetailStation(true);
-                            }
-
-                            }
-                            style={{
-                                width: '100%',
-                                padding: 15,
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                backgroundColor: COLOR.gray2
-                            }}>
-                            <Text>
-                                Thêm trụ sạc mới
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
-            {/* // ghi chú */}
-            <Modal transparent={true} visible={modalNoteStation} animationType="slide">
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <View style={styles.buttonRow}>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    setModalNoteStation(false);
-                                    setValueNote(null)
-                                }}
-                                style={styles.applyButton}>
-                                <Text style={styles.applyText}>Làm mới</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    setModalNoteStation(false);
-
-                                }}
-                                style={styles.applyButton}>
-                                <Text style={styles.applyText}>Đồng ý </Text>
-                            </TouchableOpacity>
-                        </View>
-
-                        <Text style={styles.textTitleInput}>Ghi chú</Text>
-                        <TextInput
-                            style={{ textAlignVertical: 'top', margin: '5%', height: 100, }}
-                            placeholder={'Ghi chú'}
-                            multiline
-                            onChangeText={setValueNote}
-                        />
-                    </View>
-                </View>
-            </Modal>
-
-            <ItemLoading checkValue={checkLoading} />
-
-            <ItemModalRadioButtonImage
-                checkModal={modalVisibleBrand}
-                setModalVisible={setModalVisibleBrand}
-                data={dataBrand}
-                selectedItem={selectedBrand}
-                setSelectedItem={setSelectedBrand}
-                title={'Hãng Sạc'}
-            />
-            <ItemModalCheckBoxImage
-                checkModal={modalVisibleService}
-                setModalVisible={setModalVisibleSevice}
-                data={dataService}
-                selectedItems={selectedServices}
-                setSelectedItems={setSelectedServices}
-                title={'Dịch vụ'}
-            />
-
-            <ItemModalRadioButtonImage
-                checkModal={modalVisiblePlace}
-                setModalVisible={setModalVisiblePlace}
-                data={dataPlace}
-                selectedItem={selectedPlace}
-                setSelectedItem={setSelectedPlace}
-                title={'Địa điểm'}
-            />
-            <ItemModalCheckBoxImage
-                checkModal={modalVisibleBrandCar}
-                setModalVisible={setModalVisibleBrandCar}
-                data={dataBrandCar}
-                selectedItems={selectedBrandCar}
-                setSelectedItems={setSelectedBrandCar}
-                title={'Hãng Xe'}
-            />
 
 
         </ScrollView>
