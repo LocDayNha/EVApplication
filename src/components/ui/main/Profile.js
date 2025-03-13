@@ -7,8 +7,11 @@ import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 import { firebase } from '../../../../config';
 import Toast from 'react-native-toast-message';
+import { ItemLoading } from '../../item/ItemList';
+import { useNavigation } from '@react-navigation/native';
 
 const Profile = () => {
+  const navigation = useNavigation();
 
   const { infoUser, idUser, setInfoUser } = useContext(AppContext);
   const { name, email, phoneNumber } = infoUser;
@@ -20,6 +23,7 @@ const Profile = () => {
   const [imageUser, setImageUser] = useState(null);
   const [choseImage, setChoseImage] = useState(null);
   const [urlImage, setUrlImage] = useState(null);
+  const [checkLoading, setCheckLoading] = useState(false);
 
   const showToast = (message, type = 'info') => {
     if (Platform.OS === 'android') {
@@ -81,6 +85,7 @@ const Profile = () => {
 
   const updateInforUser = async () => {
     try {
+      setCheckLoading(true);
       let newImageUrl = imageUser;
 
       if (choseImage) {
@@ -110,16 +115,19 @@ const Profile = () => {
       });
       if (data) {
         console.log('Cập nhật thành công:');
-        showToast('Cập nhật thành công','success')
         setInfoUser(data.user);
+        setCheckLoading(false);
+        showToast('Cập nhật thành công', 'success');
+        navigation.goBack();
       } else {
         console.log('Cập nhật thất bại');
-        showToast('Cập nhật thất bại','error')
+        setCheckLoading(false);
+        showToast('Cập nhật thất bại', 'error');
       }
 
     } catch (error) {
       console.log('Lỗi hệ thống:', error);
-      showToast('Lỗi hệ thống','error')
+      showToast('Lỗi hệ thống', 'error')
     }
   }
 
@@ -152,7 +160,7 @@ const Profile = () => {
           <CustomButton onPress={updateInforUser} label={'Xác nhận lưu'} />
         </View>
       </View>
-
+      <ItemLoading checkValue={checkLoading} />
     </ScrollView>
   )
 }

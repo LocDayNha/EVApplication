@@ -136,24 +136,24 @@ const ViewDetail = () => {
                                 <Text style={styles.textMain}>{dataStation.location}</Text>
                             </View>
 
-                            <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-between' }}>
-                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                    <Image style={{ width: 24, height: 24 }} source={require('../../../assets/icon/map-location.png')} />
-                                    <Text> Trung tâm thương mại</Text>
+                            <View style={{ width: '100%' }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', margin: '2%', marginRight: '3%', marginLeft: '3%', }}>
+                                    <Text style={{ fontSize: SIZE.size14, color: 'black' }}>Nơi đặt trạm sạc: </Text>
+                                    <Text style={{ fontSize: SIZE.size14, color: 'black', fontWeight: '500' }}>{dataStation.address.name}</Text>
                                 </View>
                                 <View style={styles.detailStation}>
-                                    <Image style={[styles.imgIconMain, { width: 24, height: 24 }]} source={require('../../../assets/icon/public-safety.png')} />
-                                    <Text style={[styles.textMain22, { color: 'black' }]}> Công cộng</Text>
+                                    <Text style={{ fontSize: SIZE.size14, color: 'black' }}>Địa điểm: </Text>
+                                    <Text style={{ fontSize: SIZE.size14, color: 'black', fontWeight: '500' }}>{dataStation.access}</Text>
                                 </View>
                             </View>
-                            <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-between' }}>
-                                <View style={[styles.detailStation, { justifyContent: 'center', alignItems: 'center' }]}>
-                                    <Image style={[styles.imgIconMain, { width: 24, height: 24 }]} source={require('../../../assets/icon/icons8-time-48.png')} />
-                                    <Text style={styles.textMain}> {dataStation.time}</Text>
+                            <View style={{ width: '100%', justifyContent: 'space-between' }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', margin: '2%', marginRight: '3%', marginLeft: '3%' }}>
+                                    <Text style={{ fontSize: SIZE.size14, color: 'black' }}>Thời gian hoạt động: </Text>
+                                    <Text style={{ fontSize: SIZE.size14, color: 'black', fontWeight: '500' }}>{dataStation.time}</Text>
                                 </View>
                                 <View style={styles.detailStation}>
-                                    <Image style={[styles.imgIconMain, { width: 24, height: 24 }]} source={require('../../../assets/icon/charging-station.png')} />
-                                    <Text style={styles.textMain22}> Đang hoạt động</Text>
+                                    <Text style={{ fontSize: SIZE.size14, color: 'black' }}>Trạng thái: </Text>
+                                    <Text style={[styles.textMain22,{fontWeight:'500'}]}> Đang hoạt động</Text>
                                 </View>
                             </View>
                         </View>
@@ -189,8 +189,10 @@ const ViewDetail = () => {
 
                             {/* ghi chú dịch vụ  */}
                             <View>
+                                <Text style={[styles.textInfoService, { marginLeft: '5%', marginBottom: '2%' }]}>Ghi chú</Text>
                                 <Text style={styles.textNote}>{dataStation.note}</Text>
                             </View>
+
                         </View>
 
                         {/* trụ sạc  */}
