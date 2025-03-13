@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ToastAndroid, ScrollView, Linking, Image, FlatList, TouchableOpacity, Modal, TextInput } from 'react-native'
+import { StyleSheet, Text, View, Platform,TouchableWithoutFeedback,Keyboard,ToastAndroid, ScrollView, Linking, Image, FlatList, TouchableOpacity, Modal, TextInput, KeyboardAvoidingView } from 'react-native'
 import React, { useState, useEffect, useContext } from 'react';
 import { TextInputProfile, CustomButton, ItemRating } from '../../item/Item'
 import { useNavigation } from '@react-navigation/native';
@@ -153,7 +153,7 @@ const ViewDetail = () => {
                                 </View>
                                 <View style={styles.detailStation}>
                                     <Text style={{ fontSize: SIZE.size14, color: 'black' }}>Trạng thái: </Text>
-                                    <Text style={[styles.textMain22,{fontWeight:'500'}]}> Đang hoạt động</Text>
+                                    <Text style={[styles.textMain22, { fontWeight: '500' }]}> Đang hoạt động</Text>
                                 </View>
                             </View>
                         </View>
@@ -276,53 +276,62 @@ const ViewDetail = () => {
                 )}
 
                 <Modal transparent={true} visible={modalVisible} animationType="slide">
-                    <View style={styles.modalOverlay}>
-                        <View style={styles.modalContent}>
+                    <KeyboardAvoidingView
+                        behavior={Platform.OS === "ios" ? "padding" : "height"}
+                        style={styles.modalOverlay}
+                    >
+                        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                            <View style={styles.modalContent}>
 
-                            <Text style={styles.modalTitle}>Đánh giá của bạn</Text>
-                            <View>
-                                <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 20 }}>
-                                    {[1, 2, 3, 4, 5].map((star) => (
-                                        <TouchableOpacity key={star} onPress={() => setStarRating(star)}>
-                                            <Icon
-                                                name={star <= starRating ? 'star' : 'star-o'}
-                                                size={40}
-                                                color={star <= starRating ? 'gold' : 'gray'}
-                                                style={{ marginHorizontal: 5 }}
-                                            />
-                                        </TouchableOpacity>
-                                    ))}
+                                <Text style={styles.modalTitle}>Đánh giá của bạn</Text>
+
+                                <ScrollView keyboardShouldPersistTaps="handled">
+                                    <View>
+                                        <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 20 }}>
+                                            {[1, 2, 3, 4, 5].map((star) => (
+                                                <TouchableOpacity key={star} onPress={() => setStarRating(star)}>
+                                                    <Icon
+                                                        name={star <= starRating ? 'star' : 'star-o'}
+                                                        size={40}
+                                                        color={star <= starRating ? 'gold' : 'gray'}
+                                                        style={{ marginHorizontal: 5 }}
+                                                    />
+                                                </TouchableOpacity>
+                                            ))}
+                                        </View>
+                                        <TextInput
+                                            style={styles.inputRate}
+                                            placeholder="Nhập nội dung..."
+                                            value={textContent}
+                                            onChangeText={(value) => {
+                                                if (value.length <= 100) {
+                                                    setTextContent(value);
+                                                }
+                                            }}
+                                            multiline
+                                        />
+                                    </View>
+                                </ScrollView>
+
+                                {/* nút */}
+                                <View style={styles.buttonRow}>
+                                    <TouchableOpacity onPress={() => {
+                                        setTextContent('');
+                                        setStarRating(0);
+                                        setModalVisible(false);
+                                    }} style={styles.cancelButton}>
+                                        <Text style={{ color: COLOR.green3 }}>Quay lại </Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        onPress={submitRating}
+                                        style={styles.applyButton}>
+                                        <Text style={{ color: 'white' }}>Đánh giá</Text>
+                                    </TouchableOpacity>
                                 </View>
-                                <TextInput
-                                    style={styles.inputRate}
-                                    placeholder="Nhập nội dung..."
-                                    value={textContent}
-                                    onChangeText={(value) => {
-                                        if (value.length <= 100) {
-                                            setTextContent(value);
-                                        }
-                                    }}
-                                    multiline
-                                />
-                            </View >
-                            {/* nút */}
-                            <View style={styles.buttonRow}>
-                                <TouchableOpacity onPress={() => {
-                                    setTextContent('')
-                                    setStarRating(0)
-                                    setModalVisible(false)
-                                }}
-                                    style={styles.cancelButton}>
-                                    <Text style={{ color: COLOR.green3 }}>Quay lại </Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    onPress={submitRating}
-                                    style={styles.applyButton}>
-                                    <Text style={{ color: 'white' }}>Đánh giá</Text>
-                                </TouchableOpacity>
+
                             </View>
-                        </View>
-                    </View>
+                        </TouchableWithoutFeedback>
+                    </KeyboardAvoidingView>
                 </Modal>
 
             </ScrollView>

@@ -140,7 +140,7 @@ export function ItemLoading({ text = 'Đang tải...', size = 'large', color = '
 export function ItemTextInput2({ title, content, value, onChangeText, checkValue, placeholder, widthBody, center, number }) {
     return (
         <View style={{ width: widthBody, paddingHorizontal: 15, paddingVertical: 5 }}>
-            <View style={{ alignItems: center ? 'center' : null ,}}>
+            <View style={{ alignItems: center ? 'center' : null, }}>
                 {title ? <Text style={{ fontSize: SIZE.size16 }}>{title}</Text> : <Text style={{ fontSize: SIZE.size14 }}>{content}</Text>}
             </View>
 
@@ -172,23 +172,30 @@ export function ItemText2({ title, value, setCheckModal, checkValue, placeholder
         <View style={{ width: widthBody, paddingHorizontal: 15, paddingVertical: 5, }}>
             <Text style={{ fontSize: SIZE.size16 }}>{title}</Text>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Text
+                <View
                     style={{
+
                         borderColor: checkValue ? 'red' : COLOR.gray2,
-                        color: 'black',
-                        fontSize: 14,
                         borderWidth: 1,
                         marginVertical: '1%',
                         borderRadius: 10,
                         height: 50,
                         paddingHorizontal: 10,
                         width: '80%',
-                        textAlignVertical: 'center'
+                        justifyContent: 'center'
                     }}
-                    numberOfLines={1}
                 >
-                    {value}
-                </Text>
+                    <Text
+                        style={{
+                            color: 'black',
+                            fontSize: 14,
+                        }}
+                        numberOfLines={1}
+                    >
+                        {value}
+                    </Text>
+                </View>
+
                 <TouchableOpacity
                     style={{
                         width: 50,
