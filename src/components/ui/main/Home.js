@@ -217,22 +217,22 @@ const Home = (props) => {
         }
     };
 
-        // hãng trụ sạc
-        const [dataLocationStation, setDataLocationStation] = useState([]);
-        const getLocation = async () => {
-            try {
-                const dataStation = await AxiosInstance().get('/location/get');
-                if (dataStation.data && dataStation.data.length > 0) {
-                    setDataLocationStation(dataStation.data);
-                } else {
-                    console.log('Không tìm thấy dữ liệu từ /station/get');
-                    ToastAndroid.show('Không có thông tin trạm sạc', ToastAndroid.SHORT);
-                }
-            } catch (error) {
-                console.error('Lỗi khi lấy dữ liệu station:', error);
-                ToastAndroid.show('Không thể tải danh sách thông tin trạm sạc', ToastAndroid.SHORT);
+    // vị trí trụ sạc 
+    const [dataLocationStation, setDataLocationStation] = useState([]);
+    const getLocation = async () => {
+        try {
+            const dataStation = await AxiosInstance().get('/location/get');
+            if (dataStation.data && dataStation.data.length > 0) {
+                setDataLocationStation(dataStation.data);
+            } else {
+                console.log('Không tìm thấy dữ liệu từ /station/get');
+                ToastAndroid.show('Không có thông tin trạm sạc', ToastAndroid.SHORT);
             }
-        };
+        } catch (error) {
+            console.error('Lỗi khi lấy dữ liệu station:', error);
+            ToastAndroid.show('Không thể tải danh sách thông tin trạm sạc', ToastAndroid.SHORT);
+        }
+    };
 
     const getDataStationByOption = async () => {
         try {
@@ -311,7 +311,9 @@ const Home = (props) => {
         const matchesBrand = !selectedBrand || selectedBrand.length === 0 || selectedBrand.includes(item.brand_id?._id);
 
         const matchesBrandCar = !selectedBrandCar || selectedBrandCar.length === 0 ||
-            (selectedBrand.includes("VinFast") && !["BYD", "Wuling"].includes(item.brand_id?.name));
+            item.brandcar.some(brandcar => selectedBrandCar.includes(brandcar.brandcar_id?._id));
+
+        const matchesPlace = !selectedLocation || selectedLocation.length === 0 || selectedLocation.includes(item.address?._id);
 
 
         const matchesVehicle = !selectedVehicle || selectedVehicle.length === 0 ||
@@ -326,7 +328,7 @@ const Home = (props) => {
         const matchesVon = !selectedVon || selectedVon.length === 0 ||
             item.specification.some(spec => selectedVon.includes(spec.specification_id.port_id?.type));
 
-        return (matchesBrand && matchesVehicle && matchesPort && matchesService && matchesVon && isValueNameLocation);
+        return (matchesBrand && matchesPlace && matchesBrandCar && matchesVehicle && matchesPort && matchesService && matchesVon && isValueNameLocation);
     });
 
     const goProfile = () => {
