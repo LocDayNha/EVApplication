@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Platform,TouchableWithoutFeedback,Keyboard,ToastAndroid, ScrollView, Linking, Image, FlatList, TouchableOpacity, Modal, TextInput, KeyboardAvoidingView } from 'react-native'
+import { StyleSheet, Text, View, Platform, TouchableWithoutFeedback, Keyboard, ToastAndroid, ScrollView, Linking, Image, FlatList, TouchableOpacity, Modal, TextInput, KeyboardAvoidingView } from 'react-native'
 import React, { useState, useEffect, useContext } from 'react';
 import { TextInputProfile, CustomButton, ItemRating } from '../../item/Item'
 import { useNavigation } from '@react-navigation/native';
@@ -153,7 +153,22 @@ const ViewDetail = () => {
                                 </View>
                                 <View style={styles.detailStation}>
                                     <Text style={{ fontSize: SIZE.size14, color: 'black' }}>Trạng thái: </Text>
-                                    <Text style={[styles.textMain22, { fontWeight: '500' }]}> Đang hoạt động</Text>
+                                    <Text style={[
+                                        styles.textMain22,
+                                        {
+                                            fontWeight: '500',
+                                            color: dataStation?.isActive === 1 ? COLOR.yellow :
+                                                dataStation?.isActive === 2 ? COLOR.green3 :
+                                                    dataStation?.isActive === 3 ? COLOR.darkGray :
+                                                        COLOR.darkRed
+                                        }
+                                    ]}>
+                                        {dataStation?.isActive === 1 ? 'Chờ phê duyệt' :
+                                            dataStation?.isActive === 2 ? 'Đang hoạt động' :
+                                                dataStation?.isActive === 3 ? 'Dừng hoạt động' :
+                                                    dataStation?.isActive === 4 ? 'Bị từ chối' :
+                                                        'Không xác định'}
+                                    </Text>
                                 </View>
                             </View>
                         </View>
@@ -392,7 +407,6 @@ const styles = StyleSheet.create({
     },
     textMain22: {
         fontSize: SIZE.size14,
-        color: COLOR.green3
     },
     textInfo: {
         fontSize: SIZE.size14,
