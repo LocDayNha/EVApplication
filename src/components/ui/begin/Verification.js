@@ -8,6 +8,7 @@ import { Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-
 import AppLoading from 'expo-app-loading';
 import AxiosInstance from '../../axios/AxiosInstance';
 import Toast from 'react-native-toast-message';
+import { Alert } from 'react-native';
 
 const Verification = () => {
     const route = useRoute();
@@ -98,7 +99,9 @@ const Verification = () => {
                 navigation.navigate('NewPassword', { email: email });
             }
         } catch (error) {
-            ToastAndroid.show('Có lỗi xảy ra, vui lòng thử lại', ToastAndroid.SHORT);
+            Alert.alert('Lỗi', 'Vui lòng thử lại', [
+                { text: "OK" },
+            ]);
         }
     };
 

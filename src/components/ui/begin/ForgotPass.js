@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Platform, ScrollView, KeyboardAvoidingView, Keyboard } from 'react-native'
+import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Platform, ScrollView, KeyboardAvoidingView, Keyboard, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
@@ -8,11 +8,21 @@ import AppLoading from 'expo-app-loading'
 
 const ForgotPass = () => {
     const navigation = useNavigation();
-
+    const showAlert = (title, content) => {
+        Alert.alert(title, content, [
+            { text: "OK" },
+        ]);
+    };
     const [email, setEmail] = useState(null);
 
     const SenCode = () => {
-        navigation.navigate('Verification', { email: email, name: 'ForgotPass' })
+        if (email) {
+            navigation.navigate('Verification', { email: email, name: 'ForgotPass' })
+        }
+        else {
+            showAlert('Thông báo','Vui lòng nhập email')
+        }
+
     }
 
     return (

@@ -158,7 +158,7 @@ const ButtomTab = () => {
             <Stack.Screen name="Profile" component={Profile} options={{ title: "Thông tin cá nhân", headerStyle: { backgroundColor: COLOR.green3 }, headerTintColor: "#fff", headerShown: true }} />
             <Stack.Screen name="ViewDetail" component={ViewDetail} options={{ title: "Chi tiết trạm sạc", headerStyle: { backgroundColor: COLOR.green3 }, headerTintColor: "#fff", headerShown: true, }} />
             <Stack.Screen name="FormStation" component={FormStation} options={{ title: "Thêm trạm sạc", headerStyle: { backgroundColor: COLOR.green3 }, headerTintColor: "#fff", headerShown: true }} />
-            <Stack.Screen name="FormEditStation" component={FormEditStation} options={{ title: "Thêm trạm sạc", headerStyle: { backgroundColor: COLOR.green3 }, headerTintColor: "#fff", headerShown: true }} />
+            <Stack.Screen name="FormEditStation" component={FormEditStation} options={{ title: "Sửa trạm sạc", headerStyle: { backgroundColor: COLOR.green3 }, headerTintColor: "#fff", headerShown: true }} />
 
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="Register" component={Register} />

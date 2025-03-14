@@ -497,12 +497,15 @@ export function ItemStationTrip(props) {
   );
 }
 export function ItemStationList(props) {
-  const { data } = props;
+  const { data, checkActive,setCheckStatus,setIdStation,setStatus } = props;
   const navigation = useNavigation();
   const { myLat, myLng } = useContext(AppContext);
 
   const clickViewDetail = () => {
     navigation.navigate('ViewDetail', { id: data._id });
+  };
+  const clickEdit = () => {
+    navigation.navigate('FormEditStation', { id: data._id });
   };
 
   const openGoogleMaps = async () => {
@@ -528,7 +531,20 @@ export function ItemStationList(props) {
 
   return (
     <TouchableOpacity activeOpacity={1} style={styles.listRow} key={data._id} onPress={clickViewDetail}>
-      <Image style={styles.imgStation} source={{ uri: data.image }} />
+      {checkActive || data.isActive == 1 ||data.isActive === 3 ?
+        <Image style={styles.imgStation} source={{ uri: data.image }} />
+        :
+        <View style={{ height: 180, justifyContent: 'center' }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', margin: '5%' }}>
+            <TouchableOpacity onPress={clickEdit} style={{ width: '40%', padding: 10, height: 50, borderWidth: 1, alignItems: 'center', justifyContent: 'center', borderRadius: 10, borderColor: COLOR.green3 }}>
+              <Text style={{ color: COLOR.green3 }}>Sửa trạm sạc</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() =>{setCheckStatus(true) ;setIdStation(data._id);setStatus(data.isActive)}} style={{ width: '40%', padding: 10, height: 50, borderWidth: 1, alignItems: 'center', justifyContent: 'center', borderRadius: 10, borderColor: COLOR.green3 }}>
+              <Text style={{ color: COLOR.green3 }}>Sửa trạng thái</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      }
       <View style={styles.viewInfoStation}>
         <Text style={styles.textItemName} numberOfLines={1} ellipsizeMode='tail'>{data.brand_id.name} - {data.name}</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>

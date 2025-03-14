@@ -58,7 +58,7 @@ const Register = () => {
     >
       <View style={styles.container}>
         <View style={{ width: '100%', height: '30%', justifyContent: 'center', alignItems: 'center' }} onTouchStart={() => Keyboard.dismiss()}>
-          <Text style={styles.logoText}>LOGO</Text>
+          <Image source={require('../../../assets/images/Splash (2).png')} style={{width:200, height:200, }} />
         </View>
         <Text style={styles.title}>Đăng ký tài khoản</Text>
         <View>

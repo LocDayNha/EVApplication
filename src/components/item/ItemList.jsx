@@ -123,7 +123,7 @@ export function ItemLoading({ text = 'Đang tải...', size = 'large', color = '
                 flex: 1,
                 justifyContent: 'center',
                 alignItems: 'center',
-                backgroundColor: 'rgba(0,0,0,0.1)',
+                backgroundColor: 'rgba(0,0,0,0.3)',
             }}>
                 <ActivityIndicator size={size} color={color} />
                 <Text style={{
@@ -200,11 +200,13 @@ export function ItemText2({ title, value, setCheckModal, checkValue, placeholder
                     style={{
                         width: 50,
                         padding: 10,
-                        borderColor: COLOR.green3,
+                        borderColor: COLOR.gray2,
                         borderWidth: 1,
                         borderRadius: 30,
                         backgroundColor: 'white',
                         height: 50,
+                        justifyContent: 'center',
+                        alignItems: 'center'
                     }}
                     onPress={() => setCheckModal(true)}
                 >
@@ -276,14 +278,11 @@ export function ItemDropDownRadioButton({ title, content, data, selectedValue, s
             <View style={{ marginBottom: '3%' }}>
                 {title ? <Text style={{ fontSize: SIZE.size16 }}>{title}</Text> : <Text style={{ fontSize: SIZE.size14 }}>{content}</Text>}
             </View>
-
-
             {openDropdown ?
                 <View>
                     <TouchableOpacity
                         onPress={() => setOpenDropdown(false)}
                         style={{
-                            marginVertical: '1%',
                             width: '100%',
                             height: 50,
                             borderWidth: 1,
@@ -297,7 +296,7 @@ export function ItemDropDownRadioButton({ title, content, data, selectedValue, s
                             borderTopRightRadius: 10,
                             paddingHorizontal: '5%',
                         }}>
-                        <Text style={{}}>{!selectedValue || selectedValue.length > 0 ? 'Đã chọn ' + lowercaseTitle : 'Chọn ' + lowercaseTitle}</Text>
+                        <Text numberOfLines={1} style={{ width: '80%' }}>{!selectedValue || selectedValue.length > 0 ? 'Đã chọn ' + lowercaseTitle : 'Chọn ' + lowercaseTitle}</Text>
                         <View activeOpacity={1} style={{}} >
                             <Image source={require('../../assets/icon/up.png')} style={{ width: 24, height: 24 }} />
                         </View>
@@ -378,7 +377,7 @@ export function ItemDropDownRadioButton({ title, content, data, selectedValue, s
                         alignItems: 'center',
                         paddingHorizontal: '5%',
                     }}>
-                    <Text style={{}}>{!selectedValue || selectedValue.length > 0 ? 'Đã chọn ' + lowercaseTitle : 'Chọn ' + lowercaseTitle}</Text>
+                    <Text style={{ width: '80%' }} numberOfLines={1}>{!selectedValue || selectedValue.length > 0 ? 'Đã chọn ' + lowercaseTitle : 'Chọn ' + lowercaseTitle}</Text>
                     <View activeOpacity={1} style={{}} >
                         <Image source={require('../../assets/icon/up.png')} style={{ width: 24, height: 24, transform: [{ rotate: '180deg' }] }} />
                     </View>
@@ -389,8 +388,6 @@ export function ItemDropDownRadioButton({ title, content, data, selectedValue, s
 }
 export function ItemDropDownCheckBox({ title, content, data, selectedValues, setSelectedValues, openDropdown, setOpenDropdown }) {
     const lowercaseTitle = title.toLowerCase();
-
-    // Hàm xử lý chọn/bỏ chọn mục
     const toggleSelection = (id) => {
         if (selectedValues.includes(id)) {
             setSelectedValues(selectedValues.filter((item) => item !== id)); // Bỏ chọn
@@ -398,7 +395,6 @@ export function ItemDropDownCheckBox({ title, content, data, selectedValues, set
             setSelectedValues([...selectedValues, id]); // Thêm vào danh sách chọn
         }
     };
-
     return (
         <View style={{ width: '45%', marginVertical: '1%' }}>
             <View style={{ marginBottom: '3%' }}>
@@ -422,7 +418,7 @@ export function ItemDropDownCheckBox({ title, content, data, selectedValues, set
                             borderTopRightRadius: 10,
                             paddingHorizontal: '5%',
                         }}>
-                        <Text>{Array.isArray(selectedValues) && selectedValues.length > 0 ? `Đã chọn ${lowercaseTitle}` : `Chọn ${lowercaseTitle}`}</Text>
+                        <Text style={{ width: '80%' }} numberOfLines={1} >{Array.isArray(selectedValues) && selectedValues.length > 0 ? `Đã chọn ${lowercaseTitle}` : `Chọn ${lowercaseTitle}`}</Text>
                         <View activeOpacity={1} >
                             <Image source={require('../../assets/icon/up.png')} style={{ width: 24, height: 24 }} />
                         </View>
@@ -473,7 +469,10 @@ export function ItemDropDownCheckBox({ title, content, data, selectedValues, set
                                         justifyContent: 'center'
                                     }}>
                                         {selectedValues.includes(item._id) && (
-                                            <Text style={{ color: '#009558' }}>✓</Text>
+                                            <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                                                <Text style={{ color: '#009558', }}>✓</Text>
+                                            </View>
+
                                         )}
                                     </View>
                                 </TouchableOpacity>
@@ -497,7 +496,7 @@ export function ItemDropDownCheckBox({ title, content, data, selectedValues, set
                         alignItems: 'center',
                         paddingHorizontal: '5%',
                     }}>
-                    <Text>{Array.isArray(selectedValues) && selectedValues.length > 0 ? `Đã chọn ${lowercaseTitle}` : `Chọn ${lowercaseTitle}`}</Text>
+                    <Text style={{ width: '80%' }} numberOfLines={1}>{Array.isArray(selectedValues) && selectedValues.length > 0 ? `Đã chọn ${lowercaseTitle}` : `Chọn ${lowercaseTitle}`}</Text>
                     <View activeOpacity={1} >
                         <Image source={require('../../assets/icon/up.png')} style={{ width: 24, height: 24, transform: [{ rotate: '180deg' }] }} />
                     </View>

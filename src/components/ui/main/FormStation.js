@@ -65,7 +65,11 @@ const FormStation = () => {
     const [checkKw, setCheckKw] = useState(false);
     const [checkCharger, setCheckCharger] = useState(false);
     const [checkPrice, setCheckPrice] = useState(false);
+    const [checkVehical, setCheckVehical] = useState(false);
     const [checkSocket, setCheckSocket] = useState(false);
+    const [checkButtonEdit, setCheckButtonEdit] = useState(false);
+
+
     const [checkLoading, setCheckLoading] = useState(false);
 
     // open/close item
@@ -171,6 +175,7 @@ const FormStation = () => {
 
     const addNewSpecification = async () => {
         try {
+            setCheckLoading(true);
             if (valuePower && valuePorts && valuePrice && selectedVehical && selectedSocket) {
                 const dataSpecification = await AxiosInstance().post('/specification/addNew',
                     {
@@ -180,19 +185,56 @@ const FormStation = () => {
                 if (dataSpecification.data) {
                     setListDataSpecification(prevList => [...prevList, dataSpecification.data]);
                     clearForm();
+                    setCheckLoading(false);
+
                 } else {
                     console.log('Không tìm thấy dữ liệu từ /specification/addNew');
+                    setCheckLoading(false);
                 }
             }
         } catch (error) {
             console.error('Lỗi khi lấy dữ liệu Specification:', error);
+            setCheckLoading(false);
         }
     };
 
-    const editDetail = (id) => {
-        const item = listDataSpecification.find(spec => spec._id === id);
+    const copySpecification = async (id) => {
+        try {
+            setCheckLoading(true);
 
+            const item = listDataSpecification.find(spec => spec._id === id);
+
+            if (!item) {
+                console.error("Không tìm thấy dữ liệu với ID:", id);
+                return;
+            }
+
+            if (item.kw.toString() && item.slot.toString() && item.price.toString() && item.vehicle_id?._id && item.port_id?._id) {
+                const dataSpecification = await AxiosInstance().post('/specification/addNew',
+                    {
+                        user_id: idUser, vehicle_id: item.vehicle_id?._id, port_id: item.port_id?._id, kw: item.kw, slot: item.slot, price: item.price
+                    });
+
+                if (dataSpecification.data) {
+                    setListDataSpecification(prevList => [...prevList, dataSpecification.data]);
+                    clearForm();
+                    setCheckLoading(false);
+
+                } else {
+                    console.log('Không tìm thấy dữ liệu từ /specification/addNew');
+                    setCheckLoading(false);
+                }
+            }
+        } catch (error) {
+            console.error('Lỗi khi lấy dữ liệu Specification:', error);
+            setCheckLoading(false);
+        }
+    };
+    const editDetail = (id) => {
+        setCheckButtonEdit(true)
+        const item = listDataSpecification.find(spec => spec._id === id);
         if (!item) {
+            setCheckButtonEdit(false)
             console.error("Không tìm thấy dữ liệu với ID:", id);
             return;
         }
@@ -214,6 +256,7 @@ const FormStation = () => {
     };
     const updateSpecificationById = async (id) => {
         try {
+            setCheckLoading(true);
             const updatedData = {
                 kw: valuePower,
                 slot: valuePorts,
@@ -228,15 +271,24 @@ const FormStation = () => {
                     prevList.map(item => item._id === id ? response.data : item)
                 );
                 clearForm();
+                setCheckLoading(false);
+                setCheckButtonEdit(false)
             } else {
                 console.error('Thất bại');
+                clearForm();
+                setCheckLoading(false);
+                setCheckButtonEdit(false)
             }
         } catch (error) {
             console.error("Lỗi khi cập nhật Specification:", error.response?.data || error.message);
+            clearForm();
+            setCheckLoading(false);
+            setCheckButtonEdit(false)
         }
     };
     const deleteSpecificationById = async (id) => {
         try {
+            setCheckLoading(true);
             const dataSpecificationById = await AxiosInstance().delete('/specification/deleteById',
                 {
                     data: { id }
@@ -244,46 +296,74 @@ const FormStation = () => {
 
             if (dataSpecificationById) {
                 console.log('Xóa SpecificationById thành công')
+                setCheckLoading(false);
                 setListDataSpecification(prevList =>
                     prevList.filter(item => item._id !== id)
                 );
             } else {
+                setCheckLoading(false);
                 console.log('Không tìm thấy dữ liệu từ /specification/addNew');
             }
         } catch (error) {
             console.error('Lỗi khi lấy dữ liệu Specification:', error);
+            setCheckLoading(false);
         }
     }
 
     // Station
     const addNewStaion = async () => {
+        CheckTime();
         try {
             setCheckLoading(true);
-            CheckTime();
             const formattedServices = selectedServices.map(id => ({ service_id: id }));
             const formattedSpecifications = listDataSpecification.map(item => ({
                 specification_id: item._id
             }));
             const formattedBrandCar = selectedBrandCar.map(id => ({ brandcar_id: id }));
 
-            if (!imageStation ||
-                !nameStation ||
-                !timeStation ||
-                !selectedBrand ||
-                selectedBrand.length === 0 ||
-                !formattedServices ||
-                formattedServices.length === 0 ||
-                address.length === 0 ||
-                !selectedLocation.latitude ||
-                !selectedLocation.longitude ||
-                !formattedSpecifications ||
-                formattedSpecifications.length === 0 ||
-                selectedBrandCar.length === 0 ||
-                selectedPlace.length === 0
-            ) 
-            {
+            if (!nameStation || nameStation.length === 0) {
                 setCheckLoading(false)
-                showAlert('Thông tin', 'Vui lòng nhập đầy đủ thông tin');
+                showAlert('Thông tin', 'Chưa nhập tên');
+                return;
+            }
+            else if (address.length === 0 || !address) {
+                setCheckLoading(false)
+                showAlert('Thông tin', 'Chưa nhập địa chỉ đặt trạm sạc');
+                return;
+            }
+            else if (!selectedPlace || selectedPlace.length === 0) {
+                setCheckLoading(false)
+                showAlert('Thông tin', 'Chưa chọn địa điểm đặt trạm sạc');
+                return;
+            }
+            else if (!selectedBrandCar || selectedBrandCar.length === 0) {
+                setCheckLoading(false)
+                showAlert('Thông tin', 'Chưa chọn hãng xe');
+                return;
+            }
+            else if (!selectedBrand || selectedBrand.length === 0) {
+                setCheckLoading(false)
+                showAlert('Thông tin', 'Chưa chọn hãng trụ sạc');
+                return;
+            }
+            else if (!formattedServices || formattedServices.length === 0) {
+                setCheckLoading(false)
+                showAlert('Thông tin', 'Chưa chọn dịch vụ');
+                return;
+            }
+            else if (!timeStation || timeStation.length === 0) {
+                setCheckLoading(false)
+                showAlert('Thông tin', 'Vui chọn thời gian');
+                return;
+            }
+            else if (!formattedSpecifications || formattedSpecifications.length === 0) {
+                setCheckLoading(false)
+                showAlert('Thông tin', 'Cần thêm ít nhất 1 trụ sạc');
+                return;
+            }
+            else if (!imageStation || !imageStation.length === 0) {
+                setCheckLoading(false)
+                showAlert('Thông tin', 'Vui chọn hoặc chụp ảnh');
                 return;
             }
 
@@ -310,7 +390,6 @@ const FormStation = () => {
                             address: selectedPlace,
                             brandcar: formattedBrandCar,
                         });
-
 
                         if (dataStation) {
                             setCheckLoading(false)
@@ -359,8 +438,6 @@ const FormStation = () => {
         // console.log(selectedBrandCar);
         // console.log(selectedPlace);
     }
-
-
     // Location
     const [address, setAddress] = useState(null);
     const mapRef = useRef(null);
@@ -525,6 +602,14 @@ const FormStation = () => {
             setCheckPrice(true);
             isValid = false;
         } else setCheckPrice(false);
+        if (!selectedVehical || selectedVehical.length === 0) {
+            showAlert('Thông tin', 'Vui lòng chọn loại phương tiện');
+            isValid = false;
+        }
+        if (!selectedSocket || selectedSocket.length === 0) {
+            showAlert('Thông tin', 'Vui lòng chọn đầu sạc');
+            isValid = false;
+        }
 
         if (isValid) {
             if (editIndex !== null) {
@@ -558,7 +643,7 @@ const FormStation = () => {
             </View>
             <View style={{ paddingHorizontal: 15, paddingVertical: 5, flexDirection: 'row', justifyContent: 'space-between' }}>
                 <ItemDropDownRadioButton data={dataBrand} title={'Hãng trụ sạc'} selectedValue={selectedBrand} setSelectedValue={setSelectedBrand} openDropdown={openDropdownBrandStation} setOpenDropdown={setOpenDropdownBrandStation} />
-                <ItemDropDownCheckBox data={dataService} title={'Hãng dịch vụ'} selectedValues={selectedServices} setSelectedValues={setSelectedServices} openDropdown={openDropdownServices} setOpenDropdown={setOpenDropdownServices} />
+                <ItemDropDownCheckBox data={dataService} title={'Dịch vụ'} selectedValues={selectedServices} setSelectedValues={setSelectedServices} openDropdown={openDropdownServices} setOpenDropdown={setOpenDropdownServices} />
             </View>
             <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
                 <Text style={{ fontSize: SIZE.size16 }}>Thời gian</Text>
@@ -611,60 +696,69 @@ const FormStation = () => {
                 </TouchableOpacity>
 
             </View>
-            <FlatList
-                style={{ width: '100%' }}
-                data={listDataSpecification}
-                scrollEnabled={false}
-                renderItem={({ item, index }) => (
-                    item ? (
-                        <View style={styles.containerList}>
+            <ScrollView style={{}}>
+                <FlatList
+                    style={{ width: '100%' }}
+                    data={listDataSpecification}
+                    scrollEnabled={false}
+                    renderItem={({ item, index }) => (
+                        item ? (
+                            <View style={styles.containerList}>
+                                <View style={{ width: '70%', }}>
+                                    <View style={styles.infoRow}>
+                                        <Image style={styles.icon} source={require('../../../assets/icon/icons8-flash-50 (1).png')} />
+                                        <Text style={styles.textList}>{item.kw} Kw</Text>
+                                    </View>
+                                    <View style={styles.infoRow}>
+                                        <Image style={styles.icon} source={require('../../../assets/icon/icons8-car-charger-48.png')} />
+                                        <Text style={styles.textList}>{item.slot} Cổng sạc</Text>
+                                    </View>
+                                    <View style={styles.infoRow}>
+                                        <Image style={styles.icon} source={require('../../../assets/imageSocket/power-plug.png')} />
+                                        <Text style={styles.textList}>{item.port_id?.name || "Không xác định"}</Text>
+                                    </View>
+                                    <View style={styles.infoRow}>
+                                        <Image style={styles.icon} source={require('../../../assets/icon/icons8-money-50 (1).png')} />
+                                        <Text style={styles.textList}>
+                                            {parseInt(item.price, 10).toLocaleString('vi-VN')} đ/KWh
+                                        </Text>
+                                    </View>
+                                    <View style={styles.infoRow}>
+                                        {item.vehicle_id.name === 'Xe máy điện' ?
+                                            <>
+                                                <Image style={styles.icon} source={require('../../../assets/icon/electric-scooter.png')} />
+                                            </>
+                                            :
+                                            <>
+                                                <Image style={styles.icon} source={require('../../../assets/icon/icons8-car-50 (1).png')} />
+                                            </>
 
-                            <View style={styles.centerColumn}>
-                                <View style={styles.infoRow}>
-                                    <Image style={styles.icon} source={require('../../../assets/icon/icons8-flash-50 (1).png')} />
-                                    <Text style={styles.textList}>{item.kw} Kw</Text>
+                                        }
+                                        <Text style={styles.textList}>{item.vehicle_id.name}</Text>
+                                    </View>
                                 </View>
-                                <View style={styles.infoRow}>
-                                    <Image style={styles.icon} source={require('../../../assets/icon/icons8-car-charger-48.png')} />
-                                    <Text style={styles.textList}>{item.slot} Cổng sạc</Text>
-                                </View>
-                                <View style={styles.infoRow}>
-                                    <Image style={{ width: 32, height: 32, marginLeft: '-4%', marginRight: 5 }} source={require('../../../assets/imageSocket/power-plug.png')} />
-                                    <Text style={styles.textList}>{item.port_id?.name || "Không xác định"}</Text>
-                                </View>
-                                <View style={styles.infoRow}>
-                                    <Image style={styles.icon} source={require('../../../assets/icon/icons8-money-50 (1).png')} />
-                                    <Text style={styles.textList}>
-                                        {parseInt(item.price, 10).toLocaleString('vi-VN')} đ/KWh
-                                    </Text>
-                                </View>
-                                <View style={styles.infoRow}>
-                                    {item.vehicle_id.name === 'Xe máy điện' ?
-                                        <>
-                                            <Image style={styles.icon} source={require('../../../assets/icon/electric-scooter.png')} />
-                                        </>
-                                        :
-                                        <>
-                                            <Image style={styles.icon} source={require('../../../assets/icon/icons8-car-50 (1).png')} />
-                                        </>
-
+                                <View style={{ width: '20%', justifyContent: 'center' }}>
+                                    <TouchableOpacity onPress={() => copySpecification(item._id)} style={styles.buttonList}>
+                                        <Text>Sao chép</Text>
+                                    </TouchableOpacity>
+                                    {checkButtonEdit ?
+                                        null :
+                                        <TouchableOpacity onPress={() => editDetail(item._id)} style={styles.buttonList}>
+                                            <Text>Sửa</Text>
+                                        </TouchableOpacity>
                                     }
-                                    <Text style={styles.textList}>{item.vehicle_id.name}</Text>
+                                    <TouchableOpacity onPress={() => deleteSpecificationById(item._id)} style={[styles.buttonList, { borderColor: 'red' }]}>
+                                        <Text>Xóa</Text>
+                                    </TouchableOpacity>
                                 </View>
+
                             </View>
-                            <View style={styles.rightColumn}>
-                            </View>
-                            <TouchableOpacity onPress={() => deleteSpecificationById(item._id)} style={{ position: 'absolute', top: 10, right: 10, width: 24, height: 24 }}>
-                                <Image source={require('../../../assets/icon/close.png')} style={{ width: 24, height: 24 }} />
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => editDetail(item._id)} style={{ position: 'absolute', top: 50, right: 10, width: 24, height: 24 }}>
-                                <Image source={require('../../../assets/icon/pencil.png')} style={{ width: 24, height: 24 }} />
-                            </TouchableOpacity>
-                        </View>
-                    ) : null
-                )}
-                keyExtractor={(item, index) => index.toString()}
-            />
+                        ) : null
+                    )}
+                    keyExtractor={(item, index) => index.toString()}
+                />
+            </ScrollView>
+
 
             <View style={{ paddingHorizontal: 15, paddingVertical: 5, }}>
                 <Text style={{ fontSize: SIZE.size16 }}>Ghi chú</Text>
@@ -725,9 +819,7 @@ const FormStation = () => {
             {/*  banr đồ  */}
             <Modal transparent={true} visible={modalVisibleMap} animationType="slide">
                 <View style={styles.modalOverlay}>
-
-                    <View style={[styles.modalContent, { height: '80%', }]}>
-
+                    <View style={[styles.modalContent, { height: '95%', }]}>
                         <View style={styles.buttonRow}>
                             <TouchableOpacity
                                 onPress={() => {
@@ -735,18 +827,17 @@ const FormStation = () => {
                                     setAddress(null);
                                 }}
                                 style={styles.applyButton}>
-                                <Text style={styles.applyText}>Làm mới</Text>
+                                <Text style={styles.applyText}>Hủy chọn</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
-
                                 onPress={() => {
                                     setModalVisibleMap(false);
-
                                 }}
                                 style={styles.applyButton}>
-                                <Text style={styles.applyText}>Ok</Text>
+                                <Text style={styles.applyText}>Chọn</Text>
                             </TouchableOpacity>
                         </View>
+                        {address ? <Text style={{ fontSize: SIZE.size16, paddingHorizontal: '2%', paddingVertical: '2%' }} numberOfLines={1}  > Địa chỉ : {address}</Text> : null}
                         <MapView
                             ref={mapRef}
                             style={styles.map}
@@ -763,16 +854,23 @@ const FormStation = () => {
                             )}
                         </MapView>
 
-                        <View style={styles.buttonContainer}>
-                            <Text style={{ fontSize: SIZE.size16, marginHorizontal: '5%', width: '70%' }} numberOfLines={1}  >{address}</Text>
+                        <View style={{
+                            position: 'absolute',
+                            top: '88%',
+                            right: 0,
+                            left: '80%',
+                            bottom: 0,
+                        }}>
                             <TouchableOpacity
                                 style={{
-                                    padding: 10,
+                                    height: 50,
+                                    width: 50,
                                     borderColor: COLOR.green3,
                                     borderWidth: 1,
                                     borderRadius: 30,
                                     backgroundColor: 'white',
-                                    marginRight: '5%',
+                                    justifyContent: 'center',
+                                    alignItems: 'center'
                                 }}
                                 onPress={getCurrentLocation}>
                                 <Image style={{ width: 30, height: 30, }} source={require('../../../assets/icon/icons8-my-location-48.png')} />
@@ -780,11 +878,9 @@ const FormStation = () => {
 
                         </View>
                     </View>
-
-
-
                 </View>
             </Modal>
+            <ItemLoading checkValue={checkLoading} />
 
 
         </ScrollView>
@@ -802,7 +898,6 @@ const styles = StyleSheet.create({
     },
     modalContent: {
         width: '100%',
-        height: '70%',
         backgroundColor: 'white',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
@@ -813,8 +908,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         backgroundColor: COLOR.green3,
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
     },
     applyButton: {
         paddingHorizontal: 20,
@@ -839,37 +932,9 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: 'black',
     },
-    viewInput: {
-        paddingLeft: 10,
-        paddingRight: 10,
-        borderColor: COLOR.gray2,
-        borderRadius: 10,
-        marginLeft: '5%',
-        marginRight: '5%',
-        marginTop: '2%',
-    },
-    textTitleInput: {
-        margin: 10,
-        fontSize: SIZE.size18,
-        textAlign: 'center'
-    },
-    textInput: {
-        width: '100%',
-        height: 50,
-        fontSize: 16,
-        paddingHorizontal: 10,
-        borderWidth: 0,
-        borderBottomWidth: 1,
-        borderColor: COLOR.green3,
-        borderRadius: 0,
-        marginLeft: '5%',
-        marginRight: '5%',
-        marginVertical: '2%',
-        fontWeight: 'bold'
-    },
     map: {
         width: '100%',
-        height: '80%',
+        height: '95%',
         borderRadius: 20,
     },
     buttonContainer: {
@@ -884,10 +949,10 @@ const styles = StyleSheet.create({
     containerList: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center',
         borderRadius: 10,
         backgroundColor: 'white',
-        padding: 10,
+        padding: '3%',
+        paddingHorizontal: '5%',
         margin: '2%',
         shadowColor: "#000",
         shadowOffset: {
@@ -897,13 +962,16 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
-        width: '96%'
     },
-    centerColumn: {
-        marginHorizontal: '2%'
-    },
-    rightColumn: {
-        marginHorizontal: '2%'
+    buttonList: {
+        height: 40,
+        width: '100%',
+        borderWidth: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10,
+        borderColor: COLOR.green3,
+        margin: 3,
     },
     infoRow: {
         flexDirection: 'row',
@@ -913,7 +981,7 @@ const styles = StyleSheet.create({
     icon: {
         width: 25,
         height: 25,
-        marginRight: 5,
+        marginRight: 10,
     },
     textList: {
         fontSize: 18,

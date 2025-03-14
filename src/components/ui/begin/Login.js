@@ -28,6 +28,11 @@ const Login = () => {
       });
     }
   };
+  const showAlert = (title, content) => {
+    Alert.alert(title, content, [
+        { text: "OK" },
+    ]);
+};
 
   // login
   const { setIsLogin, setInfoUser, setIdUser, infoUser, idUser } = useContext(AppContext);
@@ -61,11 +66,11 @@ const Login = () => {
         showToast('Cần xác nhận tài khoản', 'info');
         navigation.navigate('Verification', { email: email, name: 'Login' })
       } else {
-        showToast('Thông tin đăng nhập sai', 'error');
+        showAlert('Thông báo','Sai tài khoản')
         setMessageError()
       }
     } catch (error) {
-      showToast(error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại', 'error');
+      showAlert('Thông báo',error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại', 'error');
       setMessageError(error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại', 'error');
     }
   };
@@ -76,7 +81,7 @@ const Login = () => {
     >
       <View style={styles.container} >
         <View style={{ width: '100%', height: '30%', justifyContent: 'center', alignItems: 'center' }} onTouchStart={() => Keyboard.dismiss()}>
-          <Text style={styles.logoText}>LOGO</Text>
+        <Image source={require('../../../assets/images/Splash (2).png')} style={{width:200, height:200, }} />
         </View>
         <Text style={styles.title}>Đăng nhập tài khoản</Text>
         <View>
