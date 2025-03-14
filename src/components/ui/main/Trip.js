@@ -1,54 +1,30 @@
-import { StyleSheet, Text, View, Image, ActivityIndicator, ScrollView, TouchableOpacity, Modal, FlatList, ToastAndroid } from 'react-native'
-import React, { useState, useEffect, useRef } from 'react';
-import Slider from '@react-native-community/slider';
-import RNPickerSelect from 'react-native-picker-select';
-import { CustomButton, ItemStationTrip } from '../../item/Item';
-import { COLOR, SIZE } from "../../../assets/Theme/Theme";
-import * as Location from 'expo-location';
-import MapView, { Marker, Callout } from 'react-native-maps';
-import { ItemCheckBox, ItemCheckBoxImage, ItemRadioButton, ItemRadioButtonType, ItemRadioButtonVertical, ItemStationMain } from '../../item/Item';
+import { ScrollView, StyleSheet, Text, View, Image, TouchableOpacity, FlatList, ToastAndroid } from 'react-native'
+import React, { useState, useEffect, useContext } from 'react';
+import { LinearGradient } from 'expo-linear-gradient';
 import AxiosInstance from '../../axios/AxiosInstance';
-
-const initialLocation = { latitude: 14.0583, longitude: 108.2772 };
+import { useNavigation } from '@react-navigation/native';
+import { ItemStationList } from '../../item/Item';
+import Slider from '@react-native-community/slider';
 
 const Trip = () => {
-  const [modalMap, setModalMap] = useState(false);
+  const navigation = useNavigation();
 
-  const [value, setValue] = useState(5);
-  const [valueTest, setValueTest] = useState('');
-  const [valueKm, setValueKm] = useState('');
+  const [energy, setEnergy] = useState(10);
+  const [latStart, setLatStart] = useState(10.849081398948059);
+  const [lngStart, setLngStart] = useState(106.62424273185461);
+  const [latEnd, setLatEnd] = useState(10.323464572434858);
+  const [lngEnd, setLngEnd] = useState(107.08486774959243);
 
-  const maxValue = valueKm.length > 0 ? Math.max(...valueKm) : 0;
-
-  const [address, setAddress] = useState('');
-  const [myLat, setMyLat] = useState('');
-  const [myLng, setMyLng] = useState('');
+  const [dataStation, setDataStation] = useState([]);
 
 
-  const getYourLocation = async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-
-    if (status !== 'granted') {
-      setErrorMsg('Permission to location was not granted');
-    }
-
-    let { coords } = await Location.getCurrentPositionAsync();
-
-    if (coords) {
-      const { latitude, longitude } = coords;
-      let response = await Location.reverseGeocodeAsync({
-        latitude, longitude
-      });
-      setMyLat(latitude);
-      setMyLng(longitude);
-      setAddress(response[0].formattedAddress);
-    }
-  }
-
-  const [dataStation, setDataStation] = useState(null);
   const getDataStation = async () => {
     try {
-      const dataStation = await AxiosInstance().get('/station/get');
+      const dataStation = await AxiosInstance().post('/station/getByTravel',
+        {
+          outputEV: energy, myLat: latStart, myLng: lngStart, toLat: latEnd, toLng: lngEnd
+        }
+      );
       if (dataStation.data && dataStation.data.length > 0) {
         setDataStation(dataStation.data);
       } else {
@@ -60,154 +36,125 @@ const Trip = () => {
       ToastAndroid.show('Không thể tải danh sách thông tin trạm sạc', ToastAndroid.SHORT);
     }
   };
-  const [toLat, setToLat] = useState(null);
-  const [toLng, setToLng] = useState(null);
-  const [selectedLocation, setSelectedLocation] = useState(null);
-  const handleMapPress = (event) => {
-    const { latitude, longitude } = event.nativeEvent.coordinate;
-    console.log("Vị trí đã chọn:", latitude, longitude);
-    setToLat(latitude);
-    setToLng(longitude);
-    setSelectedLocation({ latitude, longitude });
-  };
 
-  const Log = () => {
-    console.log('KW:', value);
-    console.log('My Lat:', myLat);
-    console.log('My Lng:', myLng);
-    console.log('To Lat:', toLat);
-    console.log('To Lng:', toLng);
+  const log = () => {
+    console.log('energy:', energy);
+    console.log('latStart:', latStart);
+    console.log('lngStart:', lngStart);
+    console.log('latEnd:', latEnd);
+    console.log('lngEnd:', lngEnd);
   }
 
-  useEffect(() => {
-    getYourLocation();
-    getDataStation();
-  }, [])
-  const mapRef = useRef(null);
-
   return (
-
     <ScrollView style={styles.container}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', margin: '5%' }}>
-        <Text style={{ fontSize: SIZE.size14, }}>Phạm vi hoạt động của phương tiện </Text>
-        <View style={{
-          backgroundColor: COLOR.green3,
-          padding: 10,
-          borderRadius: 30,
-          justifyContent: 'center',
-          alignItems: 'center'
-        }}>
-          <Text style={{ fontSize: SIZE.size16, color: 'white' }}>{value}</Text>
+      <View style={styles.view}>
+        <View style={styles.viewEnergy}>
+          <Text style={styles.textEnergy}>Công suất phương tiện</Text>
+          <Text style={[styles.textEnergy, { color: '#009558', fontWeight: 500, fontSize: 20 }]}>{energy} km</Text>
         </View>
-      </View>
 
-      <View style={{ alignItems: 'center' }}>
-        <Slider
-          style={{ width: '80%', height: 50 }}
-          minimumValue={0}
-          maximumValue={200}
-          step={1}
-          minimumTrackTintColor={COLOR.green3}
-          maximumTrackTintColor="grey"
-          thumbTintColor={COLOR.green3}
-          onValueChange={setValue}
-          value={value}
-        />
-      </View>
-      <View style={{ justifyContent: 'space-between', flexDirection: 'row', marginHorizontal: '10%' }}>
-        <Text style={{ fontSize: SIZE.size18, }}>0</Text>
-        <Text style={{ fontSize: SIZE.size18, }}>200</Text>
-      </View>
-      <View style={styles.containerLocation}>
-        <Image style={{ width: 40, height: 40 }} source={require('../../../assets/icon/icons8-a-67.png')} />
-        <TouchableOpacity style={styles.buttonLocation}>
-          <Text>
-            Lấy vị vị trí của bạn
-          </Text>
-          <Image style={{ width: 25, height: 25 }} source={require('../../../assets/icon/icons8-my-location-96.png')} />
-        </TouchableOpacity>
-      </View>
-      <View style={styles.containerLocation}>
-        <Image style={{ width: 40, height: 40 }} source={require('../../../assets/icon/icons8-b-67.png')} />
-        <TouchableOpacity style={styles.buttonLocation} onPress={() => setModalMap(true)}>
-          <Text>
-            Chọn vị trí trên bản đồ
-          </Text>
-          <Image style={{ width: 25, height: 25 }} source={require('../../../assets/icon/icons8-location-50.png')} />
-        </TouchableOpacity>
-      </View>
-      <View style={{ alignItems: 'center', margin: '5%' }}>
-        <CustomButton label={'Tìm kiếm theo lộ trình'} onPress={Log}/>
-      </View>
+        <View style={styles.viewLine}>
 
-      <View >
-        <FlatList
-          data={dataStation}
-          scrollEnabled={false}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={(item) => item._id}
-          renderItem={({ item }) => (
-            <View>
-              <ItemStationTrip data={item} Kilomet={value} valueKm={valueKm} setValueKm={setValueKm} maxValues={maxValue} />
-            </View>
-          )}
-        />
-      </View>
+          <View style={{ width: '100%' }}>
+            <Slider
+              style={{ width: '100%' }}
+              minimumValue={10}
+              maximumValue={200}
+              step={1}
+              value={energy}
+              onValueChange={setEnergy}
+              minimumTrackTintColor="green"
+              maximumTrackTintColor="#979592"
+              thumbTintColor="green"
+            />
+          </View>
 
-      <Modal transparent={true} visible={modalMap} animationType="slide">
-        <View style={styles.modalOverlay}>
+          <View style={styles.viewTextLine}>
+            <Text style={styles.textLine}>10</Text>
+            <Text style={styles.textLine}>200</Text>
+          </View>
+        </View>
 
-          <View style={{ width: '90%', height: '80%', borderRadius: 20 }}>
-            <MapView
-              style={styles.map}
-              initialRegion={{
-                latitude: initialLocation.latitude,
-                longitude: initialLocation.longitude,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-              }}
-              ref={mapRef}
-              onPress={handleMapPress}>
-              {/* Hiển thị marker khi người dùng chọn trên bản đồ */}
-              {selectedLocation && (
-                <Marker
-                  coordinate={selectedLocation}
-                  title="Vị trí đặt trạm sạc"
-                  description="Bạn đã chọn vị trí này"
-                />
-              )}
-            </MapView>
+        <View style={{ width: '100%', marginBottom: '3%' }}>
+          <Text style={[styles.textLine, { marginLeft: '0%', fontWeight: 500, fontSize: 18 }]}>Chọn lịch trình</Text>
+        </View>
 
-            <View style={styles.buttonContainer}>
-              {/* <TouchableOpacity
-                style={{
-                  padding: 10,
-                  borderColor: COLOR.green3,
-                  borderWidth: 1,
-                  borderRadius: 10,
-                  backgroundColor: 'white'
-                }}
-                onPress={{}}>
-                <Text style={{ fontSize: 20 }}>Lấy vị trí hiện tại</Text>
-              </TouchableOpacity> */}
+        <View style={styles.viewLocation}>
+          <View style={styles.viewInputLocation}>
+            <View style={styles.viewA}>
+              <View style={styles.viewStart}>
+                <Text style={styles.textStart}>A</Text>
+              </View>
+              <View style={styles.viewTextInputStart}>
+                <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  style={styles.textInputStart}>
+                  10/70 Ấp 7, Xuân Thới Thượng, Hóc Môn, Hồ Chí Minh
+                </Text>
+                <TouchableOpacity onPress={() => console.log('Start')} style={styles.viewImgLoaction}>
+                  <Image source={require('../../../assets/icon/target.png')} style={styles.imgLocation} />
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
 
-          <View style={styles.buttonRow}>
-            <TouchableOpacity
-              onPress={() => {
-                setModalMap(false)
-              }}
-              style={styles.applyButton}>
-              <Text style={styles.applyText}>Ok</Text>
+          <View style={styles.viewTo}>
+          </View>
+
+          <View style={styles.viewInputLocation}>
+            <View style={styles.viewA}>
+              <View style={styles.viewStart}>
+                <Text style={styles.textStart}>B</Text>
+              </View>
+              <View style={styles.viewTextInputStart}>
+                <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  style={styles.textInputStart}>
+                  10/70 Ấp 7, Xuân Thới Thượng, Hóc Môn, Hồ Chí Minh
+                </Text>
+                <TouchableOpacity onPress={() => console.log('End')} style={styles.viewImgLoaction}>
+                  <Image source={require('../../../assets/icon/target.png')} style={styles.imgLocation} />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.viewButton}>
+          <LinearGradient colors={['#009558', '#5bdb5b',]} style={{ borderRadius: 20, width: '60%', justifyContent: 'center', alignItems: 'center' }}>
+            <TouchableOpacity onPress={getDataStation} style={styles.buttonSearch}>
+              <Text style={styles.textSearch}>Tìm kiếm tuyến đường</Text>
             </TouchableOpacity>
-          </View>
-
+          </LinearGradient>
         </View>
-      </Modal>
+
+        <View style={styles.viewListStation}>
+          {
+            dataStation.length > 0 ?
+              <>
+                <View >
+                  <FlatList
+                    data={dataStation}
+                    scrollEnabled={false}
+                    keyExtractor={(item) => item._id}
+                    showsVerticalScrollIndicator={false}
+                    renderItem={({ item }) =>
+                      <View>
+                        <ItemStationList data={item} />
+                      </View>
+                    }
+                  />
+                </View>
+              </>
+              :
+              null
+          }
+        </View>
+
+      </View>
     </ScrollView>
-
-
   )
 }
 
@@ -215,62 +162,124 @@ export default Trip
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: '5%',
-    backgroundColor: ''
+    width: '100%',
+    backgroundColor: 'white',
   },
-  containerLocation: {
-    flexDirection: 'row',
-    alignItems: 'center',
-
-    marginHorizontal: '10%',
-    marginVertical: '4%'
+  view: {
+    width: '94%',
+    marginTop: '3%',
+    marginLeft: '3%',
+    marginRight: '3%'
   },
-  buttonLocation: {
-    width: '80%',
+  viewEnergy: {
+    width: '100%',
     flexDirection: 'row',
-    backgroundColor: COLOR.gray2,
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    alignItems: 'center',
-    borderRadius: 10,
-    marginLeft: '5%',
     justifyContent: 'space-between',
-
+    alignItems: 'center',
+    marginTop: '3%'
   },
-  title: {
-    color: 'rgb(0, 0, 0)',
-    fontSize: 16,
-    fontWeight: 'bold',
+  textEnergy: {
+    fontSize: 18,
+    fontWeight: 500,
+    color: 'black'
   },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  viewLine: {
+    width: '90%',
+    marginLeft: '5%',
+    marginTop: '5%',
+    marginRight: '5%',
+    marginBottom: '2%',
+  },
+  viewTextLine: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  textLine: {
+    fontSize: 18,
+    fontWeight: 500,
+    color: 'black',
+  },
+  viewLocation: {
+    width: '100%',
+  },
+  viewInputLocation: {
+    width: '100%',
+    flexDirection: 'row',
+  },
+  viewA: {
+    width: '100%',
+    flexDirection: 'row'
+  },
+  viewStart: {
+    width: '15%',
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10,
+    backgroundColor: '#009558'
+  },
+  textStart: {
+    fontSize: 20,
+    fontWeight: 600,
+    color: 'white'
+  },
+  viewTextInputStart: {
+    width: '85%',
+    paddingLeft: '3%',
+    paddingRight: '3%',
+    height: 50,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
+    borderColor: '#009558',
+    borderWidth: 1,
+    flexDirection: 'row'
+  },
+  textInputStart: {
+    fontSize: 14,
+    fontWeight: 500,
+    color: 'black',
+    width: '87%',
+  },
+  viewImgLoaction: {
+    width: '10%',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  map: {
+  imgLocation: {
+    width: 30,
+    height: 30,
+    tintColor: '#333'
+  },
+  viewTo: {
+    width: 7,
+    height: 20,
+    marginLeft: '6.5%',
+    backgroundColor: '#009558',
+  },
+  viewButton: {
     width: '100%',
-    height: '100%',
+    marginTop: '5%',
+    marginBottom: '5%',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  buttonSearch: {
+    width: '100%',
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 20,
   },
-  buttonRow: {
-    flexDirection: 'row',
-    marginTop: 15,
+  textSearch: {
+    fontSize: 15,
+    fontWeight: 500,
+    color: 'white'
+  },
+  viewListStation: {
     width: '100%',
-  },
-  applyButton: {
-    backgroundColor: COLOR.green3,
-    padding: 20,
-    borderRadius: 5,
-    flex: 1,
-    alignItems: 'center',
-    marginHorizontal: '5%'
-  },
-  applyText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 20,
-  },
-
-
-});
+  }
+})
