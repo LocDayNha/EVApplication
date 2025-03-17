@@ -159,14 +159,14 @@ const ViewDetail = () => {
                                             fontWeight: '500',
                                             color: dataStation?.isActive === 1 ? COLOR.yellow :
                                                 dataStation?.isActive === 2 ? COLOR.green3 :
-                                                    dataStation?.isActive === 3 ? COLOR.darkGray :
+                                                    dataStation?.isActive === 4 ? COLOR.darkGray :
                                                         COLOR.darkRed
                                         }
                                     ]}>
                                         {dataStation?.isActive === 1 ? 'Chờ phê duyệt' :
                                             dataStation?.isActive === 2 ? 'Đang hoạt động' :
-                                                dataStation?.isActive === 3 ? 'Dừng hoạt động' :
-                                                    dataStation?.isActive === 4 ? 'Bị từ chối' :
+                                                dataStation?.isActive === 4 ? 'Dừng hoạt động' :
+                                                    dataStation?.isActive === 3 ? 'Bị từ chối' :
                                                         'Không xác định'}
                                     </Text>
                                 </View>
