@@ -130,7 +130,11 @@ const ViewDetail = () => {
                             <Image style={{ width: '100%', height: 300 }} source={{ uri: dataStation.image }} />
                         </View>
                         <View style={styles.boxMain}>
-                            <Text style={styles.textName}>{dataStation.brand_id.name} - {dataStation.name}</Text>
+                            {dataStation.brand_id.name !== 'Không' ?
+                                <Text style={styles.textName}>{dataStation.brand_id.name} - {dataStation.name}</Text>
+                                :
+                                <Text style={styles.textName}>{dataStation.name}</Text>
+                            }
                             <View style={styles.detailStation}>
                                 <Image style={styles.imgIconMain} source={require('../../../assets/icon/icons8-location-94.png')} />
                                 <Text style={styles.textMain}>{dataStation.location}</Text>

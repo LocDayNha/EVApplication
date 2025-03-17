@@ -333,7 +333,11 @@ export function ItemDropDownRadioButton({ title, content, data, selectedValue, s
                                     onPress={() => setSelectedValue(item._id)}
                                 >
                                     <View style={{ flexDirection: "row", alignItems: 'center', width: '70%' }}>
-                                        {item.image ? <Image style={{ width: 25, height: 25 }} source={{ uri: item.image }} /> : null}
+                                        {item.image ?
+                                            <Image style={{ width: 25, height: 25 }} source={{ uri: item.image }} />
+                                            :
+                                            <View style={{ width: 25, height: 25, backgroundColor: 'white' }}></View>
+                                        }
                                         <View style={{ marginLeft: '5%' }}>
                                             <Text style={{}}>
                                                 {item.name}
@@ -455,7 +459,12 @@ export function ItemDropDownCheckBox({ title, content, data, selectedValues, set
                                     onPress={() => toggleSelection(item._id)}
                                 >
                                     <View style={{ flexDirection: "row", alignItems: 'center', width: '70%' }}>
-                                        <Image style={{ width: 25, height: 25 }} source={{ uri: item.image }} />
+                                        {item.image ?
+                                            <Image style={{ width: 25, height: 25 }} source={{ uri: item.image }} />
+                                            :
+                                            <View style={{ width: 25, height: 25 }}></View>
+                                        }
+
                                         <View style={{ marginLeft: '5%' }}>
                                             <Text>{item.name}</Text>
                                         </View>

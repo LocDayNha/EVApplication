@@ -107,7 +107,54 @@ const FormEditStation = () => {
             const dataStation = await AxiosInstance().post('/station/getById', { id: id });
             if (dataStation) {
                 setDataStationId(dataStation.data);
-                setNameStation(dataStation.data.name)
+                const latitude = dataStation.data.lat;
+                const longitude = dataStation.data.lng;
+                const [timeStart, timeEnd] = dataStation.data.time.split(' - ');
+                const selectedIdsBrandCar = dataStation.data.brandcar?.map(item => item.brandcar_id?._id) || [];
+                const selectedIdsService = dataStation.data.service?.map(item => item.service_id?._id) || [];
+                const formattedData = dataStation.data.specification.map(item => ({
+                    _id: item.specification_id._id,
+                    user_id: item.specification_id.user_id,
+                    vehicle_id: {
+                        _id: item.specification_id.vehicle_id._id,
+                        name: item.specification_id.vehicle_id.name,
+                    },
+                    port_id: {
+                        _id: item.specification_id.port_id._id,
+                        name: item.specification_id.port_id.name,
+                        type: item.specification_id.port_id.type,
+                        image: item.specification_id.port_id.image,
+                    },
+                    kw: item.specification_id.kw,
+                    slot: item.specification_id.slot,
+                    price: item.specification_id.price,
+                    type: item.specification_id.type,
+                    isActive: item.specification_id.isActive,
+                    createAt: item.specification_id.createAt,
+                    __v: item.specification_id.__v,
+                }));
+
+                setNameStation(dataStation.data.name); // tên trạm sạc
+                setAddress(dataStation.data.location); // địa chỉ
+                setSelectedLocation({ latitude, longitude }); // tọa độ
+                if (dataStation.data.time === '24/7') {
+                    setIsEnabled(true);
+                    setTimeStation(dataStation.data.time); // 24/7
+                } else {
+                    setTimeStart(timeStart.trim()); // thời gian bắt đầu
+                    setTimeEnd(timeEnd.trim()); // thời gian kết thúc
+                }
+                setValueNote(dataStation.data.note); // ghi chú thêm
+
+                setSelectedPlace(dataStation.data.address._id); // điểm đặt
+                setSelectedBrand(dataStation.data.brand_id._id); // hãng trạm sạc
+                setSelectedBrandCar(selectedIdsBrandCar); // hãng xe
+                setSelectedServices(selectedIdsService); // dịch vụ
+
+                setListDataSpecification(formattedData); // trụ sạc
+
+                setImageStation(dataStation.data.image); // anh
+
                 setCheckLoading(false);
 
             } else {
@@ -285,7 +332,7 @@ const FormEditStation = () => {
                 vehicle_id: selectedVehical[0],
                 port_id: selectedSocket[0]
             };
-            console.log(id)
+
             const response = await AxiosInstance().post('/specification/update', { id, ...updatedData });
             if (response) {
                 setListDataSpecification(prevList =>
@@ -427,6 +474,127 @@ const FormEditStation = () => {
                         ToastAndroid.show("Lỗi khi lưu ảnh!", ToastAndroid.SHORT);
                         return;
                     }
+                }
+
+            } catch (error) {
+                setCheckLoading(false)
+                ToastAndroid.show('Có lỗi xảy ra, vui lòng kiểm tra lại', ToastAndroid.SHORT);
+                console.log('error:', error);
+            }
+
+        } catch (error) {
+            setCheckLoading(false)
+            console.error('Lỗi khi thêm mới dữ liệu Station:', error);
+        }
+    }
+
+    const updateStaion = async () => {
+        CheckTime();
+        try {
+            setCheckLoading(true);
+            const formattedServices = selectedServices.map(id => ({ service_id: id }));
+            const formattedSpecifications = listDataSpecification.map(item => ({
+                specification_id: item._id
+            }));
+            const formattedBrandCar = selectedBrandCar.map(id => ({ brandcar_id: id }));
+
+            if (!nameStation || nameStation.length === 0) {
+                setCheckLoading(false)
+                showAlert('Thông tin', 'Chưa nhập tên');
+                return;
+            }
+            else if (address.length === 0 || !address) {
+                setCheckLoading(false)
+                showAlert('Thông tin', 'Chưa nhập địa chỉ đặt trạm sạc');
+                return;
+            }
+            else if (!selectedPlace || selectedPlace.length === 0) {
+                setCheckLoading(false)
+                showAlert('Thông tin', 'Chưa chọn địa điểm đặt trạm sạc');
+                return;
+            }
+            else if (!selectedBrandCar || selectedBrandCar.length === 0) {
+                setCheckLoading(false)
+                showAlert('Thông tin', 'Chưa chọn hãng xe');
+                return;
+            }
+            else if (!selectedBrand || selectedBrand.length === 0) {
+                setCheckLoading(false)
+                showAlert('Thông tin', 'Chưa chọn hãng trụ sạc');
+                return;
+            }
+            else if (!formattedServices || formattedServices.length === 0) {
+                setCheckLoading(false)
+                showAlert('Thông tin', 'Chưa chọn dịch vụ');
+                return;
+            }
+            else if (!timeStation || timeStation.length === 0) {
+                setCheckLoading(false)
+                showAlert('Thông tin', 'Vui chọn thời gian');
+                return;
+            }
+            else if (!formattedSpecifications || formattedSpecifications.length === 0) {
+                setCheckLoading(false)
+                showAlert('Thông tin', 'Cần thêm ít nhất 1 trụ sạc');
+                return;
+            }
+            else if (!imageStation || !imageStation.length === 0) {
+                setCheckLoading(false)
+                showAlert('Thông tin', 'Vui chọn hoặc chụp ảnh');
+                return;
+            }
+
+            try {
+                let newImageUrl = imageStation;
+
+                if (choseImageStation) {
+                    const uploadedImageUrl = await uploadImageToFirebase();
+                    if (uploadedImageUrl) {
+                        newImageUrl = uploadedImageUrl;
+
+                        if (imageStation) {
+                            try {
+                                const storageRef = firebase.storage().refFromURL(imageStation);
+                                await storageRef.delete();
+                                console.log("Xóa ảnh cũ thành công!");
+                            } catch (error) {
+                                console.log("Lỗi khi xóa ảnh cũ:", error);
+                            }
+                        } else {
+                            console.log("không có ảnh cũ");
+                        }
+                    } else {
+                        setCheckLoading(false)
+                        console.log("Lỗi khi upload ảnh mới!");
+                        ToastAndroid.show("Lỗi khi lưu ảnh!", ToastAndroid.SHORT);
+                        return;
+                    }
+                }
+
+                const dataStation = await AxiosInstance().post('/station/update', {
+                    id: id,
+                    brand_id: selectedBrand,
+                    specification: formattedSpecifications,
+                    service: formattedServices,
+                    image: newImageUrl,
+                    name: nameStation,
+                    location: address,
+                    lat: selectedLocation.latitude,
+                    lng: selectedLocation.longitude,
+                    time: timeStation,
+                    note: valueNote,
+                    address: selectedPlace,
+                    brandcar: formattedBrandCar,
+                });
+
+                if (dataStation) {
+                    setCheckLoading(false)
+                    showAlert('Trạm sạc', 'Cập nhật trạm sạc thành công');
+                    clearFormStation();
+                    navigation.goBack();
+                } else {
+                    setCheckLoading(false)
+                    showAlert('Trạm sạc', 'Cập nhật trạm sạc thất bại');
                 }
 
             } catch (error) {
@@ -643,14 +811,7 @@ const FormEditStation = () => {
             setEditIndex(null);
         }
     };
-    // const setAllStation = () => {
-    //     if(dataStationId){
-    //         setNameStation(dataStationId.name);
-    //         setAddress(dataStationId.location);
-    //         setSelectedLocation(dataStationId.lat,dataStationId.lng);
-    //     }
-    // }
-    
+
     useEffect(() => {
         // setAllStation();
         getDataStationId();
@@ -661,7 +822,7 @@ const FormEditStation = () => {
         getDataBrandCar();
         getDataPlace();
     }, [])
-   
+
     return (
 
         <ScrollView style={{ backgroundColor: 'white' }}>
@@ -805,6 +966,7 @@ const FormEditStation = () => {
                                 borderRadius: 10,
                             }}
                             placeholder={'Ghi chú'}
+                            value={valueNote}
                             multiline
                             onChangeText={setValueNote}
                         />
@@ -837,7 +999,7 @@ const FormEditStation = () => {
                     {/* nút thêm trạm sạc  */}
                     <View style={{ alignItems: 'center' }}>
                         <TouchableOpacity
-                            onPress={addNewStaion}
+                            onPress={updateStaion}
                             style={{
                                 margin: '10%',
                                 padding: 15,
@@ -845,7 +1007,7 @@ const FormEditStation = () => {
                                 borderRadius: 10,
                                 width: '60%'
                             }}>
-                            <Text style={{ color: 'white', textAlign: 'center', fontSize: 18 }}>Thêm mới trạm sạc </Text>
+                            <Text style={{ color: 'white', textAlign: 'center', fontSize: 18 }}>Cập nhật trạm sạc</Text>
                         </TouchableOpacity>
                     </View>
 
@@ -917,6 +1079,9 @@ const FormEditStation = () => {
                 </>
                 :
                 <>
+                    <View style={{ justifyContent: 'center', alignItems: 'center', width: '100%', height: 500 }}>
+                        <Text style={{ fontSize: 16, fontWeight: 'bold' }}>Không có dữ liệu</Text>
+                    </View>
                 </>
             }
 

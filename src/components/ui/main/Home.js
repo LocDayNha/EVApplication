@@ -392,13 +392,18 @@ const Home = (props) => {
                         renderItem={({ item }) => {
                             const isSelected = selectedBrand === item._id;
                             return (
-                                <TouchableOpacity
-                                    style={[styles.itemBrand, isSelected && styles.selectedItemBrand]}
-                                    onPress={() => setSelectedBrand(selectedBrand === item._id ? [] : item._id)}
-                                >
-                                    <Image style={styles.iconListBrand} source={{ uri: item.image }} />
-                                    {/* <Text style={[styles.textBrand, isSelected && styles.selectedTextBrand]}>{item.name}</Text> */}
-                                </TouchableOpacity>
+                                <View>
+                                    {item.image && item.name !== 'Không' ?
+                                        <TouchableOpacity
+                                            style={[styles.itemBrand, isSelected && styles.selectedItemBrand]}
+                                            onPress={() => setSelectedBrand(selectedBrand === item._id ? [] : item._id)}
+                                        >
+                                            <Image style={styles.iconListBrand} source={{ uri: item.image }} />
+                                        </TouchableOpacity>
+                                        :
+                                        null
+                                    }
+                                </View>
                             );
                         }}
                     />

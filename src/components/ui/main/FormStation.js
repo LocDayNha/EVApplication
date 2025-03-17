@@ -264,7 +264,7 @@ const FormStation = () => {
                 vehicle_id: selectedVehical[0],
                 port_id: selectedSocket[0]
             };
-            console.log(id)
+
             const response = await AxiosInstance().post('/specification/update', { id, ...updatedData });
             if (response) {
                 setListDataSpecification(prevList =>
@@ -638,7 +638,7 @@ const FormStation = () => {
             <ItemText2 title={'Địa chỉ trụ sạc'} value={address} checkValue={false} setCheckModal={setModalVisibleMap} widthBody={'100%'} />
 
             <View style={{ paddingHorizontal: 15, paddingVertical: 5, flexDirection: 'row', justifyContent: 'space-between' }}>
-                <ItemDropDownRadioButton data={dataPlace} title={'Địa điểm'} selectedValue={selectedPlace} setSelectedValue={setSelectedPlace} openDropdown={openDropdownPlace} setOpenDropdown={setOpenDropdownPlace} />
+                <ItemDropDownRadioButton data={dataPlace} title={'Điểm đặt'} selectedValue={selectedPlace} setSelectedValue={setSelectedPlace} openDropdown={openDropdownPlace} setOpenDropdown={setOpenDropdownPlace} />
                 <ItemDropDownCheckBox data={dataBrandCar} title={'Hãng xe'} selectedValues={selectedBrandCar} setSelectedValues={setSelectedBrandCar} openDropdown={openDropdownBrandCar} setOpenDropdown={setOpenDropdownBrandCar} />
             </View>
             <View style={{ paddingHorizontal: 15, paddingVertical: 5, flexDirection: 'row', justifyContent: 'space-between' }}>

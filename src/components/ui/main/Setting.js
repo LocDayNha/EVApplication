@@ -34,7 +34,7 @@ const Setting = () => {
     };
 
     return (
-        <ScrollView >
+        <ScrollView style={{backgroundColor:'white'}}>
             <Text style={{ margin: '5%', fontSize: SIZE.size16, fontWeight: 'bold' }} > Cài đặt </Text>
 
             {infoUser && idUser ?

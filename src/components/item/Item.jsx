@@ -219,7 +219,11 @@ export function ItemStationMap(props) {
     <TouchableOpacity activeOpacity={1} style={styles.listLocation} key={data._id} onPress={clickViewDetail}>
       <Image style={styles.imgStation} source={{ uri: data.image }} />
       <View style={styles.viewInfoStation}>
-        <Text style={styles.textItemName} numberOfLines={1} ellipsizeMode='tail'>{data.brand_id.name} - {data.name}</Text>
+        {data.brand_id.name !== 'Không' ?
+          <Text style={styles.textItemName} numberOfLines={1} ellipsizeMode='tail'>{data.brand_id.name} - {data.name}</Text>
+          :
+          <Text style={styles.textItemName} numberOfLines={1} ellipsizeMode='tail'>{data.name}</Text>
+        }
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Image style={{ width: 20, height: 20, marginRight: 5 }} source={require('../../assets/icon/icons8-location-94.png')} />
           <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail'>{data.location}</Text>
@@ -319,7 +323,11 @@ export function ItemStationMain(props) {
           <TouchableOpacity activeOpacity={1} style={styles.listRow} key={data._id} onPress={clickViewDetail}>
             <Image style={styles.imgStation} source={{ uri: data.image }} />
             <View style={styles.viewInfoStation}>
-              <Text style={styles.textItemName} numberOfLines={1} ellipsizeMode='tail'>{data.brand_id.name} - {data.name}</Text>
+              {data.brand_id.name !== 'Không' ?
+                <Text style={styles.textItemName} numberOfLines={1} ellipsizeMode='tail'>{data.brand_id.name} - {data.name}</Text>
+                :
+                <Text style={styles.textItemName} numberOfLines={1} ellipsizeMode='tail'>{data.name}</Text>
+              }
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Image style={{ width: 20, height: 20, marginRight: 5 }} source={require('../../assets/icon/icons8-location-94.png')} />
                 <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail'>{data.location}</Text>
@@ -892,7 +900,11 @@ export function ItemCheckBoxImage({ data, selectedItems, setSelectedItems }) {
               }}
               onPress={() => toggleSelection(item._id)}
             >
-              <Image style={{ width: 30, height: 30 }} source={{ uri: item.image }} />
+              {item.image ?
+                <Image style={{ width: 30, height: 30 }} source={{ uri: item.image }} />
+                :
+                <View style={{ width: 30, height: 30 }}></View>
+              }
               <View style={{ width: '50%' }}>
                 <Text
                   style={{ fontSize: SIZE.size12, fontWeight: "bold", color: 'black', }}>
