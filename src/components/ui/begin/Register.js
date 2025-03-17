@@ -14,15 +14,13 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigation = useNavigation();
 
-  const showToast = (message, type = 'info') => {
-    if (Platform.OS === 'android') {
-      ToastAndroid.show(message, ToastAndroid.SHORT);
-    } else {
-      Toast.show({
-        type,
-        text1: message,
-      });
-    }
+  const showToast = (type, content) => {
+    Toast.show({
+      type: type, // 'success', 'error', 'warning', 'info'
+      text2: content,
+      position: 'center',
+      autoHide: false,
+    });
   };
 
   // register
@@ -40,15 +38,10 @@ const Register = () => {
       if (response && response.status) {
         navigation.navigate('Verification', { email: email, name: 'Register' });
       } else {
-        // ToastAndroid.show('Đăng ký thất bại!', ToastAndroid.SHORT);
-        showToast('Cần xác nhận tài khoản', 'error');
+        showToast('error', 'Đăng ký thất bại');
       }
     } catch (error) {
-      showToast(error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại', 'error');
-      // ToastAndroid.show(
-      //   error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại',
-      //   ToastAndroid.SHORT,
-      // );
+      showToast('error', error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại');
     }
   };
 
@@ -58,7 +51,7 @@ const Register = () => {
     >
       <View style={styles.container}>
         <View style={{ width: '100%', height: '30%', justifyContent: 'center', alignItems: 'center' }} onTouchStart={() => Keyboard.dismiss()}>
-          <Image source={require('../../../assets/images/Splash (2).png')} style={{width:200, height:200, }} />
+          <Image source={require('../../../assets/images/Splash (2).png')} style={{ width: 200, height: 200, }} />
         </View>
         <Text style={styles.title}>Đăng ký tài khoản</Text>
         <View>
@@ -122,7 +115,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     justifyContent: "center",
     alignItems: "center",
-    width:'100%', height:'100%'
+    width: '100%', height: '100%'
   },
   img: {
     marginLeft: "5%",

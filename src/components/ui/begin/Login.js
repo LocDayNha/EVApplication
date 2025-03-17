@@ -18,21 +18,20 @@ const Login = () => {
     navigation.navigate('Screen');
   }
 
-  const showToast = (message, type = 'info') => {
-    if (Platform.OS === 'android') {
-      ToastAndroid.show(message, ToastAndroid.SHORT);
-    } else {
-      Toast.show({
-        type,
-        text1: message,
-      });
-    }
+  const showToast = (type, content) => {
+    Toast.show({
+      type: type, // 'success', 'error', 'warning', 'info'
+      text2: content,
+      position: 'center',
+      autoHide: false,
+    });
   };
+
   const showAlert = (title, content) => {
     Alert.alert(title, content, [
-        { text: "OK" },
+      { text: "OK" },
     ]);
-};
+  };
 
   // login
   const { setIsLogin, setInfoUser, setIdUser, infoUser, idUser } = useContext(AppContext);
@@ -63,14 +62,16 @@ const Login = () => {
         navigateToMain();
 
       } else if (response && response.returnData.data && response.returnData.data.user.isVerified === false) {
-        showToast('Cần xác nhận tài khoản', 'info');
+        showToast('info', 'Cần xác nhận tài khoản');
         navigation.navigate('Verification', { email: email, name: 'Login' })
       } else {
-        showAlert('Thông báo','Sai tài khoản')
-        setMessageError()
+        showToast('error', 'Sai mật khẩu');
+        // showAlert('Thông báo', 'Sai tài khoản');
+        setMessageError();
       }
     } catch (error) {
-      showAlert('Thông báo',error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại', 'error');
+      showToast('error', error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại');
+      // showAlert('Thông báo', error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại', 'error');
       setMessageError(error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại', 'error');
     }
   };
@@ -81,7 +82,7 @@ const Login = () => {
     >
       <View style={styles.container} >
         <View style={{ width: '100%', height: '30%', justifyContent: 'center', alignItems: 'center' }} onTouchStart={() => Keyboard.dismiss()}>
-        <Image source={require('../../../assets/images/Splash (2).png')} style={{width:200, height:200, }} />
+          <Image source={require('../../../assets/images/Splash (2).png')} style={{ width: 200, height: 200, }} />
         </View>
         <Text style={styles.title}>Đăng nhập tài khoản</Text>
         <View>

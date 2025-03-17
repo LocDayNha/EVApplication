@@ -15,15 +15,13 @@ const Verification = () => {
     const { email, name } = route.params;
     const navigation = useNavigation();
 
-    const showToast = (message, type = 'info') => {
-        if (Platform.OS === 'android') {
-            ToastAndroid.show(message, ToastAndroid.SHORT);
-        } else {
-            Toast.show({
-                type,
-                text1: message,
-            });
-        }
+    const showToast = (type, content) => {
+        Toast.show({
+            type: type, // 'success', 'error', 'warning', 'info'
+            text2: content,
+            position: 'center',
+            autoHide: false,
+        });
     };
 
 
@@ -63,16 +61,13 @@ const Verification = () => {
             );
             if (code && code.verifyCode) {
                 setCodeResult(parseInt(code.verifyCode, 10));
-                showToast('Kiểm tra mã xác nhận ở Email', 'success');
-                // ToastAndroid.show('Kiểm tra mã xác nhận ở Email', ToastAndroid.SHORT);
+                showToast('info', 'Kiểm tra mã xác nhận ở Email');
                 console.log('Gửi mã xác nhận thành công:', code.verifyCode)
             } else {
-                showToast('Đăng ký thất bại!', 'error');
-                // ToastAndroid.show('Đăng ký thất bại!', ToastAndroid.SHORT);
+                showToast('error', 'Gửi mã xác nhận thất bại');
             }
         } catch (error) {
-            showToast('Có lỗi xảy ra, vui lòng thử lại', 'error');
-            // ToastAndroid.show('Có lỗi xảy ra, vui lòng thử lại', ToastAndroid.SHORT);
+            showToast('error', 'Có lỗi xảy ra, vui lòng thử lại');
         }
     }
 
@@ -80,6 +75,17 @@ const Verification = () => {
     const handleConfirm = async () => {
         const otpCode = otp.join("");
         const otpNumber = parseInt(otpCode, 10);
+
+        if (!otpNumber || otpNumber < 1000) {
+            showToast('warning', 'Vui lòng nhập mã xác nhận');
+            return;
+        }
+
+        if (otpNumber !== codeResult) {
+            showToast('warning', 'Mã xác nhận không đúng');
+            return;
+        }
+
         try {
             const response = await AxiosInstance().post('/user/verify',
                 {
@@ -99,9 +105,7 @@ const Verification = () => {
                 navigation.navigate('NewPassword', { email: email });
             }
         } catch (error) {
-            Alert.alert('Lỗi', 'Vui lòng thử lại', [
-                { text: "OK" },
-            ]);
+            showToast('error', 'Có lỗi xảy ra, vui lòng thử lại');
         }
     };
 

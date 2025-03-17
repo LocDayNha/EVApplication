@@ -19,12 +19,13 @@ import { TextInputBegin, TextInputMain, CustomButton, TextInputProfile, ItemRati
 import { useFonts, Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
 import AppLoading from 'expo-app-loading';
 import Toast from 'react-native-toast-message';
+import toastConfig from '../../src/components/toast/toastConfig';
 
 export default function App() {
   return (
     <AppContextProvider>
       <ButtomTab />
-      <Toast />
+      <Toast config={toastConfig} />
     </AppContextProvider>
   );
 }

@@ -4,25 +4,66 @@ import { useNavigation } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Roboto_400Regular, Roboto_500Medium } from '@expo-google-fonts/roboto';
 import { Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
-import AppLoading from 'expo-app-loading'
+import AppLoading from 'expo-app-loading';
+import Toast, { BaseToast } from 'react-native-toast-message';
+import AxiosInstance from '../../axios/AxiosInstance';
 
 const ForgotPass = () => {
     const navigation = useNavigation();
+
+    const showToast = (type, content) => {
+        Toast.show({
+            type: type, // 'success', 'error', 'warning', 'info'
+            text2: content,
+            position: 'center',
+            autoHide: false,
+        });
+    };
+    // showToast('success', 'Thành công', 'Thành công');
+    // showToast('error', 'Lỗi', 'Lỗi');
+    // showToast('warning', 'Cảnh báo', 'Cảnh báo');
+    // showToast('info', 'Thông báo', 'Thông báo');
+
     const showAlert = (title, content) => {
         Alert.alert(title, content, [
             { text: "OK" },
         ]);
     };
+
     const [email, setEmail] = useState(null);
 
-    const SenCode = () => {
-        if (email) {
-            navigation.navigate('Verification', { email: email, name: 'ForgotPass' })
-        }
-        else {
-            showAlert('Thông báo','Vui lòng nhập email')
+    const Verify = async () => {
+        if (!email) {
+            showToast('warning', 'Vui lòng nhập thông tin');
+            // showAlert('Thông báo', 'Vui lòng nhập thông tin');
+            return;
         }
 
+        const emailRegex = /^(?!.*\.\.)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(email)) {
+            showToast('warning', 'Email sai định dạng');
+            // showAlert('Thông báo', 'Email sai định dạng');
+            return;
+        }
+
+        try {
+            const response = await AxiosInstance().post('/user/getInforUserByEmail',
+                {
+                    email: email
+                }
+            );
+
+            if (response.status !== true) {
+                showToast('info', 'Email chưa đăng ký tài khoản');
+                // showAlert('Thông báo', 'Email chưa đăng ký tài khoản');
+            } else {
+                navigation.navigate('Verification', { email, name: 'ForgotPass' });
+            }
+        } catch (error) {
+            console.log('Lỗi hệ thống !');
+            showToast('error', 'Vui lòng thử lại sau');
+            // showAlert('Thông báo', 'Vui lòng thử lại sau');
+        }
     }
 
     return (
@@ -45,7 +86,7 @@ const ForgotPass = () => {
                         />
                     </View>
                 </View>
-                <TouchableOpacity style={styles.sendButton} onPress={SenCode}>
+                <TouchableOpacity style={styles.sendButton} onPress={Verify}>
                     <Text style={styles.textSend}>Gửi</Text>
                 </TouchableOpacity>
             </View>

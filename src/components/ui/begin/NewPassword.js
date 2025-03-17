@@ -15,15 +15,13 @@ const NewPassword = () => {
     const navigation = useNavigation();
     const [showPassword, setShowPassword] = useState(false);
 
-    const showToast = (message, type = 'info') => {
-        if (Platform.OS === 'android') {
-            ToastAndroid.show(message, ToastAndroid.SHORT);
-        } else {
-            Toast.show({
-                type,
-                text1: message,
-            });
-        }
+    const showToast = (type, content) => {
+        Toast.show({
+            type: type, // 'success', 'error', 'warning', 'info'
+            text2: content,
+            position: 'center',
+            autoHide: false,
+        });
     };
 
     const [password, setPassword] = useState(null);
@@ -36,19 +34,13 @@ const NewPassword = () => {
                 }
             );
             if (response) {
-                showToast('Cập nhật mật khẩu thành công', 'success');
+                showToast('success', 'Cập nhật mật khẩu thành công');
                 navigation.navigate('CompleteCreate');
-                console.log('Cập nhật mật khẩu thành công')
             } else {
-                showToast('Cập nhật mật khẩu thất bại!', 'error');
-                // ToastAndroid.show('Cập nhật mật khẩu thất bại!', ToastAndroid.SHORT);
+                showToast('error', 'Cập nhật mật khẩu thất bại');
             }
         } catch (error) {
-            showToast(error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại', 'error');
-            // ToastAndroid.show(
-            //     error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại',
-            //     ToastAndroid.SHORT,
-            // );
+            showToast('error', error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại');
         }
     }
 
