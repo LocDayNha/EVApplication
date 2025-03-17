@@ -3,11 +3,14 @@ import React, { useState, useEffect, useContext } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import AxiosInstance from '../../axios/AxiosInstance';
 import { useNavigation } from '@react-navigation/native';
-import { ItemStationList } from '../../item/Item';
+import { ItemStationList, ItemStationMain, ItemStationTrip, ItemStationTrips } from '../../item/Item';
 import Slider from '@react-native-community/slider';
+import { ItemLoading, ItemShowAlert, MapLocationPicker } from '../../item/ItemList';
 
 const Trip = () => {
   const navigation = useNavigation();
+  const [checkLoading, setCheckLoading] = useState(false);
+
 
   const [energy, setEnergy] = useState(10);
   const [latStart, setLatStart] = useState(10.849081398948059);
@@ -15,25 +18,47 @@ const Trip = () => {
   const [latEnd, setLatEnd] = useState(10.323464572434858);
   const [lngEnd, setLngEnd] = useState(107.08486774959243);
 
+  const [addressStart, setAddressStart] = useState('Chọn điểm đi');
+  const [addressEnd, setAddressEnd] = useState('Chọn điểm đến');
+
+  const [selectedLocationStart, setSelectedLocationStart] = useState('');
+  const [selectedLocationEnd, setSelectedLocationEnd] = useState('');
+
+
+  const [modalMapStart, setModalMapStart] = useState(false);
+  const [modalMapEnd, setModalMapEnd] = useState(false);
+
+
   const [dataStation, setDataStation] = useState([]);
 
 
   const getDataStation = async () => {
     try {
+      setCheckLoading(true);
       const dataStation = await AxiosInstance().post('/station/getByTravel',
         {
-          outputEV: energy, myLat: latStart, myLng: lngStart, toLat: latEnd, toLng: lngEnd
+          outputEV: energy,
+          myLat: selectedLocationStart.latitude,
+          myLng: selectedLocationStart.longitude,
+          toLat: selectedLocationEnd.latitude,
+          toLng: selectedLocationEnd.longitude
         }
       );
       if (dataStation.data && dataStation.data.length > 0) {
         setDataStation(dataStation.data);
+        setCheckLoading(false);
+
       } else {
+        setCheckLoading(false);
         console.log('Không tìm thấy dữ liệu từ /station/get');
-        ToastAndroid.show('Không có thông tin trạm sạc', ToastAndroid.SHORT);
+        ItemShowAlert('Thông báo', 'Trạm sạc không được tìm thấy');
+        // ToastAndroid.show('Không có thông tin trạm sạc', ToastAndroid.SHORT);
       }
     } catch (error) {
+      setCheckLoading(false);
       console.error('Lỗi khi lấy dữ liệu station:', error);
-      ToastAndroid.show('Không thể tải danh sách thông tin trạm sạc', ToastAndroid.SHORT);
+      ItemShowAlert('Thông báo', 'Không thể tải trạm sạc xuống')
+      // ToastAndroid.show('Không thể tải danh sách thông tin trạm sạc', ToastAndroid.SHORT);
     }
   };
 
@@ -44,6 +69,7 @@ const Trip = () => {
     console.log('latEnd:', latEnd);
     console.log('lngEnd:', lngEnd);
   }
+  console.log(dataStation);
 
   return (
     <ScrollView style={styles.container}>
@@ -90,9 +116,9 @@ const Trip = () => {
                   numberOfLines={1}
                   ellipsizeMode="tail"
                   style={styles.textInputStart}>
-                  10/70 Ấp 7, Xuân Thới Thượng, Hóc Môn, Hồ Chí Minh
+                  {addressStart}
                 </Text>
-                <TouchableOpacity onPress={() => console.log('Start')} style={styles.viewImgLoaction}>
+                <TouchableOpacity onPress={() => { console.log('Start'); setModalMapStart(true) }} style={styles.viewImgLoaction}>
                   <Image source={require('../../../assets/icon/target.png')} style={styles.imgLocation} />
                 </TouchableOpacity>
               </View>
@@ -112,9 +138,9 @@ const Trip = () => {
                   numberOfLines={1}
                   ellipsizeMode="tail"
                   style={styles.textInputStart}>
-                  10/70 Ấp 7, Xuân Thới Thượng, Hóc Môn, Hồ Chí Minh
+                  {addressEnd}
                 </Text>
-                <TouchableOpacity onPress={() => console.log('End')} style={styles.viewImgLoaction}>
+                <TouchableOpacity onPress={() => { console.log('End'); setModalMapEnd(true) }} style={styles.viewImgLoaction}>
                   <Image source={require('../../../assets/icon/target.png')} style={styles.imgLocation} />
                 </TouchableOpacity>
               </View>
@@ -142,7 +168,7 @@ const Trip = () => {
                     showsVerticalScrollIndicator={false}
                     renderItem={({ item }) =>
                       <View>
-                        <ItemStationList data={item} />
+                        <ItemStationTrips data={item} />
                       </View>
                     }
                   />
@@ -154,6 +180,22 @@ const Trip = () => {
         </View>
 
       </View>
+      <MapLocationPicker
+        modalVisible={modalMapStart}
+        setModalVisible={setModalMapStart}
+        address={addressStart}
+        setAddress={setAddressStart}
+        selectedLocation={selectedLocationStart}
+        setSelectedLocation={setSelectedLocationStart} />
+
+      <MapLocationPicker
+        modalVisible={modalMapEnd}
+        setModalVisible={setModalMapEnd}
+        address={addressEnd}
+        setAddress={setAddressEnd}
+        selectedLocation={selectedLocationEnd}
+        setSelectedLocation={setSelectedLocationEnd} />
+      <ItemLoading checkValue={checkLoading} />
     </ScrollView>
   )
 }
