@@ -1,8 +1,8 @@
-import { StyleSheet, View, Text, TouchableOpacity, Switch, FlatList, Linking, ToastAndroid, TextInput, Image, Modal, ScrollView, Touchable, ActivityIndicator } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, Switch, FlatList, Linking, ToastAndroid, TextInput, Image, Modal, ScrollView, Touchable, ActivityIndicator, Platform, Alert } from "react-native";
 import { COLOR, SIZE } from "../../assets/Theme/Theme";
 import { useNavigate } from "react-router-native";
 import { useNavigation } from '@react-navigation/native';
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 import { AppContext } from '../axios/AppContext';
 import AxiosInstance from "../axios/AxiosInstance";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -10,6 +10,8 @@ import RNPickerSelect from 'react-native-picker-select';
 import { LinearGradient } from 'expo-linear-gradient';
 import haversine from 'haversine-distance';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import MapView, { Marker } from 'react-native-maps';
+import * as Location from 'expo-location';
 
 
 export function ItemForList({ title, content, setModal, checkActive }) {
@@ -506,6 +508,138 @@ export function ItemDropDownCheckBox({ title, content, data, selectedValues, set
     );
 }
 
+export function MapLocationPicker({ address, modalVisible, setModalVisible, setAddress, selectedLocation, setSelectedLocation }) {
+    const mapRef = useRef(null);
+    const [checkLoading, setCheckLoading] = useState(false);
+    const getAddressFromCoords = async (latitude, longitude) => {
+        try {
+            setCheckLoading(true);
+            let { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                console.warn('Quyền vị trí bị từ chối');
+                setAddress('Không có quyền truy cập vị trí');
+                setCheckLoading(false);
+
+                return;
+            }
+            let response = await Location.reverseGeocodeAsync({ latitude, longitude });
+
+            if (response.length > 0) {
+                if (Platform.OS === 'ios') {
+                    setAddress(`${response[0].district}, ${response[0].subregion}, ${response[0].city}`);
+                    setCheckLoading(false);
+
+                } else {
+                    setAddress(response[0].formattedAddress);
+                    setCheckLoading(false);
+
+                }
+            } else {
+                setAddress('Không tìm thấy địa chỉ');
+                setCheckLoading(false);
+
+            }
+        } catch (error) {
+            setCheckLoading(false);
+            console.warn("Lỗi lấy địa chỉ:", error);
+            setAddress('Không thể lấy địa chỉ');
+        }
+    };
+
+    const handleMapPress = async (event) => {
+        const { latitude, longitude } = event.nativeEvent.coordinate;
+        setSelectedLocation({ latitude, longitude });
+        getAddressFromCoords(latitude, longitude);
+    };
+
+    const getCurrentLocation = async () => {
+        try {
+            setCheckLoading(true);
+            let { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                alert('Bạn cần cấp quyền truy cập vị trí!');
+                setCheckLoading(false);
+                return;
+            }
+
+            let location = await Location.getCurrentPositionAsync({});
+            const { latitude, longitude } = location.coords;
+
+            setSelectedLocation({ latitude, longitude });
+            getAddressFromCoords(latitude, longitude);
+
+            if (mapRef.current) {
+                mapRef.current.animateToRegion({
+                    latitude,
+                    longitude,
+                    latitudeDelta: 0.01,
+                    longitudeDelta: 0.01,
+                }, 1000);
+                setCheckLoading(false);
+            }
+        } catch (error) {
+            setCheckLoading(false);
+            console.warn("Lỗi lấy vị trí:", error);
+            alert('Không thể lấy vị trí!');
+        }
+    };
+
+    return (
+        <Modal transparent={true} visible={modalVisible} animationType="slide">
+            <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center' }}>
+                <View style={{ backgroundColor: 'white', margin: 20, padding: 10, borderRadius: 10, height: '90%' }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <TouchableOpacity onPress={() => { setModalVisible(false); setAddress('Chưa chọn địa chỉ') }} style={{ padding: 10 }}>
+                            <Text>Hủy chọn</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => setModalVisible(false)} style={{ padding: 10 }}>
+                            <Text>Chọn</Text>
+                        </TouchableOpacity>
+                    </View>
+                    {address ? <Text style={{ fontSize: 16, padding: 10 }}>Địa chỉ: {address}</Text> : null}
+                    <MapView
+                        ref={mapRef}
+                        style={{ flex: 1 }}
+                        initialRegion={{
+                            latitude: 14.0583,
+                            longitude: 108.2772,
+                            latitudeDelta: 5,
+                            longitudeDelta: 5,
+                        }}
+                        onPress={handleMapPress}
+                    >
+                        {selectedLocation && (
+                            <Marker coordinate={selectedLocation} title="Vị trí đã chọn" />
+                        )}
+                    </MapView>
+                    <View style={{ position: 'absolute', bottom: 20, right: 20 }}>
+                        <TouchableOpacity
+                            style={{
+                                height: 50,
+                                width: 50,
+                                borderRadius: 30,
+                                backgroundColor: 'white',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                shadowColor: '#000',
+                                shadowOpacity: 0.2,
+                                shadowOffset: { width: 0, height: 2 },
+                                elevation: 3,
+                            }}
+                            onPress={getCurrentLocation}>
+                            <Image style={{ width: 30, height: 30 }} source={require('../../assets/icon/icons8-my-location-48.png')} />
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </View>
+            <ItemLoading checkValue={checkLoading} />
+        </Modal>
+    );
+}
+
+export function ItemShowAlert(title, content) {
+    Alert.alert(title, content, [{ text: "OK" }]);
+}
 
 const styles = StyleSheet.create({
 
