@@ -43,9 +43,10 @@
     "experiments": {
       "typedRoutes": true
     },
+    "owner": "baor",
     "extra": {
       "eas": {
-        "projectId": "25e8fad2-e5a7-4a75-9289-cf85fd24b314"
+        "projectId": "1a2a765e-dd79-4fc5-9783-4323422da2f1"
       }
     }
   }
