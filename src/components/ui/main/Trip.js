@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { ItemStationList, ItemStationMain, ItemStationTrip, ItemStationTrips } from '../../item/Item';
 import Slider from '@react-native-community/slider';
 import { ItemLoading, ItemShowAlert, MapLocationPicker } from '../../item/ItemList';
+import MultiSlider from '@ptomasroos/react-native-multi-slider';
 
 const Trip = () => {
   const navigation = useNavigation();
@@ -52,6 +53,7 @@ const Trip = () => {
         setCheckLoading(false);
         console.log('Không tìm thấy dữ liệu từ /station/get');
         ItemShowAlert('Thông báo', 'Trạm sạc không được tìm thấy');
+        setDataStation(null)
         // ToastAndroid.show('Không có thông tin trạm sạc', ToastAndroid.SHORT);
       }
     } catch (error) {
@@ -69,7 +71,6 @@ const Trip = () => {
     console.log('latEnd:', latEnd);
     console.log('lngEnd:', lngEnd);
   }
-  console.log(dataStation);
 
   return (
     <ScrollView style={styles.container}>
@@ -81,17 +82,19 @@ const Trip = () => {
 
         <View style={styles.viewLine}>
 
-          <View style={{ width: '100%' }}>
-            <Slider
+          <View style={{ width: '100%', alignItems: 'center' }}>
+            <MultiSlider
               style={{ width: '100%' }}
-              minimumValue={10}
-              maximumValue={200}
+              min={10}
+              max={200}
               step={1}
               value={energy}
-              onValueChange={setEnergy}
-              minimumTrackTintColor="green"
+              onValuesChange={setEnergy}
+              minimumTrackTintColor="green3"
               maximumTrackTintColor="#979592"
-              thumbTintColor="green"
+              thumbTintColor="green3"
+              markerStyle={{ height: 20, width: 20, }}
+              trackStyle={{ height: 4, }}
             />
           </View>
 
@@ -157,26 +160,26 @@ const Trip = () => {
         </View>
 
         <View style={styles.viewListStation}>
-          {
-            dataStation.length > 0 ?
-              <>
-                <View >
-                  <FlatList
-                    data={dataStation}
-                    scrollEnabled={false}
-                    keyExtractor={(item) => item._id}
-                    showsVerticalScrollIndicator={false}
-                    renderItem={({ item }) =>
-                      <View>
-                        <ItemStationTrips data={item} />
-                      </View>
-                    }
-                  />
+
+          <View >
+            <FlatList
+              data={dataStation}
+              scrollEnabled={false}
+              keyExtractor={(item) => item._id}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item }) =>
+                <View>
+                  {
+                    dataStation.length > 0 ?
+                      <ItemStationTrips data={item} />
+                      :
+                      null
+                  }
                 </View>
-              </>
-              :
-              null
-          }
+              }
+            />
+          </View>
+
         </View>
 
       </View>
@@ -196,7 +199,7 @@ const Trip = () => {
         selectedLocation={selectedLocationEnd}
         setSelectedLocation={setSelectedLocationEnd} />
       <ItemLoading checkValue={checkLoading} />
-    </ScrollView>
+    </ScrollView >
   )
 }
 
