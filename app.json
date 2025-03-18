@@ -4,20 +4,22 @@
     "slug": "EVApplication",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./src/assets/images/Logoevapp.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "Ứng dụng cần truy cập vị trí để hiển thị địa chỉ."
-      }
+        "NSLocationWhenInUseUsageDescription": "Ứng dụng cần truy cập vị trí để hiển thị địa chỉ.",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "bundleIdentifier": "com.locdaynha.evapplication"
     },
     "android": {
       "package": "com.locdaynha.evapplication",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./src/assets/images/Logoevapp.png",
         "backgroundColor": "#ffffff"
       },
       "permissions": [
@@ -28,7 +30,7 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./src/assets/images/Logoevapp.png"
     },
     "plugins": [
       [

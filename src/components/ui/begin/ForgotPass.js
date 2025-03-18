@@ -4,7 +4,6 @@ import { useNavigation } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Roboto_400Regular, Roboto_500Medium } from '@expo-google-fonts/roboto';
 import { Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
-import AppLoading from 'expo-app-loading';
 import Toast, { BaseToast } from 'react-native-toast-message';
 import AxiosInstance from '../../axios/AxiosInstance';
 
