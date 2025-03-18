@@ -73,7 +73,7 @@ const Home = (props) => {
     const [defaultValueKm, setDefaultValueKm] = useState([10]);
     const [valueKm, setValueKm] = useState(defaultValueKm);
     const [minValueKm, setMinValueKm] = useState(1);
-    const [maxValueKm, setMaxValueKm] = useState(50);
+    const [maxValueKm, setMaxValueKm] = useState(100);
     const [valuesKw, setValuesKw] = useState([1, 200]);
     const [minValueKw, setMinValueKw] = useState(1);
     const [maxValueKw, setMaxValueKw] = useState(200);
@@ -331,6 +331,16 @@ const Home = (props) => {
         return (matchesBrand && matchesPlace && matchesBrandCar && matchesVehicle && matchesPort && matchesService && matchesVon && isValueNameLocation);
     });
 
+    const sortedItems = (filteredItems || [])
+        .map(item => ({
+            ...item,
+            distance: haversine(
+                { latitude: myLat, longitude: myLng },
+                { latitude: item.lat, longitude: item.lng }
+            ) / 1000
+        }))
+        .sort((a, b) => a.distance - b.distance);
+
     const goProfile = () => {
         if (infoUser) {
             navigation.navigate('Profile');
@@ -424,25 +434,27 @@ const Home = (props) => {
 
                     </View>
                     <View>
-                        {filteredItems && filteredItems.length > 0 ?
-                            <View >
-                                <FlatList
-                                    data={filteredItems}
-                                    scrollEnabled={false}
-                                    showsVerticalScrollIndicator={false}
-                                    keyExtractor={(item) => item._id}
-                                    renderItem={({ item }) => (
-                                        <View>
+
+                        <View >
+                            <FlatList
+                                data={sortedItems}
+                                scrollEnabled={false}
+                                showsVerticalScrollIndicator={false}
+                                keyExtractor={(item) => item._id}
+                                renderItem={({ item }) => (
+                                    <View>
+                                        {filteredItems && filteredItems.length > 0 ?
                                             <ItemStationMain data={item} Kilomet={valueKm} />
-                                        </View>
-                                    )}
-                                />
-                            </View>
-                            :
-                            <View style={{ justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%', }}>
-                                <Text style={{ fontWeight: '500', color: 'black', fontSize: 16 }}>Không có dữ liệu</Text>
-                            </View>
-                        }
+                                            :
+                                            <View style={{ justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%', }}>
+                                                <Text style={{ fontWeight: '500', color: 'black', fontSize: 16 }}>Không có dữ liệu</Text>
+                                            </View>
+                                        }
+                                    </View>
+                                )}
+                            />
+                        </View>
+
                     </View>
 
                 </View>
