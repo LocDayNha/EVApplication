@@ -348,6 +348,7 @@ const FormEditStation = () => {
             setCheckButtonEdit(false)
         }
     };
+
     const deleteSpecificationById = async (id) => {
         try {
             setCheckLoading(true);
@@ -357,7 +358,6 @@ const FormEditStation = () => {
                 });
 
             if (dataSpecificationById) {
-                console.log('Xóa SpecificationById thành công')
                 setCheckLoading(false);
                 setListDataSpecification(prevList =>
                     prevList.filter(item => item._id !== id)
@@ -371,6 +371,48 @@ const FormEditStation = () => {
             setCheckLoading(false);
         }
     }
+
+    const updateStaion2 = async () => {
+        try {
+            const formattedSpecifications = listDataSpecification.map(item => ({
+                specification_id: item._id
+            }));
+
+            console.log(formattedSpecifications);
+
+            if (!formattedSpecifications || formattedSpecifications.length === 0) {
+                setCheckLoading(false)
+                showAlert('Thông tin', 'Cần thêm ít nhất 1 trụ sạc');
+                return;
+            }
+
+            try {
+
+                const dataStation = await AxiosInstance().post('/station/update2', {
+                    id: id,
+                    specification: formattedSpecifications,
+                });
+
+                if (dataStation) {
+                    console.log('xoa thanh cong');
+                } else {
+                    console.log('xoa that bai');
+                }
+
+            } catch (error) {
+                console.log('error:', error);
+            }
+
+        } catch (error) {
+            console.error('Lỗi khi xoa tru sac:', error);
+        }
+    }
+
+    useEffect(() => {
+        if (listDataSpecification.length > 0) {
+            updateStaion2();
+        }
+    }, [listDataSpecification]);
 
     // Station
     const addNewStaion = async () => {
@@ -489,6 +531,9 @@ const FormEditStation = () => {
             const formattedSpecifications = listDataSpecification.map(item => ({
                 specification_id: item._id
             }));
+
+            console.log(formattedSpecifications);
+
             const formattedBrandCar = selectedBrandCar.map(id => ({ brandcar_id: id }));
 
             if (!nameStation || nameStation.length === 0) {
