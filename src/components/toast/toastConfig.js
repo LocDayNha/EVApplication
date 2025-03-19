@@ -21,7 +21,7 @@ const toastConfig = {
     success: (props) => <CustomToast {...props} text1='Thành công' color="#28a745" icon="✔" />,
     error: (props) => <CustomToast {...props} text1='Lỗi' color="#dc3545" icon="!" />,
     warning: (props) => <CustomToast {...props} text1='Cảnh báo' color="#ffc107" icon="⚠" />,
-    info: (props) => <CustomToast {...props} text1='Thông tin' color="#17a2b8" icon="i" />,
+    info: (props) => <CustomToast {...props} text1='Thông báo' color="#17a2b8" icon="i" />,
 };
 
 const styles = StyleSheet.create({
@@ -59,6 +59,7 @@ const styles = StyleSheet.create({
     text2: {
         fontSize: 14,
         color: '#000000',
+        fontWeight:500
     },
     closeButton: {
         padding: 5,

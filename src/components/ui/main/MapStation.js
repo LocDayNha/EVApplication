@@ -5,8 +5,19 @@ import * as Location from 'expo-location';
 import { ItemStation, ItemStationMain, ItemStationMap } from '../../item/Item';
 import { AppContext } from '../../axios/AppContext';
 import AxiosInstance from '../../axios/AxiosInstance';
+import Toast from 'react-native-toast-message';
 
 const MapStation = (props) => {
+
+    const showToast = (type, content) => {
+        Toast.show({
+            type: type, // 'success', 'error', 'warning', 'info'
+            text2: content,
+            position: 'center',
+            autoHide: 5000,
+        });
+    };
+
     const initialLocation = { latitude: 10.8231, longitude: 106.6297 };
 
     const [myLocation, setMyLocation] = useState(initialLocation);
@@ -48,11 +59,11 @@ const MapStation = (props) => {
                 setDataStation(dataStation.data);
             } else {
                 console.log('Không tìm thấy dữ liệu từ /station/get');
-                ToastAndroid.show('Không có thông tin trạm sạc', ToastAndroid.SHORT);
+                showToast('info', 'Không có thông tin trạm sạc');
             }
         } catch (error) {
             console.error('Lỗi khi lấy dữ liệu station:', error);
-            ToastAndroid.show('Không thể tải danh sách thông tin trạm sạc', ToastAndroid.SHORT);
+            showToast('error', 'Không thể tải danh sách thông tin trạm sạc');
         }
     };
 
