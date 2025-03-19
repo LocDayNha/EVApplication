@@ -11,7 +11,7 @@ import { COLOR, SIZE } from "../../../assets/Theme/Theme";
 import { AppContext } from '../../axios/AppContext';
 import { firebase } from '../../../../config';
 import { ItemModalRadioButton, ItemModalRadioButtonImage, ItemModalCheckBoxImage } from '../../item/Modal';
-import { ItemButton1, ItemForList, ItemText1, ItemTitle1, ItemTextInput1, ItemButton2, ItemLoading, ItemTextInput2, ItemText2, ItemTimePicker, ItemButtonSwitch, ItemDropDownCheckBox, ItemDropDownRadioButton, ItemTextInput3 } from '../../item/ItemList';
+import { ItemButton1, ItemForList, ItemText1, ItemTitle1, ItemTextInput1, ItemButton2, ItemLoading, ItemTextInput2, ItemText2, ItemTimePicker, ItemButtonSwitch, ItemDropDownCheckBox, ItemDropDownRadioButton, ItemTextInput3, ItemCheckBoxDP, ItemRadioDP } from '../../item/ItemList';
 
 const API_BASE = 'https://online-gateway.ghn.vn/shiip/public-api/master-data';
 const TOKEN = '46f53dba-ecf6-11ef-a268-9e63d516feb9';
@@ -627,260 +627,316 @@ const FormStation = () => {
     }, [])
     useEffect(() => {
         CheckTime();
-    }, [isEnabled,timeStart,timeEnd])
+    }, [isEnabled, timeStart, timeEnd])
+
 
     return (
-        <ScrollView style={{ backgroundColor: 'white' }}>
-            <ItemTextInput2 title={'Tên trạm sạc'} placeholder={'Nhập tên trạm sạc'} onChangeText={setNameStation} value={nameStation} checkValue={false} widthBody={'100%'} />
-            <ItemText2 title={'Địa chỉ trụ sạc'} value={address} checkValue={false} setCheckModal={setModalVisibleMap} widthBody={'100%'} />
+        <View >
+            <ScrollView style={{ backgroundColor: 'white',height:'90%' }} >
+                {/* hình ảnh */}
+                <View>
+                    <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
+                        <Text style={{ fontSize: SIZE.size16 }}>Hình ảnh</Text>
+                    </View>
+                    <View style={{ paddingHorizontal: 15, paddingVertical: 5, }}>
+                        <View style={{ alignItems: 'center' }}>
+                            <TouchableOpacity
+                                style={{
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    width: '75%',
+                                    alignItems:'center',
+                                    justifyContent:'center'
+                                }} >
+                                {
+                                    imageStation ?
+                                        <Image source={{ uri: imageStation }} style={{ width: '100%', height: 170, borderRadius: 30, marginBottom:15, }} />
+                                        :
+                                        null
+                                }
+                            </TouchableOpacity>
 
-            <View style={{ paddingHorizontal: 15, paddingVertical: 5, flexDirection: 'row', justifyContent: 'space-between' }}>
-                <ItemDropDownRadioButton data={dataPlace} title={'Điểm đặt'} selectedValue={selectedPlace} setSelectedValue={setSelectedPlace} openDropdown={openDropdownPlace} setOpenDropdown={setOpenDropdownPlace} />
-                <ItemDropDownCheckBox data={dataBrandCar} title={'Hãng xe'} selectedValues={selectedBrandCar} setSelectedValues={setSelectedBrandCar} openDropdown={openDropdownBrandCar} setOpenDropdown={setOpenDropdownBrandCar} />
-            </View>
-            <View style={{ paddingHorizontal: 15, paddingVertical: 5, flexDirection: 'row', justifyContent: 'space-between' }}>
-                <ItemDropDownRadioButton data={dataBrand} title={'Hãng trụ sạc'} selectedValue={selectedBrand} setSelectedValue={setSelectedBrand} openDropdown={openDropdownBrandStation} setOpenDropdown={setOpenDropdownBrandStation} />
-                <ItemDropDownCheckBox data={dataService} title={'Dịch vụ'} selectedValues={selectedServices} setSelectedValues={setSelectedServices} openDropdown={openDropdownServices} setOpenDropdown={setOpenDropdownServices} />
-            </View>
-            <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
-                <Text style={{ fontSize: SIZE.size16 }}>Thời gian</Text>
-            </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <View style={{ alignItems: 'center', paddingHorizontal: 15, paddingVertical: 5, }}>
-                    <Text style={{}}> 24/7</Text>
-                    <View style={{ justifyContent: 'center', alignItems: 'center', marginVertical: '1%', height: 50, }}>
-                        <ItemButtonSwitch value={isEnabled} onChangeValue={toggleSwitch} />
+
+                        </View>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                            <ItemButton2 title={'Thư viện'} onPress={pickImage} />
+                            <ItemButton2 title={'Chụp Ảnh'} onPress={takePhoto} />
+                        </View>
                     </View>
                 </View>
-                <ItemTimePicker title={'Thời gian bắt đầu'} timeVisible={isTimeStartVisible} setTimeVisible={setTimeStartVisibility} time={timeStart} setTime={setTimeStart} />
-                <ItemTimePicker title={'Thời gian kết thúc'} timeVisible={isTimeEndVisible} setTimeVisible={setTimeEndVisibility} time={timeEnd} setTime={setTimeEnd} />
+                {/* Tên trạm sạc */}
+                <ItemTextInput2 title={'Tên trạm sạc'} placeholder={'Nhập tên trạm sạc'} onChangeText={setNameStation} value={nameStation} checkValue={false} widthBody={'100%'} />
+                {/* Vị trí  */}
+                <ItemText2 title={'Địa chỉ trụ sạc'} value={address} checkValue={false} setCheckModal={setModalVisibleMap} widthBody={'100%'} />
+                {/* Nơi đặt trụ sạc */}
+                <View>
+                    <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
+                        <Text style={{ fontSize: SIZE.size16 }}>Nơi đặt trụ sạc</Text>
+                    </View>
+                    {dataPlace ? <ItemRadioDP data={dataPlace} dropdownOpen={openDropdownPlace} setDropdownOpen={setOpenDropdownBrandCar} selectedValue={selectedPlace} setSelectedValue={setSelectedPlace} /> : null}
+                </View>
+                {/* Hãng trụ sạc */}
+                <View>
+                    <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
+                        <Text style={{ fontSize: SIZE.size16 }}>Hãng trụ sạc</Text>
+                    </View>
+                    {dataBrand ? <ItemRadioDP data={dataBrand} selectedValue={selectedBrand} setSelectedValue={setSelectedBrand} dropdownOpen={openDropdownBrandStation} setDropdownOpen={setOpenDropdownBrandStation} /> : null}
+                </View>
+                {/* Thời gian  */}
+                <View>
+                    <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
+                        <Text style={{ fontSize: SIZE.size16 }}>Thời gian</Text>
+                    </View>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <View style={{ alignItems: 'center', paddingHorizontal: 15, paddingVertical: 5, }}>
+                            <Text style={{}}> 24/7</Text>
+                            <View style={{ justifyContent: 'center', alignItems: 'center', marginVertical: '1%', height: 50, }}>
+                                <ItemButtonSwitch value={isEnabled} onChangeValue={toggleSwitch} />
+                            </View>
+                        </View>
+                        <ItemTimePicker title={'Thời gian bắt đầu'} timeVisible={isTimeStartVisible} setTimeVisible={setTimeStartVisibility} time={timeStart} setTime={setTimeStart} />
+                        <ItemTimePicker title={'Thời gian kết thúc'} timeVisible={isTimeEndVisible} setTimeVisible={setTimeEndVisibility} time={timeEnd} setTime={setTimeEnd} />
 
-            </View>
+                    </View>
+                </View>
+                {/* tru sac  */}
+                <View>
+                    <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
+                        <Text style={{ fontSize: SIZE.size16 }}>Trụ sạc</Text>
+                    </View>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <ItemTextInput2 content={'Công suất'} placeholder={'Kw'} onChangeText={onChangeTextKw} value={valuePower} checkValue={checkKw} widthBody={'30%'} center={true} number={true} />
+                        <ItemTextInput2 content={'Cổng sạc'} placeholder={'Số cổng'} onChangeText={onChangeTextChager} value={valuePorts} checkValue={checkCharger} widthBody={'30%'} center={true} number={true} />
+                        <ItemTextInput2 content={'Vnd/Kwh'} placeholder={'Giá tiền'} onChangeText={onChangeTextPrice} value={valuePrice} checkValue={checkPrice} widthBody={'30%'} center={true} number={true} />
+                    </View>
+                    {/* Phuong tien  */}
+                    <View>
+                        <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
+                            <Text style={{ fontSize: SIZE.size14 }}>Phương tiện</Text>
+                        </View>
+                        {dataVehicle ? <ItemCheckBoxDP data={dataVehicle} dropdownOpen={openDropdownVehical} setDropdownOpen={setOpenDropdownVehical} selectedValues={selectedVehical} setSelectedValues={setSelectedVehical} /> : null}
+                    </View>
+                    {/* Loai sacj */}
+                    <View>
+                        <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
+                            <Text style={{ fontSize: SIZE.size14 }}>Loại sạc</Text>
+                        </View>
+                        {dataPort ? <ItemRadioDP data={dataPort} dropdownOpen={openDropdownSocket} setDropdownOpen={setOpenDropdownSocket} selectedValue={selectedSocket} setSelectedValue={setSelectedSocket} /> : null}
+                    </View>
 
-            {/* tru sac  */}
+                    <View style={{ alignItems: 'center' }}>
+                        <TouchableOpacity
+                            onPress={validateCharger}
+                            style={{
+                                margin: '5%',
+                                padding: '3%',
+                                marginBottom: '2%',
+                                width: '40%',
+                                justifyContent: 'center',
+                                borderRadius: 10,
+                                height: 50,
+                                borderWidth: 1,
+                                borderColor: COLOR.green3,
+                            }}>
+                            <Text
+                                style={{ color: COLOR.green3, textAlign: 'center', fontWeight: '700' }}>
+                                {editIndex ? "Cập nhật" : "Lưu trụ sạc"}
+                            </Text>
+                        </TouchableOpacity>
 
-            <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
-                <Text style={{ fontSize: SIZE.size16 }}>Trụ sạc</Text>
-            </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <ItemTextInput2 content={'Công suất'} placeholder={'Kw'} onChangeText={onChangeTextKw} value={valuePower} checkValue={checkKw} widthBody={'30%'} center={true} number={true} />
-                <ItemTextInput2 content={'Cổng sạc'} placeholder={'Số cổng'} onChangeText={onChangeTextChager} value={valuePorts} checkValue={checkCharger} widthBody={'30%'} center={true} number={true} />
-                <ItemTextInput2 content={'Vnd/Kwh'} placeholder={'Giá tiền'} onChangeText={onChangeTextPrice} value={valuePrice} checkValue={checkPrice} widthBody={'30%'} center={true} number={true} />
-            </View>
-            <View style={{ paddingHorizontal: 15, paddingVertical: 5, flexDirection: 'row', justifyContent: 'space-between' }}>
-                <ItemDropDownRadioButton data={dataVehicle} content={'Phương tiện'} selectedValue={selectedVehical} setSelectedValue={setSelectedVehical} openDropdown={openDropdownVehical} setOpenDropdown={setOpenDropdownVehical} />
-                <ItemDropDownRadioButton data={dataPort} content={'Loại sạc'} selectedValue={selectedSocket} setSelectedValue={setSelectedSocket} openDropdown={openDropdownSocket} setOpenDropdown={setOpenDropdownSocket} />
-            </View>
+                    </View>
+                    <ScrollView style={{}}>
+                        <FlatList
+                            style={{ width: '100%' }}
+                            data={listDataSpecification}
+                            scrollEnabled={false}
+                            renderItem={({ item, index }) => (
+                                item ? (
+                                    <View style={styles.containerList}>
+                                        <View style={{ width: '70%', }}>
+                                            <View style={styles.infoRow}>
+                                                <Image style={styles.icon} source={require('../../../assets/icon/icons8-flash-50 (1).png')} />
+                                                <Text style={styles.textList}>{item.kw} Kw</Text>
+                                            </View>
+                                            <View style={styles.infoRow}>
+                                                <Image style={styles.icon} source={require('../../../assets/icon/icons8-car-charger-48.png')} />
+                                                <Text style={styles.textList}>{item.slot} Cổng sạc</Text>
+                                            </View>
+                                            <View style={styles.infoRow}>
+                                                <Image style={styles.icon} source={require('../../../assets/imageSocket/power-plug.png')} />
+                                                <Text style={styles.textList}>{item.port_id?.name || "Không xác định"}</Text>
+                                            </View>
+                                            <View style={styles.infoRow}>
+                                                <Image style={styles.icon} source={require('../../../assets/icon/icons8-money-50 (1).png')} />
+                                                <Text style={styles.textList}>
+                                                    {parseInt(item.price, 10).toLocaleString('vi-VN')} đ/KWh
+                                                </Text>
+                                            </View>
+                                            <View style={styles.infoRow}>
+                                                {item.vehicle_id.name === 'Xe máy điện' ?
+                                                    <>
+                                                        <Image style={styles.icon} source={require('../../../assets/icon/electric-scooter.png')} />
+                                                    </>
+                                                    :
+                                                    <>
+                                                        <Image style={styles.icon} source={require('../../../assets/icon/icons8-car-50 (1).png')} />
+                                                    </>
 
-            <View style={{ alignItems: 'center' }}>
-                <TouchableOpacity
-                    onPress={validateCharger}
-                    style={{
-                        margin: '5%',
-                        padding: '3%',
-                        marginBottom: '2%',
-                        width: '40%',
-                        justifyContent: 'center',
-                        borderRadius: 10,
-                        height: 50,
-                        borderWidth: 1,
-                        borderColor: COLOR.green3,
-                    }}>
-                    <Text
-                        style={{ color: COLOR.green3, textAlign: 'center', fontWeight: '700' }}>
-                        {editIndex ? "Cập nhật" : "Lưu trụ sạc"}
-                    </Text>
-                </TouchableOpacity>
+                                                }
+                                                <Text style={styles.textList}>{item.vehicle_id.name}</Text>
+                                            </View>
+                                        </View>
+                                        <View style={{ width: '20%', justifyContent: 'center' }}>
+                                            <TouchableOpacity onPress={() => copySpecification(item._id)} style={styles.buttonList}>
+                                                <Text>Sao chép</Text>
+                                            </TouchableOpacity>
+                                            {checkButtonEdit ?
+                                                null :
+                                                <TouchableOpacity onPress={() => editDetail(item._id)} style={styles.buttonList}>
+                                                    <Text>Sửa</Text>
+                                                </TouchableOpacity>
+                                            }
+                                            <TouchableOpacity onPress={() => deleteSpecificationById(item._id)} style={[styles.buttonList, { borderColor: 'red' }]}>
+                                                <Text>Xóa</Text>
+                                            </TouchableOpacity>
+                                        </View>
 
-            </View>
-            <ScrollView style={{}}>
-                <FlatList
-                    style={{ width: '100%' }}
-                    data={listDataSpecification}
-                    scrollEnabled={false}
-                    renderItem={({ item, index }) => (
-                        item ? (
-                            <View style={styles.containerList}>
-                                <View style={{ width: '70%', }}>
-                                    <View style={styles.infoRow}>
-                                        <Image style={styles.icon} source={require('../../../assets/icon/icons8-flash-50 (1).png')} />
-                                        <Text style={styles.textList}>{item.kw} Kw</Text>
                                     </View>
-                                    <View style={styles.infoRow}>
-                                        <Image style={styles.icon} source={require('../../../assets/icon/icons8-car-charger-48.png')} />
-                                        <Text style={styles.textList}>{item.slot} Cổng sạc</Text>
-                                    </View>
-                                    <View style={styles.infoRow}>
-                                        <Image style={styles.icon} source={require('../../../assets/imageSocket/power-plug.png')} />
-                                        <Text style={styles.textList}>{item.port_id?.name || "Không xác định"}</Text>
-                                    </View>
-                                    <View style={styles.infoRow}>
-                                        <Image style={styles.icon} source={require('../../../assets/icon/icons8-money-50 (1).png')} />
-                                        <Text style={styles.textList}>
-                                            {parseInt(item.price, 10).toLocaleString('vi-VN')} đ/KWh
-                                        </Text>
-                                    </View>
-                                    <View style={styles.infoRow}>
-                                        {item.vehicle_id.name === 'Xe máy điện' ?
-                                            <>
-                                                <Image style={styles.icon} source={require('../../../assets/icon/electric-scooter.png')} />
-                                            </>
-                                            :
-                                            <>
-                                                <Image style={styles.icon} source={require('../../../assets/icon/icons8-car-50 (1).png')} />
-                                            </>
+                                ) : null
+                            )}
+                            keyExtractor={(item, index) => index.toString()}
+                        />
+                    </ScrollView>
+                </View>
 
-                                        }
-                                        <Text style={styles.textList}>{item.vehicle_id.name}</Text>
-                                    </View>
-                                </View>
-                                <View style={{ width: '20%', justifyContent: 'center' }}>
-                                    <TouchableOpacity onPress={() => copySpecification(item._id)} style={styles.buttonList}>
-                                        <Text>Sao chép</Text>
-                                    </TouchableOpacity>
-                                    {checkButtonEdit ?
-                                        null :
-                                        <TouchableOpacity onPress={() => editDetail(item._id)} style={styles.buttonList}>
-                                            <Text>Sửa</Text>
-                                        </TouchableOpacity>
-                                    }
-                                    <TouchableOpacity onPress={() => deleteSpecificationById(item._id)} style={[styles.buttonList, { borderColor: 'red' }]}>
-                                        <Text>Xóa</Text>
-                                    </TouchableOpacity>
-                                </View>
+
+                <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
+                    <Text style={{ fontSize: SIZE.size18 }}>Lựa chọn thêm</Text>
+                </View>
+                {/* Dich Vu */}
+                <View>
+                    <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
+                        <Text style={{ fontSize: SIZE.size16 }}>Dịch vụ</Text>
+                    </View>
+                    {dataService ? <ItemCheckBoxDP data={dataService} selectedValues={selectedServices} setSelectedValues={setSelectedServices} dropdownOpen={openDropdownServices} setDropdownOpen={setOpenDropdownServices} /> : null}
+                </View>
+                {/* Hangx Xe */}
+                <View>
+                    <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
+                        <Text style={{ fontSize: SIZE.size16 }}>Hãng Xe</Text>
+                    </View>
+                    {dataBrandCar ? <ItemCheckBoxDP data={dataBrandCar} selectedValues={selectedBrandCar} setSelectedValues={setSelectedBrandCar} dropdownOpen={openDropdownBrandCar} setDropdownOpen={setOpenDropdownBrandCar} /> : null}
+                </View>
+
+
+                <View style={{ paddingHorizontal: 15, paddingVertical: 5, }}>
+                    <Text style={{ fontSize: SIZE.size16 }}>Ghi chú</Text>
+                    <TextInput
+                        style={{
+                            marginVertical: '2%',
+                            textAlignVertical: 'top',
+                            height: 100,
+                            borderColor: COLOR.gray2,
+                            borderWidth: 1,
+                            borderRadius: 10,
+                        }}
+                        placeholder={'Ghi chú'}
+                        multiline
+                        onChangeText={setValueNote}
+                    />
+                </View>
+
+
+                {/* nút thêm trạm sạc  */}
+
+
+                {/*  banr đồ  */}
+                <Modal transparent={true} visible={modalVisibleMap} animationType="slide">
+                    <View style={styles.modalOverlay}>
+                        <View style={[styles.modalContent, { height: '95%', }]}>
+                            <View style={styles.buttonRow}>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setModalVisibleMap(false);
+                                        setAddress(null);
+                                    }}
+                                    style={styles.applyButton}>
+                                    <Text style={styles.applyText}>Hủy chọn</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setModalVisibleMap(false);
+                                    }}
+                                    style={styles.applyButton}>
+                                    <Text style={styles.applyText}>Chọn</Text>
+                                </TouchableOpacity>
+                            </View>
+                            {address ? <Text style={{ fontSize: SIZE.size16, paddingHorizontal: '2%', paddingVertical: '2%' }} numberOfLines={1}  > Địa chỉ : {address}</Text> : null}
+                            <MapView
+                                ref={mapRef}
+                                style={styles.map}
+                                initialRegion={{
+                                    latitude: 14.0583,
+                                    longitude: 108.2772,
+                                    latitudeDelta: 5,
+                                    longitudeDelta: 5,
+                                }}
+                                onPress={handleMapPress}
+                            >
+                                {selectedLocation && (
+                                    <Marker coordinate={selectedLocation} title="Vị trí đã chọn" />
+                                )}
+                            </MapView>
+
+                            <View style={{
+                                position: 'absolute',
+                                top: '88%',
+                                right: 0,
+                                left: '80%',
+                                bottom: 0,
+                            }}>
+                                <TouchableOpacity
+                                    style={{
+                                        height: 50,
+                                        width: 50,
+                                        borderColor: COLOR.green3,
+                                        borderWidth: 1,
+                                        borderRadius: 30,
+                                        backgroundColor: 'white',
+                                        justifyContent: 'center',
+                                        alignItems: 'center'
+                                    }}
+                                    onPress={getCurrentLocation}>
+                                    <Image style={{ width: 30, height: 30, }} source={require('../../../assets/icon/icons8-my-location-48.png')} />
+                                </TouchableOpacity>
 
                             </View>
-                        ) : null
-                    )}
-                    keyExtractor={(item, index) => index.toString()}
-                />
+                        </View>
+                    </View>
+                </Modal>
+                <ItemLoading checkValue={checkLoading} />
+
+
             </ScrollView>
-
-
-            <View style={{ paddingHorizontal: 15, paddingVertical: 5, }}>
-                <Text style={{ fontSize: SIZE.size16 }}>Ghi chú</Text>
-                <TextInput
-                    style={{
-                        marginVertical: '2%',
-                        textAlignVertical: 'top',
-                        height: 100,
-                        borderColor: COLOR.gray2,
-                        borderWidth: 1,
-                        borderRadius: 10,
-                    }}
-                    placeholder={'Ghi chú'}
-                    multiline
-                    onChangeText={setValueNote}
-                />
-            </View>
-            <View style={{ paddingHorizontal: 15, paddingVertical: 5, }}>
-                <View style={{ alignItems: 'center' }}>
-                    <TouchableOpacity
-                        style={{
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            width: '75%',
-                            margin: '5%',
-                        }} >
-                        {
-                            imageStation ?
-                                <Image source={{ uri: imageStation }} style={{ width: '100%', height: 170, borderRadius: 30, }} />
-                                :
-                                null
-                        }
-                    </TouchableOpacity>
-
-
-                </View>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-                    <ItemButton2 title={'Thư viện'} onPress={pickImage} />
-                    <ItemButton2 title={'Chụp Ảnh'} onPress={takePhoto} />
-                </View>
-            </View>
-
-            {/* nút thêm trạm sạc  */}
-            <View style={{ alignItems: 'center' }}>
+            <View style={{
+                alignItems: 'center',
+               backgroundColor:'white',
+               height:'10%',
+            }}>
                 <TouchableOpacity
                     onPress={addNewStaion}
                     style={{
-                        margin: '10%',
                         padding: 15,
                         backgroundColor: COLOR.green3,
                         borderRadius: 10,
-                        width: '60%'
+                        width: '60%',
+
                     }}>
                     <Text style={{ color: 'white', textAlign: 'center', fontSize: 18 }}>Thêm mới trạm sạc </Text>
                 </TouchableOpacity>
             </View>
+        </View>
 
-            {/*  banr đồ  */}
-            <Modal transparent={true} visible={modalVisibleMap} animationType="slide">
-                <View style={styles.modalOverlay}>
-                    <View style={[styles.modalContent, { height: '95%', }]}>
-                        <View style={styles.buttonRow}>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    setModalVisibleMap(false);
-                                    setAddress(null);
-                                }}
-                                style={styles.applyButton}>
-                                <Text style={styles.applyText}>Hủy chọn</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    setModalVisibleMap(false);
-                                }}
-                                style={styles.applyButton}>
-                                <Text style={styles.applyText}>Chọn</Text>
-                            </TouchableOpacity>
-                        </View>
-                        {address ? <Text style={{ fontSize: SIZE.size16, paddingHorizontal: '2%', paddingVertical: '2%' }} numberOfLines={1}  > Địa chỉ : {address}</Text> : null}
-                        <MapView
-                            ref={mapRef}
-                            style={styles.map}
-                            initialRegion={{
-                                latitude: 14.0583,
-                                longitude: 108.2772,
-                                latitudeDelta: 5,
-                                longitudeDelta: 5,
-                            }}
-                            onPress={handleMapPress}
-                        >
-                            {selectedLocation && (
-                                <Marker coordinate={selectedLocation} title="Vị trí đã chọn" />
-                            )}
-                        </MapView>
-
-                        <View style={{
-                            position: 'absolute',
-                            top: '88%',
-                            right: 0,
-                            left: '80%',
-                            bottom: 0,
-                        }}>
-                            <TouchableOpacity
-                                style={{
-                                    height: 50,
-                                    width: 50,
-                                    borderColor: COLOR.green3,
-                                    borderWidth: 1,
-                                    borderRadius: 30,
-                                    backgroundColor: 'white',
-                                    justifyContent: 'center',
-                                    alignItems: 'center'
-                                }}
-                                onPress={getCurrentLocation}>
-                                <Image style={{ width: 30, height: 30, }} source={require('../../../assets/icon/icons8-my-location-48.png')} />
-                            </TouchableOpacity>
-
-                        </View>
-                    </View>
-                </View>
-            </Modal>
-            <ItemLoading checkValue={checkLoading} />
-
-
-        </ScrollView>
     )
 }
 
