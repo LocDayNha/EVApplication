@@ -10,8 +10,10 @@ import { ItemListModal, ItemModalCheckBox, ItemModalRadioButton, ItemSliderModal
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { LinearGradient } from 'expo-linear-gradient';
 import haversine from 'haversine-distance';
+import { ItemListMyCar } from '../../item/ItemList';
 
 const list = [
+    { _id: 7, name: 'Xe của tôi' },
     { _id: 0, name: 'Hãng trụ sạc' },
     { _id: 5, name: 'Hãng Xe' },
     { _id: 6, name: 'Địa điểm' },
@@ -29,6 +31,9 @@ const Von = [
 const Home = (props) => {
 
     const { navigation } = props;
+    const { myCar } = useContext(AppContext);
+    const [dataSelectedCar, setDataSelectedCar] = useState([]);
+
 
     const [modalVisible, setModalVisible] = useState(false); // an hien bo loc 
     const [modalVehical, setModalVehical] = useState(false);
@@ -50,7 +55,6 @@ const Home = (props) => {
     const [valueNameLocation, setValueNameLocation] = useState();
     const [selectedBrandCar, setSelectedBrandCar] = useState([]);
     const [selectedLocation, setSelectedLocation] = useState([]);
-
 
     const clearForm = () => {
         setSelectedLocation([]);
@@ -117,6 +121,7 @@ const Home = (props) => {
             setAddress(response[0].formattedAddress);
         }
     }
+
 
     // Hàm lấy thông tin trạm sạc từ API
     const [dataStation, setDataStation] = useState(null);
@@ -315,7 +320,6 @@ const Home = (props) => {
 
         const matchesPlace = !selectedLocation || selectedLocation.length === 0 || selectedLocation.includes(item.address?._id);
 
-
         const matchesVehicle = !selectedVehicle || selectedVehicle.length === 0 ||
             item.specification.some(spec => selectedVehicle.includes(spec.specification_id.vehicle_id?._id));
 
@@ -353,6 +357,11 @@ const Home = (props) => {
     // const point2 = { latitude: 11.3495, longitude: 106.0640 };
     // const distance = haversine(point1, point2); // Khoảng cách tính bằng mét
     // console.log(distance / 1000 + " km")
+    // console.log(dataSelectedCar.vehicleCar);
+    // console.log(dataSelectedCar.chargingCar._id);
+    // console.log(dataSelectedCar.modelCar._id);
+
+
 
     return (
         <View style={{ height: '100%', backgroundColor: 'white' }}>
@@ -421,8 +430,6 @@ const Home = (props) => {
 
             </LinearGradient>
             <ScrollView showsVerticalScrollIndicator={false} style={{ height: '100%' }}>
-
-
                 {/* Tram sac gan ban */}
                 <View style={styles.boxHome}>
                     <View style={styles.container}>
@@ -468,13 +475,6 @@ const Home = (props) => {
                                 <Image style={styles.iconExit} source={require('../../../assets/icon/icons8-x-80.png')} />
                             </TouchableOpacity>
                         </View>
-                        {/* Công Xuất  */}
-                        {/* <View>
-                                    <Text style={styles.textTitleModal}>Khoảng Kw</Text>
-                                </View>
-                                <View>
-                                    <ItemSlider values={valuesKw} setValues={setValuesKw} minValue={minValueKw} maxValue={maxValueKw} />
-                                </View> */}
                         <View style={{ flexDirection: 'row', width: '100%', height: '87%' }}>
                             {/* danh muc */}
                             <ItemRadioButton data={list} setSelectedValue={setSelectedFliter} selectedValue={selectedFilter} />
@@ -486,6 +486,8 @@ const Home = (props) => {
                             {selectedFilter == 2 ? <ItemRadioButtonVertical data={Von} onSelect={handleVonSelect} selectedValue={selectedVon} setSelectedValue={setSelectedVon} /> : null}
                             {selectedFilter == 3 ? <ItemCheckBoxImage data={dataSocket} selectedItems={selectedSocket} setSelectedItems={setSelectedSocket} /> : null}
                             {selectedFilter == 4 ? <ItemCheckBoxImage data={dataService} selectedItems={selectedService} setSelectedItems={setSelectedService} /> : null}
+                            {selectedFilter == 7 ? <ItemListMyCar data={myCar} setDataSelectedCar={setDataSelectedCar} dataSelectedCar={dataSelectedCar} /> : null}
+
                         </View>
                         <View style={styles.buttonRow}>
                             <TouchableOpacity

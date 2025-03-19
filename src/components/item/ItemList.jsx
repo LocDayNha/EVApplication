@@ -650,6 +650,58 @@ export function ItemShowAlert(title, content) {
     Alert.alert(title, content, [{ text: "OK" }]);
 }
 
+export function ItemListMyCar({ dataSelectedCar, setDataSelectedCar, data }) {
+    return (
+        <View>
+            <FlatList
+                showsHorizontalScrollIndicator={false}
+                horizontal={false}
+                data={data}
+                // keyExtractor={(item) => item._id}
+                renderItem={({ item }) => (
+                    <TouchableOpacity onPress={() => setDataSelectedCar(item)}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <View style={{ flexDirection: 'row' }}>
+                                {item.vehicleCar === 'Xe máy điện' ?
+                                    <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                                        <Image source={require('../../assets/images/mycar/electric-bike.png')} style={{ width: 50, height: 50, marginLeft: '5%' }} />
+                                    </View>
+                                    :
+                                    null
+
+                                }
+
+                                {item.vehicleCar !== 'Xe máy điện' ?
+                                    <View>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '2%' }}>
+                                            <Image style={{ width: 35, height: 35, marginLeft: '5%' }} source={{ uri: item.modelCar.brand_id.image }} />
+                                            <Text style={{ marginLeft: '5%', fontSize: SIZE.size14, fontWeight: 500 }}>{item.modelCar.brand_id.name} - {item.modelCar.name}</Text>
+                                        </View>
+                                        <View style={{ alignItems: 'center', flexDirection: 'row', marginLeft: '2%' }}>
+                                            <Image source={{ uri: item.chargingCar.image }} style={{ width: 50, height: 50 }} />
+                                            <Text style={{ marginLeft: '3%', fontSize: SIZE.size14, fontWeight: 500 }}>{item.chargingCar.type} - {item.chargingCar.name}</Text>
+                                        </View>
+                                    </View>
+                                    :
+                                    null
+                                }
+
+                            </View>
+                            <View style={{ alignItems: 'center' }}>
+                                <View style={{ borderRadius: 20, width: 20, height: 20, borderWidth: 2, justifyContent: 'center', alignItems: 'center' }}>
+                                    {dataSelectedCar === item ? <View style={{ borderRadius: 20, width: 13, height: 13, backgroundColor: 'gray' }}></View> : null}
+                                </View>
+                            </View>
+                        </View>
+                    </TouchableOpacity>
+
+                )}
+            />
+
+        </View>
+    );
+}
+
 const styles = StyleSheet.create({
 
 

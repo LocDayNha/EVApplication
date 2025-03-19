@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import AxiosInstance from '../../axios/AxiosInstance';
 import { AppContext } from '../../axios/AppContext';
 import Toast from 'react-native-toast-message';
+import { ItemListMyCar } from '../../item/ItemList';
 
 const Car = () => {
 
@@ -21,6 +22,12 @@ const Car = () => {
             });
         }
     };
+    // // id đầu sạc 
+    // console.log(dataSelectedCar.chargingCar._id);
+    // // id hãng xe 
+    // console.log(dataSelectedCar.modelCar._id);
+    // console.log(dataSelectedCar);
+
 
     return (
         <View style={{ width: '100%', height: '100%', backgroundColor: 'white' }}>
@@ -31,53 +38,7 @@ const Car = () => {
                     </View>
                     :
                     <View style={styles.viewList}>
-                        <FlatList
-                            showsHorizontalScrollIndicator={false}
-                            horizontal={false}
-                            data={myCar}
-                            // keyExtractor={(item) => item._id}
-                            renderItem={({ item }) => (
-                                <View style={styles.viewItemList}>
-                                    <TouchableOpacity onPress={() => setDataSelectedCar(item)}>
-                                        <View style={{ flexDirection: 'row', width: '100%', alignItems: 'center' }}>
-                                            <View style={{ width: '90%', flexDirection: 'row' }}>
-                                                {item.vehicleCar === 'Xe máy điện' ?
-                                                    <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                                                        <Image source={require('../../../assets/images/mycar/electric-bike.png')} style={{ width: 50, height: 50, marginLeft: '5%' }} />
-                                                    </View>
-                                                    :
-                                                    null
-                                                    // <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                                                    //     <Image source={require('../../../assets/images/mycar/electric-car.png')} style={{ width: 50, height: 50, marginLeft: '5%' }} />
-                                                    // </View>
-                                                }
-
-                                                {item.vehicleCar !== 'Xe máy điện' ?
-                                                    <View>
-                                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom:'2%' }}>
-                                                            <Image style={{ width: 35, height: 35, marginLeft: '5%' }} source={{ uri: item.modelCar.brand_id.image }} />
-                                                            <Text style={{ marginLeft: '5%', fontSize: 16, fontWeight: 500 }}>{item.modelCar.brand_id.name} - {item.modelCar.name}</Text>
-                                                        </View>
-                                                        <View style={{ alignItems: 'center', flexDirection: 'row', marginLeft: '2%' }}>
-                                                            <Image source={{ uri: item.chargingCar.image }} style={{ width: 50, height: 50 }} />
-                                                            <Text style={{ marginLeft: '3%', fontSize: 16, fontWeight: 500 }}>{item.chargingCar.type} - {item.chargingCar.name}</Text>
-                                                        </View>
-                                                    </View>
-                                                    :
-                                                    null
-                                                }
-
-                                            </View>
-                                            <View style={{ width: '10%', alignItems: 'center' }}>
-                                                <View style={{ borderRadius: 20, width: 20, height: 20, borderWidth: 2, justifyContent: 'center', alignItems: 'center' }}>
-                                                    {dataSelectedCar === item ? <View style={{ borderRadius: 20, width: 13, height: 13, backgroundColor: 'gray' }}></View> : null}
-                                                </View>
-                                            </View>
-                                        </View>
-                                    </TouchableOpacity>
-                                </View>
-                            )}
-                        />
+                        <ItemListMyCar data={myCar} setDataSelectedCar={setDataSelectedCar} dataSelectedCar={dataSelectedCar} />
                     </View>
                 }
 

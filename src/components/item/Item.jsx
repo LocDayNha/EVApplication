@@ -539,8 +539,21 @@ export function ItemStationList(props) {
 
   return (
     <TouchableOpacity activeOpacity={1} style={styles.listRow} key={data._id} onPress={clickViewDetail}>
-      {checkActive || data.isActive == 1 || data.isActive === 3 ?
-        <Image style={styles.imgStation} source={{ uri: data.image }} />
+      {checkActive || data.isActive === 3 || data.isActive === 1?
+        (
+          data.isActive === 1 && !checkActive?
+            <View style={{ height: 180, justifyContent: 'center' }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', margin: '5%' }}>
+                <TouchableOpacity onPress={clickEdit} style={{ width: '40%', padding: 10, height: 50, borderWidth: 1, alignItems: 'center', justifyContent: 'center', borderRadius: 10, borderColor: COLOR.green3 }}>
+                  <Text style={{ color: COLOR.green3 }}>Sửa trạm sạc</Text>
+                </TouchableOpacity>
+              
+              </View>
+            </View>
+            :
+            < Image style={styles.imgStation} source={{ uri: data.image }} />
+        )
+
         :
         <View style={{ height: 180, justifyContent: 'center' }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', margin: '5%' }}>
@@ -830,7 +843,7 @@ export function ItemRadioButton({ data = [], setSelectedValue, selectedValue }) 
   return (
     <View style={{ width: '40%', padding: '2%', height: '100%' }}>
       <FlatList
-        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
         horizontal={false}
         data={data}
         keyExtractor={(item) => item._id}
@@ -884,7 +897,7 @@ export function ItemCheckBoxImage({ data, selectedItems, setSelectedItems }) {
       <FlatList
         data={data}
         horizontal={false}
-        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
         keyExtractor={(item) => item._id.toString()}
         renderItem={({ item }) => {
           return (

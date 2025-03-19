@@ -242,15 +242,9 @@ const FormStation = () => {
         setValuePorts(item.slot?.toString() || "");
         setValuePrice(item.price?.toString() || "");
 
-        setSelectedVehical([
-            item.vehicle_id?._id || "",
-            item.vehicle_id?.name || "Không xác định"
-        ]);
+        setSelectedVehical(item.vehicle_id?._id || "",);
 
-        setSelectedSocket([
-            item.port_id?._id || "",
-            item.port_id?.name || "Loại đầu sạc"
-        ]);
+        setSelectedSocket(item.port_id?._id || "",);
 
         setEditIndex(id);
     };
@@ -261,8 +255,8 @@ const FormStation = () => {
                 kw: valuePower,
                 slot: valuePorts,
                 price: valuePrice,
-                vehicle_id: selectedVehical[0],
-                port_id: selectedSocket[0]
+                vehicle_id: selectedVehical,
+                port_id: selectedSocket
             };
 
             const response = await AxiosInstance().post('/specification/update', { id, ...updatedData });
@@ -312,7 +306,7 @@ const FormStation = () => {
 
     // Station
     const addNewStaion = async () => {
-        CheckTime();
+
         try {
             setCheckLoading(true);
             const formattedServices = selectedServices.map(id => ({ service_id: id }));
@@ -631,6 +625,9 @@ const FormStation = () => {
         getDataBrandCar();
         getDataPlace();
     }, [])
+    useEffect(() => {
+        CheckTime();
+    }, [isEnabled,timeStart,timeEnd])
 
     return (
         <ScrollView style={{ backgroundColor: 'white' }}>

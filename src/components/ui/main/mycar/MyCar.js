@@ -23,14 +23,14 @@ const MyCar = () => {
     const [vehicle, setVehicle] = useState(null);
 
     const netPage = async () => {
-        if (vehicle && vehicle.length > 0 && vehicle === 'Xe máy điện') {
+        if (vehicle && vehicle.length > 0 && vehicle === '67ad951438a923d416a25409') {
             await setMyCar([{
                 vehicleCar: vehicle,
                 modelCar: 'Không có',
                 chargingCar: 'Không có'
             }]);
             navigation.navigate('Screen');
-        } else if (vehicle && vehicle.length > 0 && vehicle === 'Ô tô điện') {
+        } else if (vehicle && vehicle.length > 0 && vehicle === '67d7e207a9b4d60d7f235249') {
             navigation.navigate('MyBrandCar', { myVehicleCar: vehicle });
         } else {
             showToast('Vui lòng chọn loại phương tiện của bạn', 'error');
@@ -58,10 +58,10 @@ const MyCar = () => {
                     <Text style={styles.textHeader}>Loại phương tiện của bạn</Text>
                 </View>
                 <View style={styles.viewVehicle}>
-                    <TouchableOpacity style={{ borderRadius: 10, backgroundColor: vehicle === 'Xe máy điện' ? '#D9D9D9' : 'white', }} onPress={() => setVehicle('Xe máy điện')}>
+                    <TouchableOpacity style={{ borderRadius: 10, backgroundColor: vehicle === '67ad951438a923d416a25409' ? '#D9D9D9' : 'white', }} onPress={() => setVehicle('67ad951438a923d416a25409')}>
                         <Image style={styles.imageVehicle} source={require('../../../../assets/images/mycar/electric-bike.png')} />
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => setVehicle('Ô tô điện')} style={{ borderRadius: 10, backgroundColor: vehicle === 'Ô tô điện' ? '#D9D9D9' : 'white', }} >
+                    <TouchableOpacity onPress={() => setVehicle('67d7e207a9b4d60d7f235249')} style={{ borderRadius: 10, backgroundColor: vehicle === '67d7e207a9b4d60d7f235249' ? '#D9D9D9' : 'white', }} >
                         <Image style={styles.imageVehicle} source={require('../../../../assets/images/mycar/electric-car.png')} />
                     </TouchableOpacity>
                 </View>

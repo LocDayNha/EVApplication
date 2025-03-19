@@ -86,7 +86,7 @@ const ListStation = (props) => {
 
 
     return (
-        <View style={{ flex: 1, backgroundColor:'white' }}>
+        <View style={{ flex: 1, backgroundColor: 'white' }}>
             <View style={styles.listStatus}>
                 <FlatList
                     showsHorizontalScrollIndicator={false}
@@ -131,7 +131,12 @@ const ListStation = (props) => {
                                         <View>
                                             {
                                                 selectedStatus === item.isActive ?
-                                                    (<ItemStationList data={item} checkActive={checkEdit} setCheckStatus={setCheckModalStatus} setIdStation={setIdStation} setStatus={setStatus} />)
+                                                    (<ItemStationList 
+                                                        data={item} 
+                                                        checkActive={checkEdit}
+                                                         setCheckStatus={setCheckModalStatus} 
+                                                         setIdStation={setIdStation} 
+                                                         setStatus={setStatus} />)
                                                     :
                                                     (null)
                                             }
@@ -178,7 +183,7 @@ const ListStation = (props) => {
                             <TouchableOpacity
                                 style={{
                                     padding: 15,
-                                    backgroundColor: COLOR.green3,
+                                    backgroundColor: COLOR.gray2,
                                     justifyContent: 'center',
                                     alignItems: 'center',
                                     width: '40%',
@@ -186,7 +191,7 @@ const ListStation = (props) => {
 
                                 }}
                                 onPress={() => setCheckModalStatus(false)}>
-                                <Text style={{ color: 'white' }}>
+                                <Text style={{}}>
                                     Thoát
                                 </Text>
                             </TouchableOpacity>
