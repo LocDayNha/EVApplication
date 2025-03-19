@@ -746,6 +746,7 @@ export function ItemCheckBoxDP({ dropdownOpen, setDropdownOpen, selectedValues, 
                 data={items}
                 labelField="label"
                 valueField="value"
+                showsVerticalScrollIndicator={false}
                 value={selectedValues.map((item) => item.value)}
                 onChange={handleSelect}
                 placeholder="Chọn một hoặc nhiều mục"
@@ -847,6 +848,7 @@ export function ItemRadioDP({ dropdownOpen, setDropdownOpen, selectedValue, setS
                 data={items}
                 labelField="label"
                 valueField="value"
+                showsVerticalScrollIndicator={false}
                 value={selectedValue ? selectedValue.value : null}
                 onChange={handleSelect}
                 placeholder="Chọn một mục"

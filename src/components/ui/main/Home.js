@@ -10,7 +10,7 @@ import { ItemListModal, ItemModalCheckBox, ItemModalRadioButton, ItemSliderModal
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { LinearGradient } from 'expo-linear-gradient';
 import haversine from 'haversine-distance';
-import { ItemListMyCar } from '../../item/ItemList';
+import { ItemListMyCar, ItemLoading } from '../../item/ItemList';
 import Toast from 'react-native-toast-message';
 import { RefreshControl } from 'react-native';
 
@@ -44,6 +44,8 @@ const Home = (props) => {
             autoHide: 5000,
         });
     };
+
+    const [checkLoading, setCheckLoading] = useState(false);
 
     const [modalVisible, setModalVisible] = useState(false); // an hien bo loc 
     const [modalVehical, setModalVehical] = useState(false);
@@ -116,6 +118,7 @@ const Home = (props) => {
     const name = infoUser?.name || "Chưa có tên";
     const image = infoUser?.image || "https://vivureviews.com/wp-content/uploads/2022/08/avatar-vo-danh-6.png";
     const getYourLocation = async () => {
+        // setCheckLoading(true);
         let { status } = await Location.requestForegroundPermissionsAsync();
 
         if (status !== 'granted') {
@@ -132,6 +135,7 @@ const Home = (props) => {
             setMyLat(latitude);
             setMyLng(longitude);
             setAddress(response[0].formattedAddress);
+            // setCheckLoading(false);
         }
     }
 
@@ -297,16 +301,22 @@ const Home = (props) => {
         }
     }
 
+    const getData = async () => {
+        setCheckLoading(true);
+        await getLocation();
+        await getBrandCar();
+        await getServiceData();
+        await getSocketData();
+        await getVehicalData();
+        await getDataStation();
+        await getYourLocation();
+        await getBrandDataStation();
+        setCheckLoading(false);
+    }
+
     // Hook effect khởi tạo dữ liệu
     useEffect(() => {
-        getLocation();
-        getBrandCar();
-        getServiceData();
-        getSocketData();
-        getVehicalData();
-        getDataStation();
-        getYourLocation();
-        getBrandDataStation();
+        getData();
     }, []);
 
     const [selectedEc, setSelectedEc] = useState([]);
@@ -567,9 +577,9 @@ const Home = (props) => {
                 title={'Phạm vi tìm kiếm'}
             />
 
+            <ItemLoading checkValue={checkLoading} />
+
         </View>
-
-
     )
 }
 
