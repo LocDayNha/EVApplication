@@ -12,6 +12,8 @@ import haversine from 'haversine-distance';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
+import { Dropdown } from "react-native-element-dropdown";
+import { AntDesign } from "@expo/vector-icons";
 
 
 export function ItemForList({ title, content, setModal, checkActive }) {
@@ -702,7 +704,247 @@ export function ItemListMyCar({ dataSelectedCar, setDataSelectedCar, data }) {
     );
 }
 
-const styles = StyleSheet.create({
+export function ItemCheckBoxDP({ dropdownOpen, setDropdownOpen, selectedValues, setSelectedValues, data }) {
+    const [items, setItems] = useState([]);
+    useEffect(() => {
+        let formattedItems = data.map((item) => ({
+            label: item.name,
+            value: item._id,
+            image: item.image,
+        }));
 
+        setItems([{ label: "Chọn tất cả", value: "select_all" }, ...formattedItems]);
+    }, [data]);
+
+    const handleSelect = (item) => {
+        if (item.value === "select_all") {
+            if (selectedValues.length === items.length - 1) {
+                setSelectedValues([]);
+            } else {
+                setSelectedValues(items.slice(1));
+            }
+        } else {
+            let newSelection;
+            if (selectedValues.some((val) => val.value === item.value)) {
+                newSelection = selectedValues.filter((val) => val.value !== item.value);
+            } else {
+                newSelection = [...selectedValues, item];
+            }
+
+            if (newSelection.length === items.length - 1) {
+                newSelection = [items[0], ...newSelection];
+            } else {
+                newSelection = newSelection.filter((val) => val.value !== "select_all");
+            }
+
+            setSelectedValues(newSelection);
+        }
+    };
+    return (
+        <View style={{ paddingHorizontal: 15 }}>
+            <Dropdown
+                data={items}
+                labelField="label"
+                valueField="value"
+                value={selectedValues.map((item) => item.value)}
+                onChange={handleSelect}
+                placeholder="Chọn một hoặc nhiều mục"
+                style={{
+                    borderWidth: 1,
+                    borderColor: "#ccc",
+                    backgroundColor: 'white',
+                    borderRadius: 8,
+                    paddingHorizontal: 10,
+                    height: 50,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    paddingHorizontal: 15,
+                    paddingVertical: 5
+                }}
+                selectedTextStyle={{ fontSize: 16, }}
+                containerStyle={{
+                    maxHeight: '50%',
+                    borderWidth: 1,
+                    borderColor: "#ccc",
+                    borderRadius: 8,
+                    paddingHorizontal: 15,
+                    paddingVertical: 5
+                }}
+                itemTextStyle={styles.itemText}
+                onFocus={() => setDropdownOpen(true)}
+                onBlur={() => setDropdownOpen(false)}
+                renderItem={(item) => (
+                    <TouchableOpacity
+                        style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            paddingVertical: 10,
+                            paddingHorizontal: '5%',
+                        }}
+                        onPress={() => handleSelect(item)}
+                    >
+                        {item.value !== "select_all" && (
+                            <Image source={{ uri: item.image }}
+                                style={{
+                                    width: 24,
+                                    height: 24,
+                                    marginRight: 10,
+                                }} />
+                        )}
+                        <Text style={{
+                            fontSize: 14,
+                            flex: 1,
+                        }}>{item.label}</Text>
+                        {item.value !== "select_all" && (
+                            <View
+                                style={[
+                                    styles.checkbox,
+                                    selectedValues.some((val) => val.value === item.value) &&
+                                    styles.checkboxSelected,
+                                ]}
+                            >
+                                {selectedValues.some((val) => val.value === item.value) && (
+                                    <Text style={styles.checkmark}>✓</Text>
+                                )}
+                            </View>
+                        )}
+                    </TouchableOpacity>
+                )}
+                renderRightIcon={() => (
+                    <AntDesign
+                        name={dropdownOpen ? "up" : "down"}
+                        size={20}
+                        color="gray"
+                        style={{ marginLeft: 10, }}
+                    />
+                )}
+            />
+        </View>
+    );
+}
+
+
+export function ItemRadioDP({ dropdownOpen, setDropdownOpen, selectedValue, setSelectedValue, data }) {
+    const [items, setItems] = useState([]);
+
+    useEffect(() => {
+        let formattedItems = data.map((item) => ({
+            label: item.name,
+            value: item._id,
+            image: item.image,
+        }));
+
+        setItems(formattedItems);
+    }, [data]);
+
+    const handleSelect = (item) => {
+        setSelectedValue(item);
+    };
+
+    return (
+        <View style={{ paddingHorizontal: 15 }}>
+            <Dropdown
+                data={items}
+                labelField="label"
+                valueField="value"
+                value={selectedValue ? selectedValue.value : null}
+                onChange={handleSelect}
+                placeholder="Chọn một mục"
+                style={{
+                    borderWidth: 1,
+                    borderColor: "#ccc",
+                    backgroundColor: 'white',
+                    borderRadius: 8,
+                    paddingHorizontal: 10,
+                    height: 50,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    paddingHorizontal: 15,
+                    paddingVertical: 5
+                }}
+                selectedTextStyle={{ fontSize: 16 }}
+                containerStyle={{
+                    maxHeight: '50%',
+                    borderWidth: 1,
+                    borderColor: "#ccc",
+                    borderRadius: 8,
+                    paddingHorizontal: 15,
+                    paddingVertical: 5
+                }}
+                itemTextStyle={{ fontSize: 14, flex: 1 }}
+                onFocus={() => setDropdownOpen(true)}
+                onBlur={() => setDropdownOpen(false)}
+                renderItem={(item) => (
+                    <TouchableOpacity
+                        style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            paddingVertical: 10,
+                            paddingHorizontal: '5%',
+                        }}
+                        onPress={() => handleSelect(item)}
+                    >
+                        <Image source={{ uri: item.image }} style={{ width: 24, height: 24, marginRight: 10 }} />
+                        <Text style={{ fontSize: 14, flex: 1 }}>{item.label}</Text>
+
+                        {/* Nút tròn (Radio Button) */}
+                        <View
+                            style={{
+                                width: 20,
+                                height: 20,
+                                borderRadius: 10, // Hình tròn
+                                borderWidth: 2,
+                                borderColor: selectedValue?.value === item.value ? "#009558" : "gray",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                backgroundColor: "white",
+                            }}
+                        >
+                            {selectedValue?.value === item.value && (
+                                <View style={{
+                                    width: 10,
+                                    height: 10,
+                                    borderRadius: 5,
+                                    backgroundColor: "#009558",
+                                }} />
+                            )}
+                        </View>
+                    </TouchableOpacity>
+                )}
+                renderRightIcon={() => (
+                    <AntDesign
+                        name={dropdownOpen ? "up" : "down"}
+                        size={20}
+                        color="gray"
+                        style={{ marginLeft: 10 }}
+                    />
+                )}
+            />
+        </View>
+    );
+}
+
+
+
+
+const styles = StyleSheet.create({
+    checkbox: {
+        width: 20,
+        height: 20,
+        borderRadius: 5,
+        borderWidth: 2,
+        borderColor: "gray",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "lightgray",
+    },
+    checkboxSelected: {
+        borderColor: "#009558",
+        backgroundColor: "#009558",
+    },
+    checkmark: {
+        color: "white",
+        fontSize: 14,
+    },
 
 })
