@@ -7,34 +7,43 @@ import { ItemStationList, ItemStationMain, ItemStationTrip, ItemStationTrips } f
 import Slider from '@react-native-community/slider';
 import { ItemLoading, ItemShowAlert, MapLocationPicker } from '../../item/ItemList';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
+import Toast from 'react-native-toast-message';
 
 const Trip = () => {
   const navigation = useNavigation();
   const [checkLoading, setCheckLoading] = useState(false);
 
+  const showToast = (type, content) => {
+    Toast.show({
+      type: type, // 'success', 'error', 'warning', 'info'
+      text2: content,
+      position: 'center',
+      autoHide: 5000,
+    });
+  };
 
-  const [energy, setEnergy] = useState(10);
-  const [latStart, setLatStart] = useState(10.849081398948059);
-  const [lngStart, setLngStart] = useState(106.62424273185461);
-  const [latEnd, setLatEnd] = useState(10.323464572434858);
-  const [lngEnd, setLngEnd] = useState(107.08486774959243);
 
+  const [energy, setEnergy] = useState(50);
   const [addressStart, setAddressStart] = useState('Chọn điểm đi');
   const [addressEnd, setAddressEnd] = useState('Chọn điểm đến');
-
-  const [selectedLocationStart, setSelectedLocationStart] = useState('');
-  const [selectedLocationEnd, setSelectedLocationEnd] = useState('');
-
-
+  const [selectedLocationStart, setSelectedLocationStart] = useState(null);
+  const [selectedLocationEnd, setSelectedLocationEnd] = useState(null);
   const [modalMapStart, setModalMapStart] = useState(false);
   const [modalMapEnd, setModalMapEnd] = useState(false);
 
-
   const [dataStation, setDataStation] = useState([]);
-
 
   const getDataStation = async () => {
     try {
+
+      if (!selectedLocationStart) {
+        showToast('error', 'Chưa có điểm đi');
+        return;
+      } else if (!selectedLocationEnd) {
+        showToast('error', 'Chưa có điểm đến');
+        return;
+      }
+
       setCheckLoading(true);
       const dataStation = await AxiosInstance().post('/station/getByTravel',
         {
@@ -48,29 +57,18 @@ const Trip = () => {
       if (dataStation.data && dataStation.data.length > 0) {
         setDataStation(dataStation.data);
         setCheckLoading(false);
-
       } else {
         setCheckLoading(false);
-        console.log('Không tìm thấy dữ liệu từ /station/get');
-        ItemShowAlert('Thông báo', 'Trạm sạc không được tìm thấy');
-        setDataStation(null)
-        // ToastAndroid.show('Không có thông tin trạm sạc', ToastAndroid.SHORT);
+        // ItemShowAlert('Thông báo', 'Không có trạm sạc theo yêu cầu');
+        showToast('info', 'Không có trạm sạc theo yêu cầu');
       }
     } catch (error) {
       setCheckLoading(false);
       console.error('Lỗi khi lấy dữ liệu station:', error);
-      ItemShowAlert('Thông báo', 'Không thể tải trạm sạc xuống')
-      // ToastAndroid.show('Không thể tải danh sách thông tin trạm sạc', ToastAndroid.SHORT);
+      showToast('error', 'Có lỗi xảy ra vui lòng thử lại sau');
+      // ItemShowAlert('Thông báo', 'Không thể tải trạm sạc xuống');
     }
   };
-
-  const log = () => {
-    console.log('energy:', energy);
-    console.log('latStart:', latStart);
-    console.log('lngStart:', lngStart);
-    console.log('latEnd:', latEnd);
-    console.log('lngEnd:', lngEnd);
-  }
 
   return (
     <ScrollView style={styles.container}>
@@ -85,8 +83,8 @@ const Trip = () => {
           <View style={{ width: '100%', alignItems: 'center' }}>
             <MultiSlider
               style={{ width: '100%' }}
-              min={10}
-              max={200}
+              min={50}
+              max={500}
               step={1}
               value={energy}
               onValuesChange={setEnergy}
@@ -99,8 +97,8 @@ const Trip = () => {
           </View>
 
           <View style={styles.viewTextLine}>
-            <Text style={styles.textLine}>10</Text>
-            <Text style={styles.textLine}>200</Text>
+            <Text style={styles.textLine}>50</Text>
+            <Text style={styles.textLine}>500</Text>
           </View>
         </View>
 
@@ -161,23 +159,24 @@ const Trip = () => {
 
         <View style={styles.viewListStation}>
 
-          <View >
-            <FlatList
-              data={dataStation}
-              scrollEnabled={false}
-              keyExtractor={(item) => item._id}
-              showsVerticalScrollIndicator={false}
-              renderItem={({ item }) =>
-                <View>
-                  {
-                    dataStation.length > 0 ?
-                      <ItemStationTrips data={item} />
-                      :
-                      null
-                  }
-                </View>
-              }
-            />
+          <View>
+            {dataStation.length > 0 ?
+              <FlatList
+                data={dataStation}
+                scrollEnabled={false}
+                keyExtractor={(item) => item._id}
+                showsVerticalScrollIndicator={false}
+                renderItem={({ item }) =>
+                  <View>
+                    <ItemStationTrips data={item} />
+                  </View>
+                }
+              />
+              :
+              <View style={{ alignItems: 'center', width: '100%', justifyContent: 'center', height: 250 }}>
+                <Text style={{ fontSize: 15, fontWeight: 500 }}>Không có thông tin trạm sạc theo yêu cầu</Text>
+              </View>
+            }
           </View>
 
         </View>

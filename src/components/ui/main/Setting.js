@@ -10,7 +10,7 @@ const Setting = () => {
 
     const { infoUser, idUser, setIsLogin, setIdUser, setInfoUser } = useContext(AppContext);
 
-    const name = infoUser?.name || "Nguyễn Vô Danh";
+    const name = infoUser?.name || "Chưa có tên";
     const image = infoUser?.image || "https://vivureviews.com/wp-content/uploads/2022/08/avatar-vo-danh-6.png";
 
     const navigateToLogin = () => {

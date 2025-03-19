@@ -11,6 +11,8 @@ import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { LinearGradient } from 'expo-linear-gradient';
 import haversine from 'haversine-distance';
 import { ItemListMyCar } from '../../item/ItemList';
+import Toast from 'react-native-toast-message';
+import { RefreshControl } from 'react-native';
 
 const list = [
     { _id: 7, name: 'Xe của tôi' },
@@ -34,6 +36,14 @@ const Home = (props) => {
     const { myCar } = useContext(AppContext);
     const [dataSelectedCar, setDataSelectedCar] = useState([]);
 
+    const showToast = (type, content) => {
+        Toast.show({
+            type: type, // 'success', 'error', 'warning', 'info'
+            text2: content,
+            position: 'center',
+            autoHide: 5000,
+        });
+    };
 
     const [modalVisible, setModalVisible] = useState(false); // an hien bo loc 
     const [modalVehical, setModalVehical] = useState(false);
@@ -82,9 +92,12 @@ const Home = (props) => {
     const [minValueKw, setMinValueKw] = useState(1);
     const [maxValueKw, setMaxValueKw] = useState(200);
 
-    const [valueTest, setValueTest] = useState('test dư lieu ');
-
-
+    const [refreshing, setRefreshing] = useState(false);
+    const RefreshData = async () => {
+        setRefreshing(true);
+        await getDataStation();
+        setRefreshing(false);
+    }
 
     // danh muc lisst bo loc
     const [selectedFilter, setSelectedFliter] = useState(0);
@@ -100,7 +113,7 @@ const Home = (props) => {
     //Lấy địa chỉ và định vị
     const [errorMsg, setErrorMsg] = useState('');
     const [address, setAddress] = useState('');
-    const name = infoUser?.name || "Nguyễn Vô Danh";
+    const name = infoUser?.name || "Chưa có tên";
     const image = infoUser?.image || "https://vivureviews.com/wp-content/uploads/2022/08/avatar-vo-danh-6.png";
     const getYourLocation = async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
@@ -124,7 +137,7 @@ const Home = (props) => {
 
 
     // Hàm lấy thông tin trạm sạc từ API
-    const [dataStation, setDataStation] = useState(null);
+    const [dataStation, setDataStation] = useState([]);
     const getDataStation = async () => {
         try {
             const dataStation = await AxiosInstance().get('/station/get');
@@ -132,11 +145,10 @@ const Home = (props) => {
                 setDataStation(dataStation.data);
             } else {
                 console.log('Không tìm thấy dữ liệu từ /station/get');
-                ToastAndroid.show('Không có thông tin trạm sạc', ToastAndroid.SHORT);
             }
         } catch (error) {
             console.error('Lỗi khi lấy dữ liệu station:', error);
-            ToastAndroid.show('Không thể tải danh sách thông tin trạm sạc', ToastAndroid.SHORT);
+            showToast('error', 'Không thể tải danh sách thông tin trạm sạc');
         }
     };
     // hãng trạm sạc 
@@ -429,7 +441,16 @@ const Home = (props) => {
                 </View>
 
             </LinearGradient>
-            <ScrollView showsVerticalScrollIndicator={false} style={{ height: '100%' }}>
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                style={{ height: '100%' }}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={RefreshData}
+                    />
+                }
+            >
                 {/* Tram sac gan ban */}
                 <View style={styles.boxHome}>
                     <View style={styles.container}>
@@ -443,23 +464,23 @@ const Home = (props) => {
                     <View>
 
                         <View >
-                            <FlatList
-                                data={sortedItems}
-                                scrollEnabled={false}
-                                showsVerticalScrollIndicator={false}
-                                keyExtractor={(item) => item._id}
-                                renderItem={({ item }) => (
-                                    <View>
-                                        {filteredItems && filteredItems.length > 0 ?
+                            {filteredItems.length > 0 ?
+                                <FlatList
+                                    data={sortedItems}
+                                    scrollEnabled={false}
+                                    showsVerticalScrollIndicator={false}
+                                    keyExtractor={(item) => item._id}
+                                    renderItem={({ item }) => (
+                                        <View>
                                             <ItemStationMain data={item} Kilomet={valueKm} />
-                                            :
-                                            <View style={{ justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%', }}>
-                                                <Text style={{ fontWeight: '500', color: 'black', fontSize: 16 }}>Không có dữ liệu</Text>
-                                            </View>
-                                        }
-                                    </View>
-                                )}
-                            />
+                                        </View>
+                                    )}
+                                />
+                                :
+                                <View style={{ justifyContent: 'center', alignItems: 'center', width: '100%', height: 300, }}>
+                                    <Text style={{ fontWeight: '500', color: 'black', fontSize: 16 }}>Không có thông tin trạm sạc</Text>
+                                </View>
+                            }
                         </View>
 
                     </View>
