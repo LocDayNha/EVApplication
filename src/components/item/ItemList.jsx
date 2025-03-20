@@ -485,7 +485,6 @@ export function ItemDropDownCheckBox({ title, content, data, selectedValues, set
                                             <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                                                 <Text style={{ color: '#009558', }}>✓</Text>
                                             </View>
-
                                         )}
                                     </View>
                                 </TouchableOpacity>
@@ -661,7 +660,7 @@ export function ItemListMyCar({ dataSelectedCar, setDataSelectedCar, data }) {
                 data={data}
                 // keyExtractor={(item) => item._id}
                 renderItem={({ item }) => (
-                    <TouchableOpacity onPress={() => setDataSelectedCar(item)}>
+                    <TouchableOpacity onPress={() => setDataSelectedCar(dataSelectedCar === item ? null : item)} >
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                             <View style={{ flexDirection: 'row' }}>
                                 {item.vehicleCar === 'Xe máy điện' ?
@@ -670,9 +669,7 @@ export function ItemListMyCar({ dataSelectedCar, setDataSelectedCar, data }) {
                                     </View>
                                     :
                                     null
-
                                 }
-
                                 {item.vehicleCar !== 'Xe máy điện' ?
                                     <View>
                                         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '2%' }}>

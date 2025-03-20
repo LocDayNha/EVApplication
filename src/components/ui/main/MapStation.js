@@ -6,9 +6,10 @@ import { ItemStation, ItemStationMain, ItemStationMap } from '../../item/Item';
 import { AppContext } from '../../axios/AppContext';
 import AxiosInstance from '../../axios/AxiosInstance';
 import Toast from 'react-native-toast-message';
+import { ItemLoading } from '../../item/ItemList';
 
 const MapStation = (props) => {
-
+    const [checkLoading, setCheckLoading] = useState(false);
     const showToast = (type, content) => {
         Toast.show({
             type: type, // 'success', 'error', 'warning', 'info'
@@ -28,6 +29,7 @@ const MapStation = (props) => {
 
     const _getLocation = useCallback(async () => {
         try {
+            setCheckLoading(true);
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
                 console.warn('Permission bị từ chối');
@@ -37,38 +39,48 @@ const MapStation = (props) => {
             setMyLocation(location.coords);
         } catch (err) {
             console.warn(err);
+            setCheckLoading(false);
         }
     }, []);
 
     const focusOnLocation = () => {
         if (mapRef.current) {
+            setCheckLoading(true);
             mapRef.current.animateToRegion({
                 latitude: myLocation.latitude,
                 longitude: myLocation.longitude,
                 latitudeDelta: 0.0922,
                 longitudeDelta: 0.0421,
             }, 1000);
+            setCheckLoading(false);
+        }
+        else {
+            setCheckLoading(false);
         }
     };
     // Hàm lấy thông tin trạm sạc từ API
     const [dataStation, setDataStation] = useState([]);
     const getDataStation = async () => {
         try {
+            setCheckLoading(true);
             const dataStation = await AxiosInstance().get('/station/get');
             if (dataStation.data && dataStation.data.length > 0) {
                 setDataStation(dataStation.data);
+                setCheckLoading(false);
             } else {
                 console.log('Không tìm thấy dữ liệu từ /station/get');
                 showToast('info', 'Không có thông tin trạm sạc');
+                setCheckLoading(false);
             }
         } catch (error) {
             console.error('Lỗi khi lấy dữ liệu station:', error);
             showToast('error', 'Không thể tải danh sách thông tin trạm sạc');
+            setCheckLoading(false);
         }
     };
 
 
-    // Hook effect khởi tạo dữ liệu
+
     useEffect(() => {
         getDataStation();
         focusOnLocation;
@@ -80,7 +92,11 @@ const MapStation = (props) => {
                 <TouchableOpacity onPress={focusOnLocation} style={styles.buttonContainer}>
                     <Image style={{ width: 30, height: 30, }} source={require('../../../assets/icon/icons8-my-location-48.png')} />
                 </TouchableOpacity>
+                <TouchableOpacity onPress={getDataStation} style={styles.buttonContainer2}>
+                    <Image style={{ width: 30, height: 30, }} source={require('../../../assets/icon/icons8-return-100.png')} />
+                </TouchableOpacity>
             </View>
+
 
             <MapView
                 style={styles.map}
@@ -114,10 +130,17 @@ const MapStation = (props) => {
                             <Image source={require('../../../assets/icon/IconLoaction.png')}
                                 style={{ width: 40, height: 40, }} />
                         }
-
-
                     </Marker>
                 ))}
+
+                <Marker
+                    coordinate={{
+                        latitude: myLocation.latitude,
+                        longitude: myLocation.longitude,
+                    }}
+                    title={'Vị trí của tôi'}
+                >
+                </Marker>
             </MapView>
 
             {selectedStation && (
@@ -127,25 +150,7 @@ const MapStation = (props) => {
                 </View>
             )}
 
-
-            {/* {selectedStation && (
-                <View style={styles.stationInfo}>
-                    <Image style={styles.imgStation} source={{ uri: selectedStation.image }} />
-                    <View>
-                        <Text style={styles.textItemName}>
-                            {selectedStation.brand} - {selectedStation.name}
-                        </Text>
-                        <Text style={styles.textItemLocation}>{selectedStation.location}</Text>
-                        <Text style={styles.textItemLocation}>{selectedStation.time}</Text>
-                        <Text style={styles.textItemLocation}>{selectedStation.type.join("/")}</Text>
-                    </View>
-                    <TouchableOpacity onPress={() => setSelectedStation(null)}>
-                        <Text style={styles.closeButton}>Đóng</Text>
-                    </TouchableOpacity>
-                </View>
-            )} */}
-
-
+            <ItemLoading checkValue={checkLoading} />
         </View>
     );
 }
@@ -167,14 +172,16 @@ const styles = StyleSheet.create({
         zIndex: 10,
 
     },
-    searchInput: {
+    buttonContainer: {
         position: 'absolute',
+        left: '80%',
         height: 50,
-        borderRadius: 30,
-        paddingHorizontal: 10,
-        width: "75%",
-        marginHorizontal: '5%',
+        width: 50,
         backgroundColor: 'white',
+        marginHorizontal: '5%',
+        borderRadius: 30,
+        alignItems: 'center',
+        justifyContent: 'center',
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
@@ -184,10 +191,10 @@ const styles = StyleSheet.create({
         shadowRadius: 3.84,
         elevation: 5,
     },
-
-    buttonContainer: {
+    buttonContainer2: {
         position: 'absolute',
         left: '80%',
+        top: 60,
         height: 50,
         width: 50,
         backgroundColor: 'white',
