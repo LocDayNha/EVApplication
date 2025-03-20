@@ -4,24 +4,25 @@ import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 import { useNavigation } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import MapView, { Marker } from 'react-native-maps';
 import AxiosInstance from '../../axios/AxiosInstance';
 import { COLOR, SIZE } from "../../../assets/Theme/Theme";
 import { AppContext } from '../../axios/AppContext';
 import { firebase } from '../../../../config';
-import { useRoute } from '@react-navigation/native';
 import { ItemModalRadioButton, ItemModalRadioButtonImage, ItemModalCheckBoxImage } from '../../item/Modal';
-import { ItemButton1, ItemForList, ItemText1, ItemTitle1, ItemTextInput1, ItemButton2, ItemLoading, ItemTextInput2, ItemText2, ItemTimePicker, ItemButtonSwitch, ItemDropDownCheckBox, ItemDropDownRadioButton, ItemTextInput3 } from '../../item/ItemList';
+import { ItemButton1, ItemForList, ItemText1, ItemTitle1, ItemTextInput1, ItemButton2, ItemLoading, ItemTextInput2, ItemText2, ItemTimePicker, ItemButtonSwitch, ItemDropDownCheckBox, ItemDropDownRadioButton, ItemTextInput3, ItemCheckBoxDP, ItemRadioDP } from '../../item/ItemList';
 
 const API_BASE = 'https://online-gateway.ghn.vn/shiip/public-api/master-data';
 const TOKEN = '46f53dba-ecf6-11ef-a268-9e63d516feb9';
 
 const FormEditStation = () => {
     const navigation = useNavigation();
-    const { idUser } = useContext(AppContext);
     const route = useRoute();
     const { id } = route.params;
+    const { idUser } = useContext(AppContext);
+
     const showAlert = (title, content) => {
         Alert.alert(title, content, [
             { text: "OK" },
@@ -93,7 +94,6 @@ const FormEditStation = () => {
     const [selectedPlace, setSelectedPlace] = useState([]);
 
     // get data
-    const [dataStationId, setDataStationId] = useState(null);
     const [dataService, setDataService] = useState(null);
     const [dataBrand, setDataBrand] = useState(null);
     const [dataVehicle, setDataVehicle] = useState(null);
@@ -101,71 +101,6 @@ const FormEditStation = () => {
     const [dataBrandCar, setDataBrandCar] = useState(null);
     const [dataPlace, setDataPlace] = useState(null);
 
-    const getDataStationId = async () => {
-        try {
-            setCheckLoading(true);
-            const dataStation = await AxiosInstance().post('/station/getById', { id: id });
-            if (dataStation) {
-                setDataStationId(dataStation.data);
-                const latitude = dataStation.data.lat;
-                const longitude = dataStation.data.lng;
-                const [timeStart, timeEnd] = dataStation.data.time.split(' - ');
-                const selectedIdsBrandCar = dataStation.data.brandcar?.map(item => item.brandcar_id?._id) || [];
-                const selectedIdsService = dataStation.data.service?.map(item => item.service_id?._id) || [];
-                const formattedData = dataStation.data.specification.map(item => ({
-                    _id: item.specification_id._id,
-                    user_id: item.specification_id.user_id,
-                    vehicle_id: {
-                        _id: item.specification_id.vehicle_id._id,
-                        name: item.specification_id.vehicle_id.name,
-                    },
-                    port_id: {
-                        _id: item.specification_id.port_id._id,
-                        name: item.specification_id.port_id.name,
-                        type: item.specification_id.port_id.type,
-                        image: item.specification_id.port_id.image,
-                    },
-                    kw: item.specification_id.kw,
-                    slot: item.specification_id.slot,
-                    price: item.specification_id.price,
-                    type: item.specification_id.type,
-                    isActive: item.specification_id.isActive,
-                    createAt: item.specification_id.createAt,
-                    __v: item.specification_id.__v,
-                }));
-
-                setNameStation(dataStation.data.name); // tên trạm sạc
-                setAddress(dataStation.data.location); // địa chỉ
-                setSelectedLocation({ latitude, longitude }); // tọa độ
-                if (dataStation.data.time === '24/7') {
-                    setIsEnabled(true);
-                    setTimeStation(dataStation.data.time); // 24/7
-                } else {
-                    setTimeStart(timeStart.trim()); // thời gian bắt đầu
-                    setTimeEnd(timeEnd.trim()); // thời gian kết thúc
-                }
-                setValueNote(dataStation.data.note); // ghi chú thêm
-
-                setSelectedPlace(dataStation.data.address._id); // điểm đặt
-                setSelectedBrand(dataStation.data.brand_id._id); // hãng trạm sạc
-                setSelectedBrandCar(selectedIdsBrandCar); // hãng xe
-                setSelectedServices(selectedIdsService); // dịch vụ
-
-                setListDataSpecification(formattedData); // trụ sạc
-
-                setImageStation(dataStation.data.image); // anh
-
-                setCheckLoading(false);
-
-            } else {
-                setCheckLoading(false);
-                console.log('Không tìm thấy dữ liệu từ ');
-            }
-        } catch (error) {
-            setCheckLoading(false);
-            console.error('Lỗi khi lấy dữ liệu station id', error);
-        }
-    };
     const getDataService = async () => {
         try {
             const dataService = await AxiosInstance().get('/services/get');
@@ -245,9 +180,14 @@ const FormEditStation = () => {
         try {
             setCheckLoading(true);
             if (valuePower && valuePorts && valuePrice && selectedVehical && selectedSocket) {
+
+                const formattedVehical = selectedVehical.length > 2
+                    ? selectedVehical.slice(1).map(item => ({ vehicle_id: item.value }))
+                    : selectedVehical.map(item => ({ vehicle_id: item.value }));
+
                 const dataSpecification = await AxiosInstance().post('/specification/addNew',
                     {
-                        user_id: idUser, vehicle_id: selectedVehical, port_id: selectedSocket, kw: valuePower, slot: valuePorts, price: valuePrice
+                        user_id: idUser, vehicle: formattedVehical, port_id: selectedSocket.value, kw: valuePower, slot: valuePorts, price: valuePrice
                     });
 
                 if (dataSpecification.data) {
@@ -277,10 +217,10 @@ const FormEditStation = () => {
                 return;
             }
 
-            if (item.kw.toString() && item.slot.toString() && item.price.toString() && item.vehicle_id?._id && item.port_id?._id) {
+            if (item.kw.toString() && item.slot.toString() && item.price.toString() && item.vehicle && item.port_id?._id) {
                 const dataSpecification = await AxiosInstance().post('/specification/addNew',
                     {
-                        user_id: idUser, vehicle_id: item.vehicle_id?._id, port_id: item.port_id?._id, kw: item.kw, slot: item.slot, price: item.price
+                        user_id: idUser, vehicle: item.vehicle, port_id: item.port_id?._id, kw: item.kw, slot: item.slot, price: item.price
                     });
 
                 if (dataSpecification.data) {
@@ -310,21 +250,36 @@ const FormEditStation = () => {
         setValuePorts(item.slot?.toString() || "");
         setValuePrice(item.price?.toString() || "");
 
-        setSelectedVehical(item.vehicle_id?._id || "",);
+        const formattedVehicles = item.vehicle.map((item, index) => ({
+            _index: index + 1,
+            image: undefined,
+            label: item.vehicle_id.name,
+            value: item.vehicle_id._id
+        }));
+        setSelectedVehical(formattedVehicles || "",);
 
-        setSelectedSocket(item.port_id?._id || "",);
+        const formattedPort = {
+            image: item.port_id.image,
+            label: item.port_id.name,
+            value: item.port_id._id
+        };
+        setSelectedSocket(formattedPort || "",);
 
         setEditIndex(id);
     };
     const updateSpecificationById = async (id) => {
         try {
             setCheckLoading(true);
+            const formattedVehical = selectedVehical.length > 2
+                ? selectedVehical.slice(1).map(item => ({ vehicle_id: item.value }))
+                : selectedVehical.map(item => ({ vehicle_id: item.value }));
+
             const updatedData = {
                 kw: valuePower,
                 slot: valuePorts,
                 price: valuePrice,
-                vehicle_id: selectedVehical,
-                port_id: selectedSocket
+                vehicle_id: formattedVehical,
+                port_id: selectedSocket.value
             };
 
             const response = await AxiosInstance().post('/specification/update', { id, ...updatedData });
@@ -348,7 +303,6 @@ const FormEditStation = () => {
             setCheckButtonEdit(false)
         }
     };
-
     const deleteSpecificationById = async (id) => {
         try {
             setCheckLoading(true);
@@ -358,6 +312,7 @@ const FormEditStation = () => {
                 });
 
             if (dataSpecificationById) {
+                console.log('Xóa SpecificationById thành công')
                 setCheckLoading(false);
                 setListDataSpecification(prevList =>
                     prevList.filter(item => item._id !== id)
@@ -372,13 +327,222 @@ const FormEditStation = () => {
         }
     }
 
-    const updateStaion2 = async () => {
+    // Station
+    const getDataStation = async () => {
         try {
+            const dataStation = await AxiosInstance().post('/station/getById', { id: id });
+            if (dataStation && dataStation.data) {
+
+                setImageStation(dataStation.data.image); // ảnh
+                setNameStation(dataStation.data.name); // tên
+                setAddress(dataStation.data.location); // địa chỉ
+                setValueNote(dataStation.data.note); // ghi chu
+
+                const latitude = dataStation.data.lat; // lat
+                const longitude = dataStation.data.lng; // lng
+                setSelectedLocation({ latitude, longitude });
+
+                if (dataStation.data.time) {
+                    setTimeStation(dataStation.data.time);
+                    if (dataStation.data.time === '24/7') {
+                        setIsEnabled(true)
+                    } else {
+                        const [timeStart, timeEnd] = dataStation.data.time.split(' - ');
+                        setTimeStart(timeStart);
+                        setTimeEnd(timeEnd);
+                    }
+
+                }
+
+                const formattedPlace = {
+                    image: dataStation.data.address.image,
+                    label: dataStation.data.address.name,
+                    value: dataStation.data.address._id
+                };
+                setSelectedPlace(formattedPlace); // điểm đặt
+
+                const formattedBrand = {
+                    image: dataStation.data.brand_id.image,
+                    label: dataStation.data.brand_id.name,
+                    value: dataStation.data.brand_id._id
+                };
+                setSelectedBrand(formattedBrand); // hãng trạm sạc
+
+                if (!dataStation.data.service) {
+                    setSelectedServices([]);
+                } else {
+                    const formattedServices = dataStation.data.service.map((item, index) => ({
+                        _index: index,
+                        image: item.service_id.image,
+                        label: item.service_id.name,
+                        value: item.service_id._id
+                    }));
+
+                    setSelectedServices(formattedServices);
+                }
+
+                if (!dataStation.data.brandcar) {
+                    setSelectedBrandCar([]);
+                } else {
+                    const formattedBrandCar = dataStation.data.brandcar.map((item, index) => ({
+                        _index: index,
+                        image: item.brandcar_id.image,
+                        label: item.brandcar_id.name,
+                        value: item.brandcar_id._id
+                    }));
+                    setSelectedBrandCar(formattedBrandCar);
+                }
+
+                const formattedSpecification = dataStation.data.specification.map(item => ({
+                    _id: item.specification_id._id,
+                    user_id: item.specification_id.user_id,
+                    vehicle: item.specification_id.vehicle.map(v => ({
+                        _id: v._id,
+                        name: v.vehicle_id.name,
+                    })),
+                    port_id: {
+                        _id: item.specification_id.port_id._id,
+                        name: item.specification_id.port_id.name,
+                        type: item.specification_id.port_id.type,
+                        image: item.specification_id.port_id.image,
+                    },
+                    kw: item.specification_id.kw,
+                    slot: item.specification_id.slot,
+                    price: item.specification_id.price,
+                    type: item.specification_id.type,
+                    isActive: item.specification_id.isActive,
+                    createAt: item.specification_id.createAt,
+                    __v: item.specification_id.__v,
+                }));
+
+                setListDataSpecification(formattedSpecification);
+
+            } else {
+                showAlert('Thông báo', 'Không có dữ liệu trạm sạc');
+            }
+        } catch (error) {
+            console.log('Lỗi hệ thống !!!', error);
+            showAlert('Lỗi', 'Đã xảy ra lỗi vui lòng thử lại');
+        }
+    }
+
+    const updateStation = async () => {
+
+        try {
+            setCheckLoading(true);
+
+            const formattedServices = selectedServices.map(item => ({ service_id: item.value }));
+            const formattedBrandCar = selectedBrandCar.map(item => ({ brandcar_id: item.value }));
             const formattedSpecifications = listDataSpecification.map(item => ({
                 specification_id: item._id
             }));
 
-            console.log(formattedSpecifications);
+            if (!nameStation || nameStation.length === 0) {
+                setCheckLoading(false)
+                showAlert('Thông tin', 'Chưa nhập tên');
+                return;
+            }
+            else if (!selectedLocation) {
+                setCheckLoading(false)
+                showAlert('Thông tin', 'Chưa chọn địa chỉ trạm sạc');
+                return;
+            }
+            else if (address.length === 0 || !address) {
+                setCheckLoading(false)
+                showAlert('Thông tin', 'Chưa nhập địa chỉ đặt trạm sạc');
+                return;
+            }
+            else if (!selectedPlace || selectedPlace.length === 0) {
+                setCheckLoading(false)
+                showAlert('Thông tin', 'Chưa chọn nơi đặt trạm sạc');
+                return;
+            }
+            else if (!selectedBrand || selectedBrand.length === 0) {
+                setCheckLoading(false)
+                showAlert('Thông tin', 'Chưa chọn hãng trụ sạc');
+                return;
+            }
+            else if (!timeStation || timeStation.length === 0) {
+                setCheckLoading(false)
+                showAlert('Thông tin', 'Vui chọn thời gian');
+                return;
+            }
+            else if (!formattedSpecifications || formattedSpecifications.length === 0) {
+                setCheckLoading(false)
+                showAlert('Thông tin', 'Cần thêm ít nhất 1 trụ sạc');
+                return;
+            }
+            else if (!imageStation || !imageStation.length === 0) {
+                setCheckLoading(false)
+                showAlert('Thông tin', 'Vui chọn hoặc chụp ảnh');
+                return;
+            }
+
+            let newImageUrl = imageStation;
+
+            if (choseImageStation) {
+                const uploadedImageUrl = await uploadImageToFirebase();
+                if (uploadedImageUrl) {
+                    newImageUrl = uploadedImageUrl;
+                    if (imageStation) {
+                        try {
+                            const storageRef = firebase.storage().refFromURL(imageStation);
+                            await storageRef.delete();
+                            console.log("Xóa ảnh cũ thành công!");
+                        } catch (error) {
+                            console.log("Lỗi khi xóa ảnh cũ:", error);
+                        }
+                    } else {
+                        console.log("không có ảnh cũ");
+                    }
+                } else {
+                    setCheckLoading(false)
+                    console.log("Lỗi khi upload ảnh mới!");
+                    showAlert('Lỗi', 'Lỗi khi lưu ảnh')
+                    return;
+                }
+            }
+
+            const payload = {
+                id: id,
+                brand_id: selectedBrand.value,
+                specification: formattedSpecifications,
+                image: newImageUrl,
+                name: nameStation,
+                location: address,
+                lat: selectedLocation.latitude,
+                lng: selectedLocation.longitude,
+                time: timeStation,
+                note: valueNote,
+                address: selectedPlace.value,
+            };
+
+            if (formattedServices !== null) payload.service = formattedServices;
+            if (formattedBrandCar !== null) payload.brandcar = formattedBrandCar;
+
+            const dataStation = await AxiosInstance().post('/station/update', payload);
+
+            if (dataStation) {
+                setCheckLoading(false)
+                showAlert('Trạm sạc', 'Cập nhật trạm sạc thành công');
+                clearFormStation();
+                navigation.goBack();
+            } else {
+                setCheckLoading(false)
+                showAlert('Trạm sạc', 'Cập nhật trạm sạc thất bại');
+            }
+
+        } catch (error) {
+            setCheckLoading(false)
+            console.error('Lỗi khi cập nhật dữ liệu Station:', error);
+        }
+    }
+
+    const updateStation2 = async () => {
+        try {
+            const formattedSpecifications = listDataSpecification.map(item => ({
+                specification_id: item._id
+            }));
 
             if (!formattedSpecifications || formattedSpecifications.length === 0) {
                 setCheckLoading(false)
@@ -386,285 +550,66 @@ const FormEditStation = () => {
                 return;
             }
 
-            try {
+            const payload = {
+                id: id,
+                specification: formattedSpecifications,
+            };
 
-                const dataStation = await AxiosInstance().post('/station/update2', {
-                    id: id,
-                    specification: formattedSpecifications,
-                });
+            const dataStation = await AxiosInstance().post('/station/update2', payload);
 
-                if (dataStation) {
-                    console.log('xoa thanh cong');
-                } else {
-                    console.log('xoa that bai');
-                }
-
-            } catch (error) {
-                console.log('error:', error);
+            if (dataStation) {
+                console.log('Click xóa Specification thành công')
+            } else {
+                console.log('Click xóa Specification thất bại')
             }
 
         } catch (error) {
-            console.error('Lỗi khi xoa tru sac:', error);
+            setCheckLoading(false);
+            showAlert('Lỗi', 'Có lỗi xảy ra, vui lòng kiểm tra lại')
+            console.log('error:', error);
         }
     }
 
     useEffect(() => {
         if (listDataSpecification.length > 0) {
-            updateStaion2();
+            const delayUpdate = setTimeout(() => {
+                updateStation2();
+            }, 1000); // Chờ 1 giây trước khi cập nhật
+
+            return () => clearTimeout(delayUpdate); // Xóa timeout nếu danh sách thay đổi liên tục
         }
-    }, [listDataSpecification]);
+    }, [listDataSpecification])
 
-    // Station
-    const addNewStaion = async () => {
-        CheckTime();
-        try {
-            setCheckLoading(true);
-            const formattedServices = selectedServices.map(id => ({ service_id: id }));
-            const formattedSpecifications = listDataSpecification.map(item => ({
-                specification_id: item._id
-            }));
-            const formattedBrandCar = selectedBrandCar.map(id => ({ brandcar_id: id }));
 
-            if (!nameStation || nameStation.length === 0) {
-                setCheckLoading(false)
-                showAlert('Thông tin', 'Chưa nhập tên');
-                return;
-            }
-            else if (address.length === 0 || !address) {
-                setCheckLoading(false)
-                showAlert('Thông tin', 'Chưa nhập địa chỉ đặt trạm sạc');
-                return;
-            }
-            else if (!selectedPlace || selectedPlace.length === 0) {
-                setCheckLoading(false)
-                showAlert('Thông tin', 'Chưa chọn địa điểm đặt trạm sạc');
-                return;
-            }
-            else if (!selectedBrandCar || selectedBrandCar.length === 0) {
-                setCheckLoading(false)
-                showAlert('Thông tin', 'Chưa chọn hãng xe');
-                return;
-            }
-            else if (!selectedBrand || selectedBrand.length === 0) {
-                setCheckLoading(false)
-                showAlert('Thông tin', 'Chưa chọn hãng trụ sạc');
-                return;
-            }
-            else if (!formattedServices || formattedServices.length === 0) {
-                setCheckLoading(false)
-                showAlert('Thông tin', 'Chưa chọn dịch vụ');
-                return;
-            }
-            else if (!timeStation || timeStation.length === 0) {
-                setCheckLoading(false)
-                showAlert('Thông tin', 'Vui chọn thời gian');
-                return;
-            }
-            else if (!formattedSpecifications || formattedSpecifications.length === 0) {
-                setCheckLoading(false)
-                showAlert('Thông tin', 'Cần thêm ít nhất 1 trụ sạc');
-                return;
-            }
-            else if (!imageStation || !imageStation.length === 0) {
-                setCheckLoading(false)
-                showAlert('Thông tin', 'Vui chọn hoặc chụp ảnh');
-                return;
-            }
+    const logDataUpdate = () => {
+        const formattedServices = selectedServices.map(item => ({ service_id: item.value }));
+        const formattedBrandCar = selectedBrandCar.map(item => ({ brandcar_id: item.value }));
 
-            try {
-                let newImageUrl = imageStation;
+        const formattedVehical = selectedVehical.length > 2
+            ? selectedVehical.slice(1).map(item => ({ vehicle_id: item.value }))
+            : selectedVehical.map(item => ({ vehicle_id: item.value }));
 
-                if (choseImageStation) {
-                    const uploadedImageUrl = await uploadImageToFirebase();
-                    if (uploadedImageUrl) {
-                        newImageUrl = uploadedImageUrl;
+        const formattedSpecifications = listDataSpecification.map(item => ({
+            specification_id: item._id
+        }));
 
-                        const dataStation = await AxiosInstance().post('/station/addNew', {
-                            user_id: idUser,
-                            brand_id: selectedBrand,
-                            specification: formattedSpecifications,
-                            service: formattedServices,
-                            image: newImageUrl,
-                            name: nameStation,
-                            location: address,
-                            lat: selectedLocation.latitude,
-                            lng: selectedLocation.longitude,
-                            time: timeStation,
-                            note: valueNote,
-                            address: selectedPlace,
-                            brandcar: formattedBrandCar,
-                        });
-
-                        if (dataStation) {
-                            setCheckLoading(false)
-                            showAlert('Trạm sạc', 'Thêm trạm sạc thành công');
-                            clearFormStation();
-                            navigation.goBack();
-                        } else {
-                            setCheckLoading(false)
-                            showAlert('Trạm sạc', 'Thêm trạm sạc thất bại');
-                        }
-                    } else {
-                        setCheckLoading(false)
-                        console.log("Lỗi khi upload ảnh mới!");
-                        ToastAndroid.show("Lỗi khi lưu ảnh!", ToastAndroid.SHORT);
-                        return;
-                    }
-                }
-
-            } catch (error) {
-                setCheckLoading(false)
-                ToastAndroid.show('Có lỗi xảy ra, vui lòng kiểm tra lại', ToastAndroid.SHORT);
-                console.log('error:', error);
-            }
-
-        } catch (error) {
-            setCheckLoading(false)
-            console.error('Lỗi khi thêm mới dữ liệu Station:', error);
-        }
+        console.log('Ảnh:', imageStation);
+        console.log('Tên trạm:', nameStation);
+        console.log('Địa chỉ:', address);
+        console.log('Lat:', selectedLocation.latitude);
+        console.log('Lng:', selectedLocation.longitude);
+        console.log('Thời gian:', timeStation);
+        console.log('Điểm đặt:', selectedPlace.value);
+        console.log('Hãng trụ sạc:', selectedBrand.value);
+        console.log('Dịch Vụ', formattedServices);
+        console.log('Hãng xe', formattedBrandCar);
+        console.log('Loại xe', formattedVehical);
+        console.log('Loại đầu sạc', selectedSocket);
+        console.log('Trụ sạc:', formattedSpecifications);
+        // console.log('',);
+        // console.log('',);
     }
 
-    const updateStaion = async () => {
-        try {
-            setCheckLoading(true);
-            const formattedServices = selectedServices.map(id => ({ service_id: id }));
-            const formattedSpecifications = listDataSpecification.map(item => ({
-                specification_id: item._id
-            }));
-
-            console.log(formattedSpecifications);
-
-            const formattedBrandCar = selectedBrandCar.map(id => ({ brandcar_id: id }));
-
-            if (!nameStation || nameStation.length === 0) {
-                setCheckLoading(false)
-                showAlert('Thông tin', 'Chưa nhập tên');
-                return;
-            }
-            else if (address.length === 0 || !address) {
-                setCheckLoading(false)
-                showAlert('Thông tin', 'Chưa nhập địa chỉ đặt trạm sạc');
-                return;
-            }
-            else if (!selectedPlace || selectedPlace.length === 0) {
-                setCheckLoading(false)
-                showAlert('Thông tin', 'Chưa chọn địa điểm đặt trạm sạc');
-                return;
-            }
-            else if (!selectedBrandCar || selectedBrandCar.length === 0) {
-                setCheckLoading(false)
-                showAlert('Thông tin', 'Chưa chọn hãng xe');
-                return;
-            }
-            else if (!selectedBrand || selectedBrand.length === 0) {
-                setCheckLoading(false)
-                showAlert('Thông tin', 'Chưa chọn hãng trụ sạc');
-                return;
-            }
-            else if (!formattedServices || formattedServices.length === 0) {
-                setCheckLoading(false)
-                showAlert('Thông tin', 'Chưa chọn dịch vụ');
-                return;
-            }
-            else if (!timeStation || timeStation.length === 0) {
-                setCheckLoading(false)
-                showAlert('Thông tin', 'Vui chọn thời gian');
-                return;
-            }
-            else if (!formattedSpecifications || formattedSpecifications.length === 0) {
-                setCheckLoading(false)
-                showAlert('Thông tin', 'Cần thêm ít nhất 1 trụ sạc');
-                return;
-            }
-            else if (!imageStation || !imageStation.length === 0) {
-                setCheckLoading(false)
-                showAlert('Thông tin', 'Vui chọn hoặc chụp ảnh');
-                return;
-            }
-
-            try {
-                let newImageUrl = imageStation;
-
-                if (choseImageStation) {
-                    const uploadedImageUrl = await uploadImageToFirebase();
-                    if (uploadedImageUrl) {
-                        newImageUrl = uploadedImageUrl;
-
-                        if (imageStation) {
-                            try {
-                                const storageRef = firebase.storage().refFromURL(imageStation);
-                                await storageRef.delete();
-                                console.log("Xóa ảnh cũ thành công!");
-                            } catch (error) {
-                                console.log("Lỗi khi xóa ảnh cũ:", error);
-                            }
-                        } else {
-                            console.log("không có ảnh cũ");
-                        }
-                    } else {
-                        setCheckLoading(false)
-                        console.log("Lỗi khi upload ảnh mới!");
-                        ToastAndroid.show("Lỗi khi lưu ảnh!", ToastAndroid.SHORT);
-                        return;
-                    }
-                }
-
-                const dataStation = await AxiosInstance().post('/station/update', {
-                    id: id,
-                    brand_id: selectedBrand,
-                    specification: formattedSpecifications,
-                    service: formattedServices,
-                    image: newImageUrl,
-                    name: nameStation,
-                    location: address,
-                    lat: selectedLocation.latitude,
-                    lng: selectedLocation.longitude,
-                    time: timeStation,
-                    note: valueNote,
-                    address: selectedPlace,
-                    brandcar: formattedBrandCar,
-                });
-
-                if (dataStation) {
-                    setCheckLoading(false)
-                    showAlert('Trạm sạc', 'Cập nhật trạm sạc thành công');
-                    clearFormStation();
-                    navigation.goBack();
-                } else {
-                    setCheckLoading(false)
-                    showAlert('Trạm sạc', 'Cập nhật trạm sạc thất bại');
-                }
-
-            } catch (error) {
-                setCheckLoading(false)
-                ToastAndroid.show('Có lỗi xảy ra, vui lòng kiểm tra lại', ToastAndroid.SHORT);
-                console.log('error:', error);
-            }
-
-        } catch (error) {
-            setCheckLoading(false)
-            console.error('Lỗi khi thêm mới dữ liệu Station:', error);
-        }
-    }
-
-    const logData = () => {
-        // const formattedServices = selectedServices.map(id => ({ service_id: id }));
-        // console.log('nameStation:', nameStation);
-        // console.log('time:', `${timeStart} - ${timeEnd}`);
-        // console.log('Location:', `${locationDetail}, ${location.wardName}, ${location.districtName}, ${location.provinceName}`);
-        // console.log('Brand:', selectedBrand[0]);
-        // console.log('Services:', formattedServices);
-        // console.log('Lat:', selectedLocation.latitude);
-        // console.log('Lng:', selectedLocation.longitude);
-        // console.log('Specification:', formattedSpecifications);
-        console.log('kw:', valuePower);
-        console.log('slot:', valuePorts);
-        console.log('price:', valuePrice);
-        console.log('vehicle_id:', selectedVehical[0]);
-        console.log('port_id:', selectedSocket[0]);
-        // console.log(selectedBrandCar);
-        // console.log(selectedPlace);
-    }
     // Location
     const [address, setAddress] = useState(null);
     const mapRef = useRef(null);
@@ -851,35 +796,73 @@ const FormEditStation = () => {
     };
 
     useEffect(() => {
-        // setAllStation();
-        getDataStationId();
         getDataService();
         getDataBrand();
         getDataVehicle();
         getDataPort();
         getDataBrandCar();
         getDataPlace();
+        getDataStation();
     }, [])
     useEffect(() => {
         CheckTime();
     }, [isEnabled, timeStart, timeEnd])
 
+
     return (
-
-        <ScrollView style={{ backgroundColor: 'white' }}>
-            {dataStationId ?
-                <>
-                    <ItemTextInput2 title={'Tên trạm sạc'} placeholder={'Nhập tên trạm sạc'} onChangeText={setNameStation} value={nameStation} checkValue={false} widthBody={'100%'} />
-                    <ItemText2 title={'Địa chỉ trụ sạc'} value={address} checkValue={false} setCheckModal={setModalVisibleMap} widthBody={'100%'} />
-
-                    <View style={{ paddingHorizontal: 15, paddingVertical: 5, flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <ItemDropDownRadioButton data={dataPlace} title={'Địa điểm'} selectedValue={selectedPlace} setSelectedValue={setSelectedPlace} openDropdown={openDropdownPlace} setOpenDropdown={setOpenDropdownPlace} />
-                        <ItemDropDownCheckBox data={dataBrandCar} title={'Hãng xe'} selectedValues={selectedBrandCar} setSelectedValues={setSelectedBrandCar} openDropdown={openDropdownBrandCar} setOpenDropdown={setOpenDropdownBrandCar} />
+        <View >
+            <ScrollView style={{ backgroundColor: 'white', height: '90%' }} >
+                {/* hình ảnh */}
+                <View>
+                    <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
+                        <Text style={{ fontSize: SIZE.size16 }}>Hình ảnh</Text>
                     </View>
-                    <View style={{ paddingHorizontal: 15, paddingVertical: 5, flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <ItemDropDownRadioButton data={dataBrand} title={'Hãng trụ sạc'} selectedValue={selectedBrand} setSelectedValue={setSelectedBrand} openDropdown={openDropdownBrandStation} setOpenDropdown={setOpenDropdownBrandStation} />
-                        <ItemDropDownCheckBox data={dataService} title={'Dịch vụ'} selectedValues={selectedServices} setSelectedValues={setSelectedServices} openDropdown={openDropdownServices} setOpenDropdown={setOpenDropdownServices} />
+                    <View style={{ paddingHorizontal: 15, paddingVertical: 5, }}>
+                        <View style={{ alignItems: 'center' }}>
+                            <TouchableOpacity
+                                style={{
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    width: '75%',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }} >
+                                {
+                                    imageStation ?
+                                        <Image source={{ uri: imageStation }} style={{ width: '100%', height: 170, borderRadius: 30, marginBottom: 15, }} />
+                                        :
+                                        null
+                                }
+                            </TouchableOpacity>
+
+
+                        </View>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                            <ItemButton2 title={'Thư viện'} onPress={pickImage} />
+                            <ItemButton2 title={'Chụp Ảnh'} onPress={takePhoto} />
+                        </View>
                     </View>
+                </View>
+                {/* Tên trạm sạc */}
+                <ItemTextInput2 title={'Tên trạm sạc'} placeholder={'Nhập tên trạm sạc'} onChangeText={setNameStation} value={nameStation} checkValue={false} widthBody={'100%'} />
+                {/* Vị trí  */}
+                <ItemText2 title={'Địa chỉ trạm sạc'} value={address} checkValue={false} setCheckModal={setModalVisibleMap} widthBody={'100%'} />
+                {/* Nơi đặt trụ sạc */}
+                <View>
+                    <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
+                        <Text style={{ fontSize: SIZE.size16 }}>Nơi đặt trạm sạc</Text>
+                    </View>
+                    {dataPlace ? <ItemRadioDP data={dataPlace} dropdownOpen={openDropdownPlace} setDropdownOpen={setOpenDropdownBrandCar} selectedValue={selectedPlace} setSelectedValue={setSelectedPlace} /> : null}
+                </View>
+                {/* Hãng trụ sạc */}
+                <View>
+                    <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
+                        <Text style={{ fontSize: SIZE.size16 }}>Hãng trụ sạc</Text>
+                    </View>
+                    {dataBrand ? <ItemRadioDP data={dataBrand} selectedValue={selectedBrand} setSelectedValue={setSelectedBrand} dropdownOpen={openDropdownBrandStation} setDropdownOpen={setOpenDropdownBrandStation} /> : null}
+                </View>
+                {/* Thời gian  */}
+                <View>
                     <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
                         <Text style={{ fontSize: SIZE.size16 }}>Thời gian</Text>
                     </View>
@@ -894,9 +877,9 @@ const FormEditStation = () => {
                         <ItemTimePicker title={'Thời gian kết thúc'} timeVisible={isTimeEndVisible} setTimeVisible={setTimeEndVisibility} time={timeEnd} setTime={setTimeEnd} />
 
                     </View>
-
-                    {/* tru sac  */}
-
+                </View>
+                {/* tru sac  */}
+                <View>
                     <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
                         <Text style={{ fontSize: SIZE.size16 }}>Trụ sạc</Text>
                     </View>
@@ -905,9 +888,19 @@ const FormEditStation = () => {
                         <ItemTextInput2 content={'Cổng sạc'} placeholder={'Số cổng'} onChangeText={onChangeTextChager} value={valuePorts} checkValue={checkCharger} widthBody={'30%'} center={true} number={true} />
                         <ItemTextInput2 content={'Vnd/Kwh'} placeholder={'Giá tiền'} onChangeText={onChangeTextPrice} value={valuePrice} checkValue={checkPrice} widthBody={'30%'} center={true} number={true} />
                     </View>
-                    <View style={{ paddingHorizontal: 15, paddingVertical: 5, flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <ItemDropDownRadioButton data={dataVehicle} content={'Phương tiện'} selectedValue={selectedVehical} setSelectedValue={setSelectedVehical} openDropdown={openDropdownVehical} setOpenDropdown={setOpenDropdownVehical} />
-                        <ItemDropDownRadioButton data={dataPort} content={'Loại sạc'} selectedValue={selectedSocket} setSelectedValue={setSelectedSocket} openDropdown={openDropdownSocket} setOpenDropdown={setOpenDropdownSocket} />
+                    {/* Phuong tien  */}
+                    <View>
+                        <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
+                            <Text style={{ fontSize: SIZE.size14 }}>Phương tiện</Text>
+                        </View>
+                        {dataVehicle ? <ItemCheckBoxDP data={dataVehicle} dropdownOpen={openDropdownVehical} setDropdownOpen={setOpenDropdownVehical} selectedValues={selectedVehical} setSelectedValues={setSelectedVehical} /> : null}
+                    </View>
+                    {/* Loai sacj */}
+                    <View>
+                        <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
+                            <Text style={{ fontSize: SIZE.size14 }}>Loại sạc</Text>
+                        </View>
+                        {dataPort ? <ItemRadioDP data={dataPort} dropdownOpen={openDropdownSocket} setDropdownOpen={setOpenDropdownSocket} selectedValue={selectedSocket} setSelectedValue={setSelectedSocket} /> : null}
                     </View>
 
                     <View style={{ alignItems: 'center' }}>
@@ -959,7 +952,7 @@ const FormEditStation = () => {
                                                 </Text>
                                             </View>
                                             <View style={styles.infoRow}>
-                                                {item.vehicle_id.name === 'Xe máy điện' ?
+                                                {/* {item.vehicle.vehicle_id[0].name === 'Xe máy điện' ?
                                                     <>
                                                         <Image style={styles.icon} source={require('../../../assets/icon/electric-scooter.png')} />
                                                     </>
@@ -967,9 +960,12 @@ const FormEditStation = () => {
                                                     <>
                                                         <Image style={styles.icon} source={require('../../../assets/icon/icons8-car-50 (1).png')} />
                                                     </>
-
+                                                } */}
+                                                {item.vehicle.length > 1 ?
+                                                    <Text style={styles.textList}>Tất cả</Text>
+                                                    :
+                                                    <Text style={styles.textList}>{item.vehicle[0].vehicle_id.name}</Text>
                                                 }
-                                                <Text style={styles.textList}>{item.vehicle_id.name}</Text>
                                             </View>
                                         </View>
                                         <View style={{ width: '20%', justifyContent: 'center' }}>
@@ -993,142 +989,137 @@ const FormEditStation = () => {
                             keyExtractor={(item, index) => index.toString()}
                         />
                     </ScrollView>
+                </View>
 
 
-                    <View style={{ paddingHorizontal: 15, paddingVertical: 5, }}>
-                        <Text style={{ fontSize: SIZE.size16 }}>Ghi chú</Text>
-                        <TextInput
-                            style={{
-                                marginVertical: '2%',
-                                textAlignVertical: 'top',
-                                height: 100,
-                                borderColor: COLOR.gray2,
-                                borderWidth: 1,
-                                borderRadius: 10,
-                            }}
-                            placeholder={'Ghi chú'}
-                            value={valueNote}
-                            multiline
-                            onChangeText={setValueNote}
-                        />
+                <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
+                    <Text style={{ fontSize: SIZE.size18 }}>Lựa chọn thêm</Text>
+                </View>
+                {/* Dich Vu */}
+                <View>
+                    <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
+                        <Text style={{ fontSize: SIZE.size16 }}>Dịch vụ</Text>
                     </View>
-                    <View style={{ paddingHorizontal: 15, paddingVertical: 5, }}>
-                        <View style={{ alignItems: 'center' }}>
-                            <TouchableOpacity
-                                style={{
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    width: '75%',
-                                    margin: '5%',
-                                }} >
-                                {
-                                    imageStation ?
-                                        <Image source={{ uri: imageStation }} style={{ width: '100%', height: 170, borderRadius: 30, }} />
-                                        :
-                                        null
-                                }
-                            </TouchableOpacity>
-
-
-                        </View>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-                            <ItemButton2 title={'Thư viện'} onPress={pickImage} />
-                            <ItemButton2 title={'Chụp Ảnh'} onPress={takePhoto} />
-                        </View>
+                    {dataService ? <ItemCheckBoxDP data={dataService} selectedValues={selectedServices} setSelectedValues={setSelectedServices} dropdownOpen={openDropdownServices} setDropdownOpen={setOpenDropdownServices} /> : null}
+                </View>
+                {/* Hangx Xe */}
+                <View>
+                    <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
+                        <Text style={{ fontSize: SIZE.size16 }}>Hãng Xe</Text>
                     </View>
+                    {dataBrandCar ? <ItemCheckBoxDP data={dataBrandCar} selectedValues={selectedBrandCar} setSelectedValues={setSelectedBrandCar} dropdownOpen={openDropdownBrandCar} setDropdownOpen={setOpenDropdownBrandCar} /> : null}
+                </View>
 
-                    {/* nút thêm trạm sạc  */}
-                    <View style={{ alignItems: 'center' }}>
-                        <TouchableOpacity
-                            onPress={updateStaion}
-                            style={{
-                                margin: '10%',
-                                padding: 15,
-                                backgroundColor: COLOR.green3,
-                                borderRadius: 10,
-                                width: '60%'
-                            }}>
-                            <Text style={{ color: 'white', textAlign: 'center', fontSize: 18 }}>Cập nhật trạm sạc</Text>
-                        </TouchableOpacity>
-                    </View>
 
-                    {/*  banr đồ  */}
-                    <Modal transparent={true} visible={modalVisibleMap} animationType="slide">
-                        <View style={styles.modalOverlay}>
-                            <View style={[styles.modalContent, { height: '95%', }]}>
-                                <View style={styles.buttonRow}>
-                                    <TouchableOpacity
-                                        onPress={() => {
-                                            setModalVisibleMap(false);
-                                            setAddress(null);
-                                        }}
-                                        style={styles.applyButton}>
-                                        <Text style={styles.applyText}>Hủy chọn</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        onPress={() => {
-                                            setModalVisibleMap(false);
-                                        }}
-                                        style={styles.applyButton}>
-                                        <Text style={styles.applyText}>Chọn</Text>
-                                    </TouchableOpacity>
-                                </View>
-                                {address ? <Text style={{ fontSize: SIZE.size16, paddingHorizontal: '2%', paddingVertical: '2%' }} numberOfLines={1}  > Địa chỉ : {address}</Text> : null}
-                                <MapView
-                                    ref={mapRef}
-                                    style={styles.map}
-                                    initialRegion={{
-                                        latitude: 14.0583,
-                                        longitude: 108.2772,
-                                        latitudeDelta: 5,
-                                        longitudeDelta: 5,
+                <View style={{ paddingHorizontal: 15, paddingVertical: 5, }}>
+                    <Text style={{ fontSize: SIZE.size16 }}>Ghi chú</Text>
+                    <TextInput
+                        style={{
+                            marginVertical: '2%',
+                            textAlignVertical: 'top',
+                            height: 100,
+                            borderColor: COLOR.gray2,
+                            borderWidth: 1,
+                            borderRadius: 10,
+                        }}
+                        placeholder={'Ghi chú'}
+                        value={valueNote}
+                        multiline
+                        onChangeText={setValueNote}
+                    />
+                </View>
+
+
+                {/* nút thêm trạm sạc  */}
+
+
+                {/*  banr đồ  */}
+                <Modal transparent={true} visible={modalVisibleMap} animationType="slide">
+                    <View style={styles.modalOverlay}>
+                        <View style={[styles.modalContent, { height: '95%', }]}>
+                            <View style={styles.buttonRow}>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setModalVisibleMap(false);
+                                        setAddress(null);
                                     }}
-                                    onPress={handleMapPress}
-                                >
-                                    {selectedLocation && (
-                                        <Marker coordinate={selectedLocation} title="Vị trí đã chọn" />
-                                    )}
-                                </MapView>
+                                    style={styles.applyButton}>
+                                    <Text style={styles.applyText}>Hủy chọn</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setModalVisibleMap(false);
+                                    }}
+                                    style={styles.applyButton}>
+                                    <Text style={styles.applyText}>Chọn</Text>
+                                </TouchableOpacity>
+                            </View>
+                            {address ? <Text style={{ fontSize: SIZE.size16, paddingHorizontal: '2%', paddingVertical: '2%' }} numberOfLines={1}  > Địa chỉ : {address}</Text> : null}
+                            <MapView
+                                ref={mapRef}
+                                style={styles.map}
+                                initialRegion={{
+                                    latitude: 14.0583,
+                                    longitude: 108.2772,
+                                    latitudeDelta: 5,
+                                    longitudeDelta: 5,
+                                }}
+                                onPress={handleMapPress}
+                            >
+                                {selectedLocation && (
+                                    <Marker coordinate={selectedLocation} title="Vị trí đã chọn" />
+                                )}
+                            </MapView>
 
-                                <View style={{
-                                    position: 'absolute',
-                                    top: '88%',
-                                    right: 0,
-                                    left: '80%',
-                                    bottom: 0,
-                                }}>
-                                    <TouchableOpacity
-                                        style={{
-                                            height: 50,
-                                            width: 50,
-                                            borderColor: COLOR.green3,
-                                            borderWidth: 1,
-                                            borderRadius: 30,
-                                            backgroundColor: 'white',
-                                            justifyContent: 'center',
-                                            alignItems: 'center'
-                                        }}
-                                        onPress={getCurrentLocation}>
-                                        <Image style={{ width: 30, height: 30, }} source={require('../../../assets/icon/icons8-my-location-48.png')} />
-                                    </TouchableOpacity>
+                            <View style={{
+                                position: 'absolute',
+                                top: '88%',
+                                right: 0,
+                                left: '80%',
+                                bottom: 0,
+                            }}>
+                                <TouchableOpacity
+                                    style={{
+                                        height: 50,
+                                        width: 50,
+                                        borderColor: COLOR.green3,
+                                        borderWidth: 1,
+                                        borderRadius: 30,
+                                        backgroundColor: 'white',
+                                        justifyContent: 'center',
+                                        alignItems: 'center'
+                                    }}
+                                    onPress={getCurrentLocation}>
+                                    <Image style={{ width: 30, height: 30, }} source={require('../../../assets/icon/icons8-my-location-48.png')} />
+                                </TouchableOpacity>
 
-                                </View>
                             </View>
                         </View>
-                    </Modal>
-
-                </>
-                :
-                <>
-                    <View style={{ justifyContent: 'center', alignItems: 'center', width: '100%', height: 500 }}>
-                        <Text style={{ fontSize: 16, fontWeight: 'bold' }}>Không có dữ liệu</Text>
                     </View>
-                </>
-            }
+                </Modal>
+                <ItemLoading checkValue={checkLoading} />
 
 
-            <ItemLoading checkValue={checkLoading} />
-        </ScrollView>
+            </ScrollView>
+            <View style={{
+                alignItems: 'center',
+                backgroundColor: 'white',
+                height: '10%',
+            }}>
+                <TouchableOpacity
+                    onPress={updateStation}
+                    style={{
+                        padding: 15,
+                        backgroundColor: COLOR.green3,
+                        borderRadius: 10,
+                        width: '60%',
+
+                    }}>
+                    <Text style={{ color: 'white', textAlign: 'center', fontSize: 18 }}>Cập nhật trạm sạc </Text>
+                </TouchableOpacity>
+            </View>
+        </View>
+
     )
 }
 

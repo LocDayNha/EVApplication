@@ -177,42 +177,57 @@ const ViewDetail = () => {
                             </View>
                         </View>
                         {/* Dich Vu  */}
-                        <View style={{
-                            margin: '5%', marginTop: 0, backgroundColor: 'white', borderRadius: 10, paddingTop: 10, shadowColor: "#000",
-                            shadowOffset: {
-                                width: 0,
-                                height: 2,
-                            },
-                            shadowOpacity: 0.25,
-                            shadowRadius: 3.84,
-                            elevation: 5,
-                        }} >
-                            <View style={{ justifyContent: 'center', alignItems: 'center', }}>
-                                <Text style={styles.textInfoService}> Dịch vụ </Text>
-                            </View>
-                            <FlatList
-                                data={dataStation.service.map(item => item.service_id)}
-                                showsHorizontalScrollIndicator={false}
-                                scrollEnabled={false}
-                                keyExtractor={(item) => item._id}
-                                renderItem={({ item }) => (
-                                    <View style={styles.viewService} >
-                                        <Image style={styles.imgServies} source={{ uri: item.image }} />
-                                        <Text style={styles.textService}>
-                                            {item.name}
-                                        </Text>
+
+                        {dataStation.service.length > 0 && dataStation.note ?
+                            <View style={{
+                                margin: '5%', marginTop: 0, backgroundColor: 'white', borderRadius: 10, paddingTop: 10, shadowColor: "#000",
+                                shadowOffset: {
+                                    width: 0,
+                                    height: 2,
+                                },
+                                shadowOpacity: 0.25,
+                                shadowRadius: 3.84,
+                                elevation: 5,
+                            }} >
+                                {dataStation.service.length > 0 ?
+                                    <>
+                                        <View style={{ justifyContent: 'center', alignItems: 'center', }}>
+                                            <Text style={styles.textInfoService}> Dịch vụ </Text>
+                                        </View>
+                                        <FlatList
+                                            data={dataStation.service.map(item => item.service_id)}
+                                            showsHorizontalScrollIndicator={false}
+                                            scrollEnabled={false}
+                                            keyExtractor={(item) => item._id}
+                                            renderItem={({ item }) => (
+                                                <View style={styles.viewService} >
+                                                    <Image style={styles.imgServies} source={{ uri: item.image }} />
+                                                    <Text style={styles.textService}>
+                                                        {item.name}
+                                                    </Text>
+                                                </View>
+
+                                            )}
+                                        />
+                                    </>
+                                    :
+                                    null
+                                }
+
+                                {/* ghi chú dịch vụ  */}
+                                {dataStation.note ?
+                                    <View>
+                                        <Text style={[styles.textInfoService, { marginLeft: '5%', marginBottom: '2%' }]}>Ghi chú</Text>
+                                        <Text style={styles.textNote}>{dataStation.note}</Text>
                                     </View>
+                                    :
+                                    null
+                                }
 
-                                )}
-                            />
-
-                            {/* ghi chú dịch vụ  */}
-                            <View>
-                                <Text style={[styles.textInfoService, { marginLeft: '5%', marginBottom: '2%' }]}>Ghi chú</Text>
-                                <Text style={styles.textNote}>{dataStation.note}</Text>
                             </View>
-
-                        </View>
+                            :
+                            null
+                        }
 
                         {/* trụ sạc  */}
                         <View style={{ justifyContent: 'center', alignItems: 'center' }}>

@@ -177,9 +177,14 @@ const FormStation = () => {
         try {
             setCheckLoading(true);
             if (valuePower && valuePorts && valuePrice && selectedVehical && selectedSocket) {
+
+                const formattedVehical = selectedVehical.length > 2
+                    ? selectedVehical.slice(1).map(item => ({ vehicle_id: item.value }))
+                    : selectedVehical.map(item => ({ vehicle_id: item.value }));
+
                 const dataSpecification = await AxiosInstance().post('/specification/addNew',
                     {
-                        user_id: idUser, vehicle_id: selectedVehical, port_id: selectedSocket, kw: valuePower, slot: valuePorts, price: valuePrice
+                        user_id: idUser, vehicle: formattedVehical, port_id: selectedSocket.value, kw: valuePower, slot: valuePorts, price: valuePrice
                     });
 
                 if (dataSpecification.data) {
@@ -209,10 +214,10 @@ const FormStation = () => {
                 return;
             }
 
-            if (item.kw.toString() && item.slot.toString() && item.price.toString() && item.vehicle_id?._id && item.port_id?._id) {
+            if (item.kw.toString() && item.slot.toString() && item.price.toString() && item.vehicle && item.port_id?._id) {
                 const dataSpecification = await AxiosInstance().post('/specification/addNew',
                     {
-                        user_id: idUser, vehicle_id: item.vehicle_id?._id, port_id: item.port_id?._id, kw: item.kw, slot: item.slot, price: item.price
+                        user_id: idUser, vehicle: item.vehicle, port_id: item.port_id?._id, kw: item.kw, slot: item.slot, price: item.price
                     });
 
                 if (dataSpecification.data) {
@@ -242,21 +247,36 @@ const FormStation = () => {
         setValuePorts(item.slot?.toString() || "");
         setValuePrice(item.price?.toString() || "");
 
-        setSelectedVehical(item.vehicle_id?._id || "",);
+        const formattedVehicles = item.vehicle.map((item, index) => ({
+            _index: index + 1,
+            image: undefined,
+            label: item.vehicle_id.name,
+            value: item.vehicle_id._id
+        }));
+        setSelectedVehical(formattedVehicles || "",);
 
-        setSelectedSocket(item.port_id?._id || "",);
+        const formattedPort = {
+            image: item.port_id.image,
+            label: item.port_id.name,
+            value: item.port_id._id
+        };
+        setSelectedSocket(formattedPort || "",);
 
         setEditIndex(id);
     };
     const updateSpecificationById = async (id) => {
         try {
             setCheckLoading(true);
+            const formattedVehical = selectedVehical.length > 2
+                ? selectedVehical.slice(1).map(item => ({ vehicle_id: item.value }))
+                : selectedVehical.map(item => ({ vehicle_id: item.value }));
+
             const updatedData = {
                 kw: valuePower,
                 slot: valuePorts,
                 price: valuePrice,
-                vehicle_id: selectedVehical,
-                port_id: selectedSocket
+                vehicle_id: formattedVehical,
+                port_id: selectedSocket.value
             };
 
             const response = await AxiosInstance().post('/specification/update', { id, ...updatedData });
@@ -309,15 +329,28 @@ const FormStation = () => {
 
         try {
             setCheckLoading(true);
-            const formattedServices = selectedServices.map(id => ({ service_id: id }));
+
+            const formattedServices = selectedServices ? selectedServices.map(item => ({ service_id: item.value })) : null;
+            const formattedBrandCar = selectedBrandCar ? selectedBrandCar.map(item => ({ brandcar_id: item.value })) : null;
+
+            const formattedVehical = selectedVehical.length > 2
+                ? selectedVehical.slice(1).map(item => ({ vehicle_id: item.value }))
+                : selectedVehical.map(item => ({ vehicle_id: item.value }));
+
             const formattedSpecifications = listDataSpecification.map(item => ({
                 specification_id: item._id
             }));
-            const formattedBrandCar = selectedBrandCar.map(id => ({ brandcar_id: id }));
+
+
 
             if (!nameStation || nameStation.length === 0) {
                 setCheckLoading(false)
                 showAlert('Thông tin', 'Chưa nhập tên');
+                return;
+            }
+            else if (!selectedLocation) {
+                setCheckLoading(false)
+                showAlert('Thông tin', 'Chưa chọn địa chỉ trạm sạc');
                 return;
             }
             else if (address.length === 0 || !address) {
@@ -327,24 +360,24 @@ const FormStation = () => {
             }
             else if (!selectedPlace || selectedPlace.length === 0) {
                 setCheckLoading(false)
-                showAlert('Thông tin', 'Chưa chọn địa điểm đặt trạm sạc');
+                showAlert('Thông tin', 'Chưa chọn nơi đặt trạm sạc');
                 return;
             }
-            else if (!selectedBrandCar || selectedBrandCar.length === 0) {
-                setCheckLoading(false)
-                showAlert('Thông tin', 'Chưa chọn hãng xe');
-                return;
-            }
+            // else if (!selectedBrandCar || selectedBrandCar.length === 0) {
+            //     setCheckLoading(false)
+            //     showAlert('Thông tin', 'Chưa chọn hãng xe');
+            //     return;
+            // }
             else if (!selectedBrand || selectedBrand.length === 0) {
                 setCheckLoading(false)
                 showAlert('Thông tin', 'Chưa chọn hãng trụ sạc');
                 return;
             }
-            else if (!formattedServices || formattedServices.length === 0) {
-                setCheckLoading(false)
-                showAlert('Thông tin', 'Chưa chọn dịch vụ');
-                return;
-            }
+            // else if (!formattedServices || formattedServices.length === 0) {
+            //     setCheckLoading(false)
+            //     showAlert('Thông tin', 'Chưa chọn dịch vụ');
+            //     return;
+            // }
             else if (!timeStation || timeStation.length === 0) {
                 setCheckLoading(false)
                 showAlert('Thông tin', 'Vui chọn thời gian');
@@ -369,11 +402,10 @@ const FormStation = () => {
                     if (uploadedImageUrl) {
                         newImageUrl = uploadedImageUrl;
 
-                        const dataStation = await AxiosInstance().post('/station/addNew', {
+                        const payload = {
                             user_id: idUser,
-                            brand_id: selectedBrand,
+                            brand_id: selectedBrand.value,
                             specification: formattedSpecifications,
-                            service: formattedServices,
                             image: newImageUrl,
                             name: nameStation,
                             location: address,
@@ -381,9 +413,14 @@ const FormStation = () => {
                             lng: selectedLocation.longitude,
                             time: timeStation,
                             note: valueNote,
-                            address: selectedPlace,
-                            brandcar: formattedBrandCar,
-                        });
+                            address: selectedPlace.value,
+                        };
+
+                        // Chỉ thêm key vào payload nếu giá trị không phải null
+                        if (formattedServices !== null) payload.service = formattedServices;
+                        if (formattedBrandCar !== null) payload.brandcar = formattedBrandCar;
+
+                        const dataStation = await AxiosInstance().post('/station/addNew', payload);
 
                         if (dataStation) {
                             setCheckLoading(false)
@@ -415,22 +452,31 @@ const FormStation = () => {
     }
 
     const logData = () => {
-        // const formattedServices = selectedServices.map(id => ({ service_id: id }));
-        // console.log('nameStation:', nameStation);
-        // console.log('time:', `${timeStart} - ${timeEnd}`);
-        // console.log('Location:', `${locationDetail}, ${location.wardName}, ${location.districtName}, ${location.provinceName}`);
-        // console.log('Brand:', selectedBrand[0]);
-        // console.log('Services:', formattedServices);
-        // console.log('Lat:', selectedLocation.latitude);
-        // console.log('Lng:', selectedLocation.longitude);
-        // console.log('Specification:', formattedSpecifications);
-        console.log('kw:', valuePower);
-        console.log('slot:', valuePorts);
-        console.log('price:', valuePrice);
-        console.log('vehicle_id:', selectedVehical[0]);
-        console.log('port_id:', selectedSocket[0]);
-        // console.log(selectedBrandCar);
-        // console.log(selectedPlace);
+        const formattedServices = selectedServices.map(item => ({ service_id: item.value }));
+        const formattedBrandCar = selectedBrandCar.map(item => ({ brandcar_id: item.value }));
+
+        const formattedVehical = selectedVehical.length > 2
+            ? selectedVehical.slice(1).map(item => ({ vehicle_id: item.value }))
+            : selectedVehical.map(item => ({ vehicle_id: item.value }));
+
+        const formattedSpecifications = listDataSpecification.map(item => ({
+            specification_id: item._id
+        }));
+
+        console.log('Tên trạm:', nameStation);
+        console.log('Địa chỉ:', address);
+        console.log('Lat:', selectedLocation.latitude);
+        console.log('Lng:', selectedLocation.longitude);
+        console.log('Thời gian:', timeStation);
+        console.log('Điểm đặt:', selectedPlace.value);
+        console.log('Hãng trụ sạc:', selectedBrand.value);
+        console.log('Dịch Vụ', formattedServices);
+        console.log('Hãng xe', formattedBrandCar);
+        console.log('Loại xe', formattedVehical);
+        console.log('Loại đầu sạc', selectedSocket);
+        console.log('Trụ sạc:', formattedSpecifications);
+        // console.log('',);
+        // console.log('',);
     }
     // Location
     const [address, setAddress] = useState(null);
@@ -632,7 +678,7 @@ const FormStation = () => {
 
     return (
         <View >
-            <ScrollView style={{ backgroundColor: 'white',height:'90%' }} >
+            <ScrollView style={{ backgroundColor: 'white', height: '90%' }} >
                 {/* hình ảnh */}
                 <View>
                     <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
@@ -645,12 +691,12 @@ const FormStation = () => {
                                     justifyContent: 'center',
                                     alignItems: 'center',
                                     width: '75%',
-                                    alignItems:'center',
-                                    justifyContent:'center'
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
                                 }} >
                                 {
                                     imageStation ?
-                                        <Image source={{ uri: imageStation }} style={{ width: '100%', height: 170, borderRadius: 30, marginBottom:15, }} />
+                                        <Image source={{ uri: imageStation }} style={{ width: '100%', height: 170, borderRadius: 30, marginBottom: 15, }} />
                                         :
                                         null
                                 }
@@ -667,11 +713,11 @@ const FormStation = () => {
                 {/* Tên trạm sạc */}
                 <ItemTextInput2 title={'Tên trạm sạc'} placeholder={'Nhập tên trạm sạc'} onChangeText={setNameStation} value={nameStation} checkValue={false} widthBody={'100%'} />
                 {/* Vị trí  */}
-                <ItemText2 title={'Địa chỉ trụ sạc'} value={address} checkValue={false} setCheckModal={setModalVisibleMap} widthBody={'100%'} />
+                <ItemText2 title={'Địa chỉ trạm sạc'} value={address} checkValue={false} setCheckModal={setModalVisibleMap} widthBody={'100%'} />
                 {/* Nơi đặt trụ sạc */}
                 <View>
                     <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
-                        <Text style={{ fontSize: SIZE.size16 }}>Nơi đặt trụ sạc</Text>
+                        <Text style={{ fontSize: SIZE.size16 }}>Nơi đặt trạm sạc</Text>
                     </View>
                     {dataPlace ? <ItemRadioDP data={dataPlace} dropdownOpen={openDropdownPlace} setDropdownOpen={setOpenDropdownBrandCar} selectedValue={selectedPlace} setSelectedValue={setSelectedPlace} /> : null}
                 </View>
@@ -773,7 +819,7 @@ const FormStation = () => {
                                                 </Text>
                                             </View>
                                             <View style={styles.infoRow}>
-                                                {item.vehicle_id.name === 'Xe máy điện' ?
+                                                {/* {item.vehicle.vehicle_id[0].name === 'Xe máy điện' ?
                                                     <>
                                                         <Image style={styles.icon} source={require('../../../assets/icon/electric-scooter.png')} />
                                                     </>
@@ -781,9 +827,12 @@ const FormStation = () => {
                                                     <>
                                                         <Image style={styles.icon} source={require('../../../assets/icon/icons8-car-50 (1).png')} />
                                                     </>
-
+                                                } */}
+                                                {item.vehicle.length > 1 ?
+                                                    <Text style={styles.textList}>Tất cả</Text>
+                                                    :
+                                                    <Text style={styles.textList}>{item.vehicle[0].vehicle_id.name}</Text>
                                                 }
-                                                <Text style={styles.textList}>{item.vehicle_id.name}</Text>
                                             </View>
                                         </View>
                                         <View style={{ width: '20%', justifyContent: 'center' }}>
@@ -920,8 +969,8 @@ const FormStation = () => {
             </ScrollView>
             <View style={{
                 alignItems: 'center',
-               backgroundColor:'white',
-               height:'10%',
+                backgroundColor: 'white',
+                height: '10%',
             }}>
                 <TouchableOpacity
                     onPress={addNewStaion}
