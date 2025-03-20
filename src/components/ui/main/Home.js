@@ -379,9 +379,27 @@ const Home = (props) => {
     // const point2 = { latitude: 11.3495, longitude: 106.0640 };
     // const distance = haversine(point1, point2); // Khoảng cách tính bằng mét
     // console.log(distance / 1000 + " km")
+
     // console.log(dataSelectedCar.vehicleCar);
     // console.log(dataSelectedCar.chargingCar._id);
     // console.log(dataSelectedCar.modelCar._id);
+    // console.log(dataSelectedCar)
+
+    useEffect(() => {
+        if (dataSelectedCar) {
+            if (dataSelectedCar.chargingCar && dataSelectedCar.chargingCar._id) {
+                console.log(dataSelectedCar.chargingCar._id);
+            }
+    
+            if (dataSelectedCar.modelCar && dataSelectedCar.modelCar._id) {
+                console.log(dataSelectedCar.modelCar._id);
+            } 
+            if (dataSelectedCar.vehicleCar) {
+                console.log(dataSelectedCar.vehicleCar);
+            } 
+        }
+    }, [dataSelectedCar]);
+    
 
 
 
@@ -434,10 +452,10 @@ const Home = (props) => {
                             const isSelected = selectedBrand === item._id;
                             return (
                                 <View>
-                                    {item.image && item.name !== 'Không' ?
+                                    {item.image ?
                                         <TouchableOpacity
-                                            style={[styles.itemBrand, isSelected && styles.selectedItemBrand]}
-                                            onPress={() => setSelectedBrand(selectedBrand === item._id ? [] : item._id)}
+                                            style={[styles.itemBrand, selectedBrand.includes(item._id) && styles.selectedItemBrand]}
+                                            onPress={() => setSelectedBrand([item._id])}
                                         >
                                             <Image style={styles.iconListBrand} source={{ uri: item.image }} />
                                         </TouchableOpacity>
