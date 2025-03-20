@@ -31,7 +31,7 @@ const Trip = () => {
   const [modalMapStart, setModalMapStart] = useState(false);
   const [modalMapEnd, setModalMapEnd] = useState(false);
 
-  const [dataStation, setDataStation] = useState([]);
+  const [dataStation, setDataStation] = useState(null);
 
   const getDataStation = async () => {
     try {
@@ -58,15 +58,14 @@ const Trip = () => {
         setDataStation(dataStation.data);
         setCheckLoading(false);
       } else {
+        setDataStation([]);
         setCheckLoading(false);
-        // ItemShowAlert('Thông báo', 'Không có trạm sạc theo yêu cầu');
         showToast('info', 'Không có trạm sạc theo yêu cầu');
       }
     } catch (error) {
       setCheckLoading(false);
       console.error('Lỗi khi lấy dữ liệu station:', error);
       showToast('error', 'Có lỗi xảy ra vui lòng thử lại sau');
-      // ItemShowAlert('Thông báo', 'Không thể tải trạm sạc xuống');
     }
   };
 
@@ -119,7 +118,7 @@ const Trip = () => {
                   style={styles.textInputStart}>
                   {addressStart}
                 </Text>
-                <TouchableOpacity onPress={() => { console.log('Start'); setModalMapStart(true) }} style={styles.viewImgLoaction}>
+                <TouchableOpacity onPress={() => setModalMapStart(true)} style={styles.viewImgLoaction}>
                   <Image source={require('../../../assets/icon/target.png')} style={styles.imgLocation} />
                 </TouchableOpacity>
               </View>
@@ -141,7 +140,7 @@ const Trip = () => {
                   style={styles.textInputStart}>
                   {addressEnd}
                 </Text>
-                <TouchableOpacity onPress={() => { console.log('End'); setModalMapEnd(true) }} style={styles.viewImgLoaction}>
+                <TouchableOpacity onPress={() => setModalMapEnd(true)} style={styles.viewImgLoaction}>
                   <Image source={require('../../../assets/icon/target.png')} style={styles.imgLocation} />
                 </TouchableOpacity>
               </View>
@@ -160,22 +159,26 @@ const Trip = () => {
         <View style={styles.viewListStation}>
 
           <View>
-            {dataStation.length > 0 ?
-              <FlatList
-                data={dataStation}
-                scrollEnabled={false}
-                keyExtractor={(item) => item._id}
-                showsVerticalScrollIndicator={false}
-                renderItem={({ item }) =>
-                  <View>
-                    <ItemStationTrips data={item} />
-                  </View>
-                }
-              />
-              :
+            {!dataStation ?
               <View style={{ alignItems: 'center', width: '100%', justifyContent: 'center', height: 250 }}>
-                <Text style={{ fontSize: 15, fontWeight: 500 }}>Không có thông tin trạm sạc theo yêu cầu</Text>
+                <Text style={{ fontSize: 15, fontWeight: 500 }}>Chọn lịch trình của bạn</Text>
               </View>
+              : dataStation.length > 0 ?
+                <FlatList
+                  data={dataStation}
+                  scrollEnabled={false}
+                  keyExtractor={(item) => item._id}
+                  showsVerticalScrollIndicator={false}
+                  renderItem={({ item }) =>
+                    <View>
+                      <ItemStationTrips data={item} />
+                    </View>
+                  }
+                />
+                :
+                <View style={{ alignItems: 'center', width: '100%', justifyContent: 'center', height: 250 }}>
+                  <Text style={{ fontSize: 15, fontWeight: 500 }}>Không có thông tin trạm sạc theo yêu cầu</Text>
+                </View>
             }
           </View>
 

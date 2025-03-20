@@ -427,15 +427,15 @@ export function ItemStationList(props) {
 
   return (
     <TouchableOpacity activeOpacity={1} style={styles.listRow} key={data._id} onPress={clickViewDetail}>
-      {checkActive || data.isActive === 3 || data.isActive === 1?
+      {checkActive || data.isActive === 3 || data.isActive === 1 ?
         (
-          data.isActive === 1 && !checkActive?
+          data.isActive === 1 && !checkActive ?
             <View style={{ height: 180, justifyContent: 'center' }}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', margin: '5%' }}>
                 <TouchableOpacity onPress={clickEdit} style={{ width: '40%', padding: 10, height: 50, borderWidth: 1, alignItems: 'center', justifyContent: 'center', borderRadius: 10, borderColor: COLOR.green3 }}>
                   <Text style={{ color: COLOR.green3 }}>Sửa trạm sạc</Text>
                 </TouchableOpacity>
-              
+
               </View>
             </View>
             :
@@ -455,7 +455,12 @@ export function ItemStationList(props) {
         </View>
       }
       <View style={styles.viewInfoStation}>
-        <Text style={styles.textItemName} numberOfLines={1} ellipsizeMode='tail'>{data.brand_id.name} - {data.name}</Text>
+        {data.brand_id.name === 'Không' ?
+          <Text style={styles.textItemName} numberOfLines={1} ellipsizeMode='tail'>{data.name}</Text>
+          :
+          <Text style={styles.textItemName} numberOfLines={1} ellipsizeMode='tail'>{data.brand_id.name} - {data.name}</Text>
+        }
+
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Image style={{ width: 20, height: 20, marginRight: 5 }} source={require('../../assets/icon/icons8-location-94.png')} />
           <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail'>{data.location}</Text>
