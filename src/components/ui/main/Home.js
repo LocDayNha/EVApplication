@@ -148,6 +148,7 @@ const Home = (props) => {
             if (dataStation.data && dataStation.data.length > 0) {
                 setDataStation(dataStation.data);
             } else {
+                setDataStation([]);
                 console.log('Không tìm thấy dữ liệu từ /station/get');
             }
         } catch (error) {

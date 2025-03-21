@@ -178,7 +178,7 @@ const ViewDetail = () => {
                         </View>
                         {/* Dich Vu  */}
 
-                        {dataStation.service.length > 0 && dataStation.note ?
+                        {dataStation.service.length > 0 ?
                             <View style={{
                                 margin: '5%', marginTop: 0, backgroundColor: 'white', borderRadius: 10, paddingTop: 10, shadowColor: "#000",
                                 shadowOffset: {
