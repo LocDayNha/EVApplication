@@ -181,9 +181,7 @@ const FormEditStation = () => {
             setCheckLoading(true);
             if (valuePower && valuePorts && valuePrice && selectedVehical && selectedSocket) {
 
-                const formattedVehical = selectedVehical.length > 2
-                    ? selectedVehical.slice(1).map(item => ({ vehicle_id: item.value }))
-                    : selectedVehical.map(item => ({ vehicle_id: item.value }));
+                const formattedVehical = selectedVehical.map(item => ({ vehicle_id: item.value }));
 
                 const dataSpecification = await AxiosInstance().post('/specification/addNew',
                     {
@@ -191,7 +189,17 @@ const FormEditStation = () => {
                     });
 
                 if (dataSpecification.data) {
-                    setListDataSpecification(prevList => [...prevList, dataSpecification.data]);
+                    const vehicleInfo = dataSpecification.data.vehicle.map(v => ({
+                        vehicle_id: v.vehicle_id._id,
+                        vehicle_name: v.vehicle_id.name,
+                        _id: v._id,
+                    }));
+
+                    const newData = {
+                        ...dataSpecification.data,
+                        vehicle: vehicleInfo,
+                    };
+                    setListDataSpecification(prevList => [...prevList, newData]);
                     clearForm();
                     setCheckLoading(false);
 
@@ -224,7 +232,17 @@ const FormEditStation = () => {
                     });
 
                 if (dataSpecification.data) {
-                    setListDataSpecification(prevList => [...prevList, dataSpecification.data]);
+                    const vehicleInfo = dataSpecification.data.vehicle.map(v => ({
+                        vehicle_id: v.vehicle_id._id,
+                        vehicle_name: v.vehicle_id.name,
+                        _id: v._id,
+                    }));
+
+                    const newData = {
+                        ...dataSpecification.data,
+                        vehicle: vehicleInfo,
+                    };
+                    setListDataSpecification(prevList => [...prevList, newData]);
                     clearForm();
                     setCheckLoading(false);
 
@@ -250,13 +268,16 @@ const FormEditStation = () => {
         setValuePorts(item.slot?.toString() || "");
         setValuePrice(item.price?.toString() || "");
 
-        const formattedVehicles = item.vehicle.map((item, index) => ({
-            _index: index + 1,
-            image: undefined,
-            label: item.vehicle_id.name,
-            value: item.vehicle_id._id
-        }));
-        setSelectedVehical(formattedVehicles || "",);
+        const formattedVehicles = item?.vehicle
+            ? item.vehicle.map((v, index) => ({
+                _index: index + 1,
+                image: undefined,
+                label: v?.vehicle_name || "Không có dữ liệu",
+                value: v?.vehicle_id || "",
+            }))
+            : [];
+
+        setSelectedVehical(formattedVehicles);
 
         const formattedPort = {
             image: item.port_id.image,
@@ -270,22 +291,32 @@ const FormEditStation = () => {
     const updateSpecificationById = async (id) => {
         try {
             setCheckLoading(true);
-            const formattedVehical = selectedVehical.length > 2
-                ? selectedVehical.slice(1).map(item => ({ vehicle_id: item.value }))
-                : selectedVehical.map(item => ({ vehicle_id: item.value }));
 
+            const formattedVehical = selectedVehical.map(item => ({ vehicle_id: item.value }));
+
+            console.log(formattedVehical);
             const updatedData = {
                 kw: valuePower,
                 slot: valuePorts,
                 price: valuePrice,
-                vehicle_id: formattedVehical,
+                vehicle: formattedVehical,
                 port_id: selectedSocket.value
             };
 
             const response = await AxiosInstance().post('/specification/update', { id, ...updatedData });
             if (response) {
+                const vehicleInfo = response.data.vehicle.map(v => ({
+                    vehicle_id: v.vehicle_id._id,
+                    vehicle_name: v.vehicle_id.name,
+                    _id: v._id,
+                }));
+
+                const newData = {
+                    ...response.data,
+                    vehicle: vehicleInfo,
+                };
                 setListDataSpecification(prevList =>
-                    prevList.map(item => item._id === id ? response.data : item)
+                    prevList.map(item => item._id === id ? newData : item)
                 );
                 clearForm();
                 setCheckLoading(false);
@@ -326,7 +357,6 @@ const FormEditStation = () => {
             setCheckLoading(false);
         }
     }
-
     // Station
     const getDataStation = async () => {
         try {
@@ -396,10 +426,12 @@ const FormEditStation = () => {
                 const formattedSpecification = dataStation.data.specification.map(item => ({
                     _id: item.specification_id._id,
                     user_id: item.specification_id.user_id,
-                    vehicle: item.specification_id.vehicle.map(v => ({
-                        _id: v._id,
-                        name: v.vehicle_id.name,
-                    })),
+                    vehicle: Array.isArray(item.specification_id.vehicle)
+                        ? item.specification_id.vehicle.map(v => ({
+                            vehicle_id: v.vehicle_id._id,
+                            vehicle_name: v.vehicle_id && v.vehicle_id.name ? v.vehicle_id.name : "Không có dữ liệu",
+                        }))
+                        : [],
                     port_id: {
                         _id: item.specification_id.port_id._id,
                         name: item.specification_id.port_id.name,
@@ -412,7 +444,6 @@ const FormEditStation = () => {
                     type: item.specification_id.type,
                     isActive: item.specification_id.isActive,
                     createAt: item.specification_id.createAt,
-                    __v: item.specification_id.__v,
                 }));
 
                 setListDataSpecification(formattedSpecification);
@@ -961,11 +992,13 @@ const FormEditStation = () => {
                                                         <Image style={styles.icon} source={require('../../../assets/icon/icons8-car-50 (1).png')} />
                                                     </>
                                                 } */}
-                                                {item.vehicle.length > 1 ?
+                                                {Array.isArray(item.vehicle) && item.vehicle.length > 1 ? (
                                                     <Text style={styles.textList}>Tất cả</Text>
-                                                    :
-                                                    <Text style={styles.textList}>{item.vehicle[0].vehicle_id.name}</Text>
-                                                }
+                                                ) : (
+                                                    <Text style={styles.textList}>
+                                                        {item.vehicle[0].vehicle_name || "Không có dữ liệu"}
+                                                    </Text>
+                                                )}
                                             </View>
                                         </View>
                                         <View style={{ width: '20%', justifyContent: 'center' }}>
@@ -978,9 +1011,13 @@ const FormEditStation = () => {
                                                     <Text>Sửa</Text>
                                                 </TouchableOpacity>
                                             }
-                                            <TouchableOpacity onPress={() => deleteSpecificationById(item._id)} style={[styles.buttonList, { borderColor: 'red' }]}>
-                                                <Text>Xóa</Text>
-                                            </TouchableOpacity>
+                                            {listDataSpecification.length <= 1 ?
+                                                null :
+                                                <TouchableOpacity onPress={() => deleteSpecificationById(item._id)} style={[styles.buttonList, { borderColor: 'red' }]}>
+                                                    <Text>Xóa</Text>
+                                                </TouchableOpacity>
+                                            }
+
                                         </View>
 
                                     </View>
@@ -1042,6 +1079,7 @@ const FormEditStation = () => {
                                     onPress={() => {
                                         setModalVisibleMap(false);
                                         setAddress(null);
+                                        setSelectedLocation(null);
                                     }}
                                     style={styles.applyButton}>
                                     <Text style={styles.applyText}>Hủy chọn</Text>

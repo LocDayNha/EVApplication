@@ -455,7 +455,8 @@ const Home = (props) => {
                                     {item.image ?
                                         <TouchableOpacity
                                             style={[styles.itemBrand, selectedBrand.includes(item._id) && styles.selectedItemBrand]}
-                                            onPress={() => setSelectedBrand([item._id])}
+                                           // onPress={() => setSelectedBrand([item._id])}
+                                            onPress={() => setSelectedBrand(selectedBrand.includes(item._id) ? [] : [item._id])}
                                         >
                                             <Image style={styles.iconListBrand} source={{ uri: item.image }} />
                                         </TouchableOpacity>

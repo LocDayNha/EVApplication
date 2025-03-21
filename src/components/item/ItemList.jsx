@@ -716,9 +716,9 @@ export function ItemCheckBoxDP({ dropdownOpen, setDropdownOpen, selectedValues, 
     const handleSelect = (item) => {
         if (item.value === "select_all") {
             if (selectedValues.length === items.length - 1) {
-                setSelectedValues([]);
+                setSelectedValues([]); 
             } else {
-                setSelectedValues(items.slice(1));
+                setSelectedValues(items.slice(1)); 
             }
         } else {
             let newSelection;
@@ -727,13 +727,8 @@ export function ItemCheckBoxDP({ dropdownOpen, setDropdownOpen, selectedValues, 
             } else {
                 newSelection = [...selectedValues, item];
             }
-
-            if (newSelection.length === items.length - 1) {
-                newSelection = [items[0], ...newSelection];
-            } else {
-                newSelection = newSelection.filter((val) => val.value !== "select_all");
-            }
-
+            newSelection = newSelection.filter((val) => val.value !== "select_all");
+    
             setSelectedValues(newSelection);
         }
     };
@@ -746,7 +741,7 @@ export function ItemCheckBoxDP({ dropdownOpen, setDropdownOpen, selectedValues, 
                 showsVerticalScrollIndicator={false}
                 value={selectedValues.map((item) => item.value)}
                 onChange={handleSelect}
-                placeholder="Chọn một hoặc nhiều mục"
+                placeholder={selectedValues.length> 0 ? 'Đã chọn':"Chọn một hoặc nhiều mục"}
                 style={{
                     borderWidth: 1,
                     borderColor: "#ccc",
@@ -761,7 +756,7 @@ export function ItemCheckBoxDP({ dropdownOpen, setDropdownOpen, selectedValues, 
                 }}
                 selectedTextStyle={{ fontSize: 16, }}
                 containerStyle={{
-                    maxHeight: '50%',
+                    Height: 150,
                     borderWidth: 1,
                     borderColor: "#ccc",
                     borderRadius: 8,

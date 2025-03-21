@@ -148,14 +148,22 @@ const FormStation = () => {
     };
     const getDataBrandCar = async () => {
         try {
-            const dataPort = await AxiosInstance().get('/brandcar/get');
-            if (dataPort.data && dataPort.data.length > 0) {
-                setDataBrandCar(dataPort.data);
+            const dataCar = await AxiosInstance().get('/brandcar/get');
+            if (dataCar.data && dataCar.data.length > 0) {
+                setDataBrandCar(dataCar.data);
+
+                const formattedBrandCar = dataCar.data.map((item, index) => ({
+                    _index: index,
+                    image: item.image,
+                    label: item.name,
+                    value: item._id
+                }));
+                setSelectedBrandCar(formattedBrandCar);
             } else {
                 console.log('Không tìm thấy dữ liệu từ /port/get');
             }
         } catch (error) {
-            console.error('Lỗi khi lấy dữ liệu port:', error);
+            console.error('Lỗi khi lấy dữ liệu hang xe :', error);
         }
     };
     const getDataPlace = async () => {
@@ -178,9 +186,7 @@ const FormStation = () => {
             setCheckLoading(true);
             if (valuePower && valuePorts && valuePrice && selectedVehical && selectedSocket) {
 
-                const formattedVehical = selectedVehical.length > 2
-                    ? selectedVehical.slice(1).map(item => ({ vehicle_id: item.value }))
-                    : selectedVehical.map(item => ({ vehicle_id: item.value }));
+                const formattedVehical = selectedVehical.map(item => ({ vehicle_id: item.value }));
 
                 const dataSpecification = await AxiosInstance().post('/specification/addNew',
                     {
@@ -188,7 +194,17 @@ const FormStation = () => {
                     });
 
                 if (dataSpecification.data) {
-                    setListDataSpecification(prevList => [...prevList, dataSpecification.data]);
+                    const vehicleInfo = dataSpecification.data.vehicle.map(v => ({
+                        vehicle_id: v.vehicle_id._id,
+                        vehicle_name: v.vehicle_id.name,
+                        _id: v._id,
+                    }));
+
+                    const newData = {
+                        ...dataSpecification.data,
+                        vehicle: vehicleInfo,
+                    };
+                    setListDataSpecification(prevList => [...prevList, newData]);
                     clearForm();
                     setCheckLoading(false);
 
@@ -215,13 +231,22 @@ const FormStation = () => {
             }
 
             if (item.kw.toString() && item.slot.toString() && item.price.toString() && item.vehicle && item.port_id?._id) {
-                const dataSpecification = await AxiosInstance().post('/specification/addNew',
+                const response = await AxiosInstance().post('/specification/addNew',
                     {
                         user_id: idUser, vehicle: item.vehicle, port_id: item.port_id?._id, kw: item.kw, slot: item.slot, price: item.price
                     });
 
-                if (dataSpecification.data) {
-                    setListDataSpecification(prevList => [...prevList, dataSpecification.data]);
+                if (response.data) {
+                    const vehicleInfo = response.data.vehicle.map(v => ({
+                        vehicle_id: v.vehicle_id._id,
+                        vehicle_name: v.vehicle_id.name,
+                        _id: v._id,
+                    }));
+                    const newData = {
+                        ...response.data,
+                        vehicle: vehicleInfo,
+                    };
+                    setListDataSpecification(prevList => [...prevList, newData]);
                     clearForm();
                     setCheckLoading(false);
 
@@ -247,13 +272,16 @@ const FormStation = () => {
         setValuePorts(item.slot?.toString() || "");
         setValuePrice(item.price?.toString() || "");
 
-        const formattedVehicles = item.vehicle.map((item, index) => ({
-            _index: index + 1,
-            image: undefined,
-            label: item.vehicle_id.name,
-            value: item.vehicle_id._id
-        }));
-        setSelectedVehical(formattedVehicles || "",);
+        const formattedVehicles = item?.vehicle
+            ? item.vehicle.map((v, index) => ({
+                _index: index + 1,
+                image: undefined,
+                label: v?.vehicle_name || "Không có dữ liệu",
+                value: v?.vehicle_id || "",
+            }))
+            : [];
+
+        setSelectedVehical(formattedVehicles);
 
         const formattedPort = {
             image: item.port_id.image,
@@ -267,9 +295,8 @@ const FormStation = () => {
     const updateSpecificationById = async (id) => {
         try {
             setCheckLoading(true);
-            const formattedVehical = selectedVehical.length > 2
-                ? selectedVehical.slice(1).map(item => ({ vehicle_id: item.value }))
-                : selectedVehical.map(item => ({ vehicle_id: item.value }));
+            console.log(selectedVehical);
+            const formattedVehical = selectedVehical.map(item => item.value);
 
             const updatedData = {
                 kw: valuePower,
@@ -281,8 +308,18 @@ const FormStation = () => {
 
             const response = await AxiosInstance().post('/specification/update', { id, ...updatedData });
             if (response) {
+                const vehicleInfo = response.data.vehicle.map(v => ({
+                    vehicle_id: v.vehicle_id._id,
+                    vehicle_name: v.vehicle_id.name,
+                    _id: v._id,
+                }));
+
+                const newData = {
+                    ...response.data,
+                    vehicle: vehicleInfo,
+                };
                 setListDataSpecification(prevList =>
-                    prevList.map(item => item._id === id ? response.data : item)
+                    prevList.map(item => item._id === id ? newData : item)
                 );
                 clearForm();
                 setCheckLoading(false);
@@ -828,11 +865,13 @@ const FormStation = () => {
                                                         <Image style={styles.icon} source={require('../../../assets/icon/icons8-car-50 (1).png')} />
                                                     </>
                                                 } */}
-                                                {item.vehicle.length > 1 ?
+                                                {Array.isArray(item.vehicle) && item.vehicle.length > 1 ? (
                                                     <Text style={styles.textList}>Tất cả</Text>
-                                                    :
-                                                    <Text style={styles.textList}>{item.vehicle[0].vehicle_id.name}</Text>
-                                                }
+                                                ) : (
+                                                    <Text style={styles.textList}>
+                                                        {item.vehicle[0].vehicle_name || "Không có dữ liệu"}
+                                                    </Text>
+                                                )}
                                             </View>
                                         </View>
                                         <View style={{ width: '20%', justifyContent: 'center' }}>
@@ -908,6 +947,7 @@ const FormStation = () => {
                                     onPress={() => {
                                         setModalVisibleMap(false);
                                         setAddress(null);
+                                        setSelectedLocation(null);
                                     }}
                                     style={styles.applyButton}>
                                     <Text style={styles.applyText}>Hủy chọn</Text>
