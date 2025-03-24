@@ -177,57 +177,65 @@ const ViewDetail = () => {
                             </View>
                         </View>
                         {/* Dich Vu  */}
+                        <View style={{ justifyContent: 'center', alignItems: 'center', margin: '5%' }}>
+                            <Text style={styles.textInfoService}> Dịch vụ </Text>
+                        </View>
+                        <View>
+                            {dataStation.service.length > 0 ?
+                                <View style={{
+                                    margin: '5%',
+                                    marginTop: 0,
+                                    backgroundColor: 'white',
+                                    borderRadius: 10,
+                                    paddingTop: 10,
+                                    // shadowColor: "#000",
+                                    // shadowOffset: {
+                                    //     width: 0,
+                                    //     height: 2,
+                                    // },
+                                    // shadowOpacity: 0.25,
+                                    // shadowRadius: 3.84,
+                                    elevation: 5,
+                                }} >
+                                    {dataStation.service.length > 0 ?
+                                        <>
 
-                        {dataStation.service.length > 0 ?
-                            <View style={{
-                                margin: '5%', marginTop: 0, backgroundColor: 'white', borderRadius: 10, paddingTop: 10, shadowColor: "#000",
-                                shadowOffset: {
-                                    width: 0,
-                                    height: 2,
-                                },
-                                shadowOpacity: 0.25,
-                                shadowRadius: 3.84,
-                                elevation: 5,
-                            }} >
-                                {dataStation.service.length > 0 ?
-                                    <>
-                                        <View style={{ justifyContent: 'center', alignItems: 'center', }}>
-                                            <Text style={styles.textInfoService}> Dịch vụ </Text>
+                                            <FlatList
+                                                data={dataStation.service.map(item => item.service_id)}
+                                                showsHorizontalScrollIndicator={false}
+                                                scrollEnabled={false}
+                                                keyExtractor={(item) => item._id}
+                                                renderItem={({ item }) => (
+                                                    <View style={styles.viewService} >
+                                                        <Image style={styles.imgServies} source={{ uri: item.image }} />
+                                                        <Text style={styles.textService}>
+                                                            {item.name}
+                                                        </Text>
+                                                    </View>
+
+                                                )}
+                                            />
+                                        </>
+                                        :
+                                        null
+                                    }
+
+                                    {/* ghi chú dịch vụ  */}
+                                    {dataStation.note ?
+                                        <View>
+                                            <Text style={[styles.textInfoService, { marginLeft: '5%', marginBottom: '2%' }]}>Ghi chú</Text>
+                                            <Text style={styles.textNote}>{dataStation.note}</Text>
                                         </View>
-                                        <FlatList
-                                            data={dataStation.service.map(item => item.service_id)}
-                                            showsHorizontalScrollIndicator={false}
-                                            scrollEnabled={false}
-                                            keyExtractor={(item) => item._id}
-                                            renderItem={({ item }) => (
-                                                <View style={styles.viewService} >
-                                                    <Image style={styles.imgServies} source={{ uri: item.image }} />
-                                                    <Text style={styles.textService}>
-                                                        {item.name}
-                                                    </Text>
-                                                </View>
+                                        :
+                                        null
+                                    }
 
-                                            )}
-                                        />
-                                    </>
-                                    :
-                                    null
-                                }
+                                </View>
+                                :
+                                null
+                            }
 
-                                {/* ghi chú dịch vụ  */}
-                                {dataStation.note ?
-                                    <View>
-                                        <Text style={[styles.textInfoService, { marginLeft: '5%', marginBottom: '2%' }]}>Ghi chú</Text>
-                                        <Text style={styles.textNote}>{dataStation.note}</Text>
-                                    </View>
-                                    :
-                                    null
-                                }
-
-                            </View>
-                            :
-                            null
-                        }
+                        </View>
 
                         {/* trụ sạc  */}
                         <View style={{ justifyContent: 'center', alignItems: 'center' }}>
@@ -403,18 +411,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         borderColor: '#C7C6C5',
     },
-    textNameCharging: {
-        alignItems: 'center',
-        width: '40%',
-        padding: '5%',
-        marginLeft: '10%',
-        marginTop: '-15%',
-        margin: '5%',
-        backgroundColor: 'white',
-        borderWidth: 1,
-        borderRadius: 10,
-        borderColor: '#C7C6C5',
-    },
     textName: {
         fontSize: SIZE.size18,
         fontWeight: 'bold',
@@ -464,12 +460,12 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderRadius: 20,
         shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
+        // shadowOffset: {
+        //     width: 0,
+        //     height: 2,
+        // },
         shadowOpacity: 0.25,
-        shadowRadius: 3.84,
+        // shadowRadius: 3.84,
         elevation: 5,
     },
     detailStation: {
@@ -534,7 +530,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     viewChargingPost: {
-        backgroundColor: 'white',
+        backgroundColor: '#EEEEEEFF',
         borderRadius: 10,
         padding: '2%',
         flexDirection: 'row',
@@ -543,14 +539,14 @@ const styles = StyleSheet.create({
         marginLeft: '2%',
         marginTop: '2%',
         marginBottom: '3%',
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
+        // shadowColor: "#000",
+        // shadowOffset: {
+        //     width: 0,
+        //     height: 2,
+        // },
+        // shadowOpacity: 0.25,
+        // shadowRadius: 3.84,
+        // elevation: 5,
     },
     listRate: {
         margin: '0%',
