@@ -57,9 +57,11 @@ export function TextInputProfile({ label, defaultValue, onChangeText, placeholde
 
 export function CustomButton({ label, onPress }) {
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress}>
-      <Text style={styles.buttonText}>{label}</Text>
-    </TouchableOpacity>
+    <LinearGradient colors={['#009558', '#5bdb5b',]} style={styles.container}>
+      <TouchableOpacity style={{ width: "100%", height: 50, justifyContent:'center', alignItems:'center' }} onPress={onPress}>
+        <Text style={styles.buttonText}>{label}</Text>
+      </TouchableOpacity>
+    </LinearGradient >
   );
 }
 
@@ -1174,7 +1176,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: SIZE.size16,
-    color: COLOR.secondary,
+    color: 'white',
     fontWeight: 700,
     fontFamily: 'Poppins'
   },

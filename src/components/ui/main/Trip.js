@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View, Image, TouchableOpacity, FlatList, ToastAndroid } from 'react-native'
+import { ScrollView, StyleSheet, Text, View, Image, TouchableOpacity, FlatList, ToastAndroid, TextInput } from 'react-native'
 import React, { useState, useEffect, useContext } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import AxiosInstance from '../../axios/AxiosInstance';
@@ -72,9 +72,12 @@ const Trip = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.view}>
-        <View style={styles.viewEnergy}>
-          <Text style={styles.textEnergy}>Công suất phương tiện</Text>
-          <Text style={[styles.textEnergy, { color: '#009558', fontWeight: 500, fontSize: 20 }]}>{energy} km</Text>
+        <View style={[styles.viewEnergy, { marginTop: dataStation !== null && dataStation.length > 0 ? '3%' : '40%', }]}>
+          <Text style={styles.textEnergy}>Công suất phương tiện: </Text>
+          <View style={{ backgroundColor: '#33CC33', flexDirection: 'row', alignItems: 'center', marginLeft: '5%', paddingHorizontal: '2%', borderRadius: 15 }}>
+            <TextInput keyboardType="numeric" style={[styles.textEnergy, { color: 'black', fontWeight: 500, fontSize: 16, color: 'white' }]} onChangeText={setEnergy}>{energy}</TextInput>
+            <Text style={[styles.textEnergy, { color: 'black', fontWeight: 500, fontSize: 16, color: 'white' }]}>km</Text>
+          </View>
         </View>
 
         <View style={styles.viewLine}>
@@ -87,11 +90,11 @@ const Trip = () => {
               step={1}
               value={energy}
               onValuesChange={setEnergy}
-              minimumTrackTintColor="green3"
-              maximumTrackTintColor="#979592"
-              thumbTintColor="green3"
-              markerStyle={{ height: 20, width: 20, }}
-              trackStyle={{ height: 4, }}
+              minimumTrackTintColor="#33CC33"  // Màu của thanh đã kéo
+              maximumTrackTintColor="#EEEEEE"  // Màu của thanh chưa kéo
+              thumbTintColor="#33CC33"  // Màu của núm kéo
+              markerStyle={{ height: 20, width: 20, backgroundColor: '#33CC33' }}
+              trackStyle={{ height: 4, backgroundColor: '#EEEEEE' }}
             />
           </View>
 
@@ -101,9 +104,9 @@ const Trip = () => {
           </View>
         </View>
 
-        <View style={{ width: '100%', marginBottom: '3%' }}>
-          <Text style={[styles.textLine, { marginLeft: '0%', fontWeight: 500, fontSize: 18 }]}>Chọn lịch trình</Text>
-        </View>
+        {/* <View style={{ width: '100%', marginBottom: '3%' }}>
+          <Text style={[styles.textLine, { marginLeft: '0%', fontWeight: 500, fontSize: 16 }]}>Chọn lịch trình</Text>
+        </View> */}
 
         <View style={styles.viewLocation}>
           <View style={styles.viewInputLocation}>
@@ -111,17 +114,17 @@ const Trip = () => {
               <View style={styles.viewStart}>
                 <Text style={styles.textStart}>A</Text>
               </View>
-              <View style={styles.viewTextInputStart}>
+              <TouchableOpacity onPress={() => setModalMapStart(true)} style={styles.viewTextInputStart}>
                 <Text
                   numberOfLines={1}
                   ellipsizeMode="tail"
                   style={styles.textInputStart}>
                   {addressStart}
                 </Text>
-                <TouchableOpacity onPress={() => setModalMapStart(true)} style={styles.viewImgLoaction}>
+                <View style={styles.viewImgLoaction}>
                   <Image source={require('../../../assets/icon/target.png')} style={styles.imgLocation} />
-                </TouchableOpacity>
-              </View>
+                </View>
+              </TouchableOpacity>
             </View>
           </View>
 
@@ -133,23 +136,23 @@ const Trip = () => {
               <View style={styles.viewStart}>
                 <Text style={styles.textStart}>B</Text>
               </View>
-              <View style={styles.viewTextInputStart}>
+              <TouchableOpacity onPress={() => setModalMapEnd(true)} style={styles.viewTextInputStart}>
                 <Text
                   numberOfLines={1}
                   ellipsizeMode="tail"
                   style={styles.textInputStart}>
                   {addressEnd}
                 </Text>
-                <TouchableOpacity onPress={() => setModalMapEnd(true)} style={styles.viewImgLoaction}>
+                <View style={styles.viewImgLoaction}>
                   <Image source={require('../../../assets/icon/target.png')} style={styles.imgLocation} />
-                </TouchableOpacity>
-              </View>
+                </View>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
 
         <View style={styles.viewButton}>
-          <LinearGradient colors={['#009558', '#5bdb5b',]} style={{ borderRadius: 20, width: '60%', justifyContent: 'center', alignItems: 'center' }}>
+          <LinearGradient colors={['#009558', '#5bdb5b',]} style={{ borderRadius: 50, width: '60%', justifyContent: 'center', alignItems: 'center' }}>
             <TouchableOpacity onPress={getDataStation} style={styles.buttonSearch}>
               <Text style={styles.textSearch}>Tìm kiếm tuyến đường</Text>
             </TouchableOpacity>
@@ -161,7 +164,6 @@ const Trip = () => {
           <View>
             {!dataStation ?
               <View style={{ alignItems: 'center', width: '100%', justifyContent: 'center', height: 250 }}>
-                <Text style={{ fontSize: 15, fontWeight: 500 }}>Chọn lịch trình của bạn</Text>
               </View>
               : dataStation.length > 0 ?
                 <FlatList
@@ -177,7 +179,7 @@ const Trip = () => {
                 />
                 :
                 <View style={{ alignItems: 'center', width: '100%', justifyContent: 'center', height: 250 }}>
-                  <Text style={{ fontSize: 15, fontWeight: 500 }}>Không có thông tin trạm sạc theo yêu cầu</Text>
+                  {/* <Text style={{ fontSize: 15, fontWeight: 500 }}>Không có thông tin trạm sạc theo yêu cầu</Text> */}
                 </View>
             }
           </View>
@@ -221,26 +223,24 @@ const styles = StyleSheet.create({
   viewEnergy: {
     width: '100%',
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: '3%'
   },
   textEnergy: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 500,
     color: 'black'
   },
   viewLine: {
     width: '90%',
     marginLeft: '5%',
-    marginTop: '5%',
     marginRight: '5%',
     marginBottom: '2%',
   },
   viewTextLine: {
     width: '100%',
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    marginTop: '-3%'
   },
   textLine: {
     fontSize: 18,
@@ -249,6 +249,7 @@ const styles = StyleSheet.create({
   },
   viewLocation: {
     width: '100%',
+    marginTop: '2%'
   },
   viewInputLocation: {
     width: '100%',
@@ -256,19 +257,20 @@ const styles = StyleSheet.create({
   },
   viewA: {
     width: '100%',
-    flexDirection: 'row'
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
   viewStart: {
-    width: '15%',
-    height: 50,
+    width: '10%',
+    height: 35,
     alignItems: 'center',
     justifyContent: 'center',
-    borderTopLeftRadius: 10,
-    borderBottomLeftRadius: 10,
-    backgroundColor: '#009558'
+    borderRadius: 50,
+    backgroundColor: '#33CC33'
   },
   textStart: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: 600,
     color: 'white'
   },
@@ -279,10 +281,8 @@ const styles = StyleSheet.create({
     height: 50,
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderTopRightRadius: 10,
-    borderBottomRightRadius: 10,
-    borderColor: '#009558',
-    borderWidth: 1,
+    borderRadius: 10,
+    backgroundColor: '#EEEEEE',
     flexDirection: 'row'
   },
   textInputStart: {
@@ -297,15 +297,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   imgLocation: {
-    width: 30,
-    height: 30,
+    width: 24,
+    height: 24,
     tintColor: '#333'
   },
   viewTo: {
-    width: 7,
-    height: 20,
-    marginLeft: '6.5%',
-    backgroundColor: '#009558',
+    width: 5,
+    height: 35,
+    marginTop: '-2%',
+    marginBottom: '-2%',
+    marginLeft: '4.3%',
+    backgroundColor: '#33CC33',
   },
   viewButton: {
     width: '100%',
@@ -319,10 +321,10 @@ const styles = StyleSheet.create({
     height: 50,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 20,
+    borderRadius: 50,
   },
   textSearch: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: 500,
     color: 'white'
   },
