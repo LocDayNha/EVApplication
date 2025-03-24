@@ -34,7 +34,7 @@ const Home = (props) => {
 
     const { navigation } = props;
     const { myCar } = useContext(AppContext);
-    const [dataSelectedCar, setDataSelectedCar] = useState([]);
+    const [dataSelectedCar, setDataSelectedCar] = useState(myCar[0]);
 
     const showToast = (type, content) => {
         Toast.show({
@@ -73,7 +73,13 @@ const Home = (props) => {
         setSelectedBrandCar([]);
         setSelectedVon([]);
         setSelectedBrand([]);
+        setSelectedBrandCar([]);
         setSelectedService([]);
+        setSelectedVehicle([]);
+        setSelectedSocket([]);
+    };
+    const clearFormVehicle = () => {
+        setSelectedBrandCar([]);
         setSelectedVehicle([]);
         setSelectedSocket([]);
     };
@@ -102,7 +108,7 @@ const Home = (props) => {
     }
 
     // danh muc lisst bo loc
-    const [selectedFilter, setSelectedFliter] = useState(0);
+    const [selectedFilter, setSelectedFliter] = useState(7);
     // danh muc phương tiện
     const handleVehicalSelect = (VehicalId) => {
         setSelectedVehicle(VehicalId);
@@ -319,7 +325,6 @@ const Home = (props) => {
     useEffect(() => {
         getData();
     }, []);
-
     const [selectedEc, setSelectedEc] = useState([]);
     const handleEcSelect = (ecId) => {
         setSelectedEc(ecId);
@@ -344,7 +349,11 @@ const Home = (props) => {
         const matchesPlace = !selectedLocation || selectedLocation.length === 0 || selectedLocation.includes(item.address?._id);
 
         const matchesVehicle = !selectedVehicle || selectedVehicle.length === 0 ||
-            item.specification.some(spec => selectedVehicle.includes(spec.specification_id.vehicle_id?._id));
+            item.specification.some(spec =>
+                spec.specification_id.vehicle.some(v =>
+                    selectedVehicle.includes(v.vehicle_id?._id)
+                )
+            );
 
         const matchesPort = !selectedSocket || selectedSocket.length === 0 ||
             item.specification.some(spec => selectedSocket.includes(spec.specification_id.port_id?._id));
@@ -357,6 +366,42 @@ const Home = (props) => {
 
         return (matchesBrand && matchesPlace && matchesBrandCar && matchesVehicle && matchesPort && matchesService && matchesVon && isValueNameLocation);
     });
+
+
+    const [checkFilter, setCheckFilter] = useState(false);
+    useEffect(() => {
+        if (myCar) {
+            clearFormVehicle();
+            if (dataSelectedCar) {
+                setCheckFilter(true);
+                if (dataSelectedCar.chargingCar && !selectedSocket.includes(dataSelectedCar.chargingCar._id)) {
+                    setSelectedSocket(prev => [...prev, dataSelectedCar.chargingCar._id]);
+                }
+                if (dataSelectedCar.modelCar && !selectedBrandCar.includes(dataSelectedCar.modelCar.brand_id._id)) {
+                    setSelectedBrandCar(prev => [...prev, dataSelectedCar.modelCar.brand_id._id]);
+                }
+                if (dataSelectedCar.modelCar && dataSelectedCar.modelCar === 'Xe máy điện') {
+                    setSelectedVehicle('67ad951438a923d416a25409');
+                }
+                else {
+                    setSelectedVehicle('67d7e207a9b4d60d7f235249');
+                }
+
+            } else {
+                setCheckFilter(false);
+            }
+        } else {
+            setCheckFilter(false);
+        }
+    }, [dataSelectedCar]);
+
+    // useEffect(() => {
+    //     if (selectedBrandCar.length > 0 || selectedSocket.length > 0) {
+    //         setCheckFilter(false);
+    //         setDataBrandCar([]);
+    //     }
+    // }, [selectedBrandCar, selectedVehicle, selectedSocket]);
+
 
     const sortedItems = (filteredItems || [])
         .map(item => ({
@@ -386,21 +431,6 @@ const Home = (props) => {
     // console.log(dataSelectedCar.modelCar._id);
     // console.log(dataSelectedCar)
 
-    useEffect(() => {
-        if (dataSelectedCar) {
-            if (dataSelectedCar.chargingCar && dataSelectedCar.chargingCar._id) {
-                console.log(dataSelectedCar.chargingCar._id);
-            }
-    
-            if (dataSelectedCar.modelCar && dataSelectedCar.modelCar._id) {
-                console.log(dataSelectedCar.modelCar._id);
-            } 
-            if (dataSelectedCar.vehicleCar) {
-                console.log(dataSelectedCar.vehicleCar);
-            } 
-        }
-    }, [dataSelectedCar]);
-    
 
 
 
@@ -456,7 +486,7 @@ const Home = (props) => {
                                     {item.image ?
                                         <TouchableOpacity
                                             style={[styles.itemBrand, selectedBrand.includes(item._id) && styles.selectedItemBrand]}
-                                           // onPress={() => setSelectedBrand([item._id])}
+                                            // onPress={() => setSelectedBrand([item._id])}
                                             onPress={() => setSelectedBrand(selectedBrand.includes(item._id) ? [] : [item._id])}
                                         >
                                             <Image style={styles.iconListBrand} source={{ uri: item.image }} />
@@ -537,7 +567,9 @@ const Home = (props) => {
                             {selectedFilter == 2 ? <ItemRadioButtonVertical data={Von} onSelect={handleVonSelect} selectedValue={selectedVon} setSelectedValue={setSelectedVon} /> : null}
                             {selectedFilter == 3 ? <ItemCheckBoxImage data={dataSocket} selectedItems={selectedSocket} setSelectedItems={setSelectedSocket} /> : null}
                             {selectedFilter == 4 ? <ItemCheckBoxImage data={dataService} selectedItems={selectedService} setSelectedItems={setSelectedService} /> : null}
-                            {selectedFilter == 7 ? <ItemListMyCar data={myCar} setDataSelectedCar={setDataSelectedCar} dataSelectedCar={dataSelectedCar} /> : null}
+                            <View style={{ width: '60%' }}>
+                                {selectedFilter == 7 ? <ItemListMyCar data={myCar} setDataSelectedCar={setDataSelectedCar} dataSelectedCar={dataSelectedCar} /> : null}
+                            </View>
 
                         </View>
                         <View style={styles.buttonRow}>

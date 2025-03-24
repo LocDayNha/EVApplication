@@ -651,7 +651,7 @@ export function ItemShowAlert(title, content) {
     Alert.alert(title, content, [{ text: "OK" }]);
 }
 
-export function ItemListMyCar({ dataSelectedCar, setDataSelectedCar, data }) {
+export function ItemListMyCar({ dataSelectedCar, setDataSelectedCar, data, }) {
     return (
         <View>
             <FlatList
@@ -660,7 +660,7 @@ export function ItemListMyCar({ dataSelectedCar, setDataSelectedCar, data }) {
                 data={data}
                 // keyExtractor={(item) => item._id}
                 renderItem={({ item }) => (
-                    <TouchableOpacity onPress={() => setDataSelectedCar(dataSelectedCar === item ? null : item)} >
+                    <TouchableOpacity onPress={() => [setDataSelectedCar(dataSelectedCar === item ? null : item)]  } >
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                             <View style={{ flexDirection: 'row' }}>
                                 {item.vehicleCar === 'Xe máy điện' ?
@@ -716,9 +716,9 @@ export function ItemCheckBoxDP({ dropdownOpen, setDropdownOpen, selectedValues, 
     const handleSelect = (item) => {
         if (item.value === "select_all") {
             if (selectedValues.length === items.length - 1) {
-                setSelectedValues([]); 
+                setSelectedValues([]);
             } else {
-                setSelectedValues(items.slice(1)); 
+                setSelectedValues(items.slice(1));
             }
         } else {
             let newSelection;
@@ -728,7 +728,7 @@ export function ItemCheckBoxDP({ dropdownOpen, setDropdownOpen, selectedValues, 
                 newSelection = [...selectedValues, item];
             }
             newSelection = newSelection.filter((val) => val.value !== "select_all");
-    
+
             setSelectedValues(newSelection);
         }
     };
@@ -741,7 +741,7 @@ export function ItemCheckBoxDP({ dropdownOpen, setDropdownOpen, selectedValues, 
                 showsVerticalScrollIndicator={false}
                 value={selectedValues.map((item) => item.value)}
                 onChange={handleSelect}
-                placeholder={selectedValues.length> 0 ? 'Đã chọn':"Chọn một hoặc nhiều mục"}
+                placeholder={selectedValues.length > 0 ? 'Đã chọn' : "Chọn một hoặc nhiều mục"}
                 style={{
                     borderWidth: 1,
                     borderColor: "#ccc",
