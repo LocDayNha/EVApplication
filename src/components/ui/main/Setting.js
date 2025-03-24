@@ -34,14 +34,17 @@ const Setting = () => {
     };
 
     return (
-        <ScrollView style={{backgroundColor:'white'}}>
-            <Text style={{ margin: '5%', fontSize: SIZE.size16, fontWeight: 'bold' }} > Cài đặt </Text>
+        <ScrollView style={{ backgroundColor: 'white', width: '100%' }}>
+            {/* <Text style={{ margin: '5%', fontSize: SIZE.size16, fontWeight: 'bold' }} > Cài đặt </Text> */}
 
             {infoUser && idUser ?
                 <>
                     <TouchableOpacity style={styles.viewUser} onPress={() => navigation.navigate("Profile")}>
-                        <Image style={styles.imguser} source={{ uri: image }} />
-                        <Text style={styles.textNameuser} >{name}</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <Image style={styles.imguser} source={{ uri: image }} />
+                            <Text style={styles.textNameuser} >{name}</Text>
+                        </View>
+                        <Image style={{ width: 20, height: 20, }} source={require('../../../assets/icon/icons8-next-96.png')} />
                     </TouchableOpacity>
                 </>
                 :
@@ -51,14 +54,14 @@ const Setting = () => {
 
             </View> */}
 
-            <View style={styles.boxSetting}>
+            <View style={[styles.boxSetting, { marginTop: '5%' }]}>
 
                 {infoUser && idUser ?
                     <>
 
                         <TouchableOpacity style={styles.boxContent} onPress={() => navigation.navigate("List")}>
                             <View style={{ flexDirection: 'row', alignItems: 'center', }}>
-                                <Image style={styles.imgIcon} source={require('../../../assets/icon/icons8-car-charger-48.png')} />
+                                <Image style={styles.imgIcon} source={require('../../../assets/icon/setting/station.png')} />
                                 <Text style={styles.textNameSetting}>Trạm sạc của bạn </Text>
                             </View>
 
@@ -71,7 +74,7 @@ const Setting = () => {
 
                 <TouchableOpacity onPress={() => navigation.navigate("Car")} style={styles.boxContent} >
                     <View style={{ flexDirection: 'row', alignItems: 'center', }}>
-                        <Image style={styles.imgIcon} source={require('../../../assets/icon/electric-car.png')} />
+                        <Image style={styles.imgIcon} source={require('../../../assets/icon/setting/mycar.png')} />
                         <Text style={styles.textNameSetting}>Phương tiện của bạn </Text>
                     </View>
 
@@ -82,7 +85,7 @@ const Setting = () => {
                     <>
                         <TouchableOpacity style={styles.boxContent} onPress={() => navigation.navigate("Profile")}>
                             <View style={{ flexDirection: 'row', alignItems: 'center', }} >
-                                <Image style={styles.imgIcon} source={require('../../../assets/icon/icons8-user-96.png')} />
+                                <Image style={[styles.imgIcon, { marginRight: '4%', }]} source={require('../../../assets/icon/setting/user.png')} />
                                 <Text style={styles.textNameSetting}>Quản lý thông tin cá nhân  </Text>
                             </View>
 
@@ -91,7 +94,7 @@ const Setting = () => {
 
                         <TouchableOpacity onPress={() => navigation.navigate('ForgotPass')} style={styles.boxContent}>
                             <View style={{ flexDirection: 'row', alignItems: 'center', }}>
-                                <Image style={styles.imgIcon} source={require('../../../assets/icon/icons8-password-96.png')} />
+                                <Image style={styles.imgIcon} source={require('../../../assets/icon/setting/change.png')} />
                                 <Text style={styles.textNameSetting}>Đổi mật khẩu</Text>
                             </View>
 
@@ -105,7 +108,7 @@ const Setting = () => {
 
                 <TouchableOpacity style={styles.boxContent}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', }}>
-                        <Image style={styles.imgIcon} source={require('../../../assets/icon/icons8-mail-96.png')} />
+                        <Image style={[styles.imgIcon, { width: 28, height: 28, }]} source={require('../../../assets/icon/setting/email.png')} />
                         <Text style={styles.textNameSetting}>Liên hệ chúng tôi </Text>
                     </View>
 
@@ -114,7 +117,7 @@ const Setting = () => {
 
                 <TouchableOpacity style={styles.boxContent}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', }}>
-                        <Image style={styles.imgIcon} source={require('../../../assets/icon/icons8-moon-symbol-96.png')} />
+                        <Image style={[styles.imgIcon, { width: 28, height: 28 }]} source={require('../../../assets/icon/setting/dark.png')} />
                         <Text style={styles.textNameSetting}>Chế độ tối </Text>
                     </View>
 
@@ -123,7 +126,7 @@ const Setting = () => {
 
                 <TouchableOpacity style={styles.boxContent}>
                     <View style={{ flexDirection: 'row' }}>
-                        <Image style={styles.imgIcon} source={require('../../../assets/icon/icons8-star-96.png')} />
+                        <Image style={[styles.imgIcon, { width: 28, height: 28 }]} source={require('../../../assets/icon/setting/rating.png')} />
                         <Text style={styles.textNameSetting}>Đánh giá ứng dụng</Text>
                     </View>
 
@@ -176,8 +179,8 @@ const styles = StyleSheet.create({
     viewUser: {
         borderRadius: 10,
         flexDirection: 'row',
-        margin: '5%',
-        marginTop: '0%',
+        marginLeft: '5%',
+        marginRight: '5%',
         padding: '5%',
         alignItems: 'center',
         backgroundColor: 'white',
@@ -189,6 +192,9 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
+        marginTop: '5%',
+        alignItems: 'center',
+        justifyContent: 'space-between'
     },
     imguser: {
         width: '50',
@@ -201,7 +207,7 @@ const styles = StyleSheet.create({
         height: '30',
         //    borderRadius:30,
         marginRight: '5%',
-        tintColor: '#009558'
+        tintColor: 'black'
     },
     textNameuser: {
         fontSize: SIZE.size16,
@@ -227,7 +233,7 @@ const styles = StyleSheet.create({
         shadowRadius: 3.84,
         elevation: 5,
         paddingTop: '2.5%',
-        paddingBottom: '2.5%'
+        paddingBottom: '2.5%',
     },
     boxContent2: {
         flexDirection: 'row',

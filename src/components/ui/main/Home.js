@@ -100,13 +100,6 @@ const Home = (props) => {
     const [minValueKw, setMinValueKw] = useState(1);
     const [maxValueKw, setMaxValueKw] = useState(200);
 
-    const [refreshing, setRefreshing] = useState(false);
-    const RefreshData = async () => {
-        setRefreshing(true);
-        await getDataStation();
-        setRefreshing(false);
-    }
-
     // danh muc lisst bo loc
     const [selectedFilter, setSelectedFliter] = useState(7);
     // danh muc phương tiện
@@ -321,6 +314,14 @@ const Home = (props) => {
         setCheckLoading(false);
     }
 
+
+    const [refreshing, setRefreshing] = useState(false);
+    const RefreshData = async () => {
+        setRefreshing(true);
+        getData();
+        setRefreshing(false);
+    }
+
     // Hook effect khởi tạo dữ liệu
     useEffect(() => {
         getData();
@@ -483,7 +484,7 @@ const Home = (props) => {
                             const isSelected = selectedBrand === item._id;
                             return (
                                 <View>
-                                    {item.image ?
+                                    {item.image && item.name !== 'Không' ?
                                         <TouchableOpacity
                                             style={[styles.itemBrand, selectedBrand.includes(item._id) && styles.selectedItemBrand]}
                                             // onPress={() => setSelectedBrand([item._id])}
@@ -549,6 +550,7 @@ const Home = (props) => {
             </ScrollView>
             <Modal transparent={true} visible={modalVisible} animationType="slide">
                 <View style={styles.modalOverlay}>
+                    <TouchableOpacity onPress={() => setModalVisible(false)} style={{ width: "100%", height: '20%', }}></TouchableOpacity>
                     <View style={styles.modalContent}>
                         <View style={styles.buttonC}>
                             <Text style={[styles.modalTitle, { textAlign: 'center' }]}> Bộ lọc chi tiết</Text>

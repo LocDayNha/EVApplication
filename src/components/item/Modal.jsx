@@ -206,7 +206,10 @@ export function ItemSliderModal({ checkModal, setModalVisible, value, setValue, 
                     <View style={styles.buttonRow}>
                         <TouchableOpacity
                             style={[styles.applyButton, { backgroundColor: COLOR.gray1 }]}
-                            onPress={() => setValue(defaultValue)}
+                            onPress={() => {
+                                setValue(defaultValue);
+                                setModalVisible(false);
+                            }}
                         >
                             <Text style={[styles.applyText, { color: 'black' }]}>Làm mới</Text>
                         </TouchableOpacity>
@@ -214,7 +217,7 @@ export function ItemSliderModal({ checkModal, setModalVisible, value, setValue, 
                             style={styles.applyButton}
                             onPress={() => setModalVisible(false)}
                         >
-                            <Text style={styles.applyText}>Đóng</Text>
+                            <Text style={styles.applyText}>Áp dụng</Text>
                         </TouchableOpacity>
 
                     </View>

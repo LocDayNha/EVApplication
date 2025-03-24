@@ -51,14 +51,14 @@ const TabIcon = ({ focused, icon, label }) => (
         >
             <Image
                 style={{
-                    width: label === "" ? 36 : 26,
-                    height: label === "" ? 36 : 26,
-                    tintColor: focused ? COLOR.green3 : COLOR.gray4,
+                    width: label === "" ? 36 : label === "Lộ trình" ? 30 : 26,
+                    height: label === "" ? 36 : label === "Lộ trình" ? 26 : 26,
+                    tintColor: focused ? COLOR.green3 : COLOR.black,
                 }}
                 source={icon}
             />
         </ImageBackground>
-        <Text style={{ color: focused ? COLOR.green3 : COLOR.gray4, fontSize: 13, fontWeight: '500' }}>
+        <Text style={{ color: focused ? COLOR.green3 : COLOR.black, fontSize: 13, fontWeight: '500' }}>
             {label}
         </Text>
     </View>
@@ -145,7 +145,7 @@ const ButtomTab = () => {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="SplashSceen" component={SplashScreen} />
-            
+
             <Stack.Screen name="MyCar" component={MyCar} />
             <Stack.Screen name="MyBrandCar" component={MyBrandCar} />
             <Stack.Screen name="MyVehicleCar" component={MyVehicleCar} />
