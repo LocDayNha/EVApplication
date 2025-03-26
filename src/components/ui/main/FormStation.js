@@ -296,13 +296,13 @@ const FormStation = () => {
         try {
             setCheckLoading(true);
             console.log(selectedVehical);
-            const formattedVehical = selectedVehical.map(item => item.value);
+            const formattedVehical = selectedVehical.map(item => ({ vehicle_id: item.value }));
 
             const updatedData = {
                 kw: valuePower,
                 slot: valuePorts,
                 price: valuePrice,
-                vehicle_id: formattedVehical,
+                vehicle: formattedVehical,
                 port_id: selectedSocket.value
             };
 

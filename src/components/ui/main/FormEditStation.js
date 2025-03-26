@@ -291,10 +291,9 @@ const FormEditStation = () => {
     const updateSpecificationById = async (id) => {
         try {
             setCheckLoading(true);
-
             const formattedVehical = selectedVehical.map(item => ({ vehicle_id: item.value }));
-
             console.log(formattedVehical);
+            
             const updatedData = {
                 kw: valuePower,
                 slot: valuePorts,
