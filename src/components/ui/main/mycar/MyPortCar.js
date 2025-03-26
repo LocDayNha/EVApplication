@@ -79,19 +79,18 @@ const MyPortCar = () => {
                         keyExtractor={(item) => item._id}
                         renderItem={({ item }) => (
                             <View style={styles.viewList}>
-                                <TouchableOpacity onPress={() => setDataSelectedPortCar(item)}>
-                                    <View style={{
+                                <TouchableOpacity
+                                    style={{
                                         flexDirection: 'row', width: '100%', padding: '5%', borderRadius: 15,
                                         backgroundColor: dataSelectedPortCar === item ? '#D9D9D9' : 'white',
-                                    }}>
-                                        <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                                            <Image source={{ uri: item.image }} style={{ width: 60, height: 60 }} />
-                                            {item.name === 'GB/T' ? <Text style={{ fontSize: 14, fontWeight: 500 }}>{item.type} - {item.name}</Text>
-                                                :
-                                                <Text style={{ fontSize: 14, fontWeight: 500 }}>{item.name}</Text>
-
-                                            }
-                                        </View>
+                                    }}
+                                    onPress={() => setDataSelectedPortCar(item)}>
+                                    <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center' }}>
+                                        <Image source={{ uri: item.image }} style={{ width: 60, height: 60 }} />
+                                        {item.name === 'GB/T' ? <Text style={{ fontSize: 14, fontWeight: 500 }}>{item.type} - {item.name}</Text>
+                                            :
+                                            <Text style={{ fontSize: 14, fontWeight: 500 }}>{item.name}</Text>
+                                        }
                                     </View>
                                 </TouchableOpacity>
                             </View>
@@ -158,7 +157,6 @@ const styles = StyleSheet.create({
     },
     viewList: {
         width: '30%',
-        flex: 1,
         margin: '1%',
     },
     viewText: {

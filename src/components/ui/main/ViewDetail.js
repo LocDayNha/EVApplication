@@ -195,11 +195,11 @@ const ViewDetail = () => {
                                     // },
                                     // shadowOpacity: 0.25,
                                     // shadowRadius: 3.84,
-                                    elevation: 5,
+                                    // elevation: 5,
+
                                 }} >
                                     {dataStation.service.length > 0 ?
                                         <>
-
                                             <FlatList
                                                 data={dataStation.service.map(item => item.service_id)}
                                                 showsHorizontalScrollIndicator={false}
@@ -232,7 +232,10 @@ const ViewDetail = () => {
 
                                 </View>
                                 :
-                                null
+                                <View style={{ alignItems: 'center' }}>
+                                    <Text style={{ alignItems: 'center',fontSize:SIZE.size16 }} >Trạm sạc này không có dịch vụ</Text>
+                                </View>
+
                             }
 
                         </View>
@@ -459,14 +462,16 @@ const styles = StyleSheet.create({
         padding: '5%',
         backgroundColor: 'white',
         borderRadius: 20,
-        shadowColor: "#000",
+        // shadowColor: "#000",
+        borderWidth: 0.5,
+        borderColor: '#C7C6C5',
         // shadowOffset: {
         //     width: 0,
         //     height: 2,
         // },
-        shadowOpacity: 0.25,
+        // shadowOpacity: 0.25,
         // shadowRadius: 3.84,
-        elevation: 5,
+        // elevation: 5,
     },
     detailStation: {
         flexDirection: 'row',
@@ -534,11 +539,10 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: '2%',
         flexDirection: 'row',
-
         marginRight: '2%',
         marginLeft: '2%',
         marginTop: '2%',
-        marginBottom: '3%',
+        marginBottom: '1%',
         // shadowColor: "#000",
         // shadowOffset: {
         //     width: 0,

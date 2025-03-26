@@ -53,12 +53,12 @@ const TabIcon = ({ focused, icon, label }) => (
                 style={{
                     width: label === "" ? 36 : label === "Lộ trình" ? 30 : 26,
                     height: label === "" ? 36 : label === "Lộ trình" ? 26 : 26,
-                    tintColor: focused ? COLOR.green3 : COLOR.black,
+                    tintColor: focused ? COLOR.green3 : COLOR.gray3,
                 }}
                 source={icon}
             />
         </ImageBackground>
-        <Text style={{ color: focused ? COLOR.green3 : COLOR.black, fontSize: 13, fontWeight: '500' }}>
+        <Text style={{ color: focused ? COLOR.green3 : COLOR.black, fontSize: 13,}}>
             {label}
         </Text>
     </View>

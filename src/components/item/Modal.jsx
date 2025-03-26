@@ -39,7 +39,6 @@ export function ItemModalCheckBox({ checkModal, setModalVisible, data, selectedI
                             </TouchableOpacity>
                         )}
                     />
-
                     <View style={styles.buttonRow}>
                         <TouchableOpacity
                             onPress={() => {
@@ -141,8 +140,6 @@ export function ItemListModal({ checkModal, setModalVisible, data, selectedItem,
                             )}
                         />
                     </ScrollView>
-
-
                     <View style={styles.buttonRow}>
                         <TouchableOpacity
                             style={styles.applyButton}
@@ -186,6 +183,7 @@ export function ItemSliderModal({ checkModal, setModalVisible, value, setValue, 
                             max={maxValue}
                             step={1}
                             sliderLength={250}
+                            selectedStyle={{ backgroundColor: COLOR.green3 }}
                             minimumTrackTintColor={COLOR.green4}
                             maximumTrackTintColor="grey"
                             thumbTintColor={COLOR.green4}
@@ -244,6 +242,7 @@ export function ItemSlider({ values, setValues, minValue, maxValue }) {
                 minimumTrackTintColor={COLOR.green4}
                 maximumTrackTintColor="grey"
                 // thumbTintColor={COLOR.green4}
+                selectedStyle={{ backgroundColor: '#33CC33' }}
                 onValuesChange={(val) => setValues(val)}
                 snapped
                 values={values}

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, Image, Modal, ToastAndroid, Switch, Alert, FlatList, TextInput, ActivityIndicator, TouchableOpacity, Button, Platform } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Image, Modal, ToastAndroid, Switch, Alert, FlatList, TextInput, ActivityIndicator, TouchableOpacity, Button, Platform, KeyboardAvoidingView } from 'react-native';
 import React, { useEffect, useRef, useState, useContext } from 'react';
 import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
@@ -360,6 +360,7 @@ const FormEditStation = () => {
     // Station
     const getDataStation = async () => {
         try {
+            setCheckLoading(true);
             const dataStation = await AxiosInstance().post('/station/getById', { id: id });
             if (dataStation && dataStation.data) {
 
@@ -447,11 +448,13 @@ const FormEditStation = () => {
                 }));
 
                 setListDataSpecification(formattedSpecification);
-
+                setCheckLoading(false);
             } else {
+                setCheckLoading(false);
                 showAlert('Thông báo', 'Không có dữ liệu trạm sạc');
             }
         } catch (error) {
+            setCheckLoading(false);
             console.log('Lỗi hệ thống !!!', error);
             showAlert('Lỗi', 'Đã xảy ra lỗi vui lòng thử lại');
         }
@@ -841,8 +844,8 @@ const FormEditStation = () => {
 
 
     return (
-        <View >
-            <ScrollView style={{ backgroundColor: 'white', height: '90%' }} >
+        <KeyboardAvoidingView  behavior={Platform.OS === 'ios' ? 'padding' : null}>
+            <ScrollView style={{ backgroundColor: 'white', height: '90%' }}  >
                 {/* hình ảnh */}
                 <View>
                     <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
@@ -1067,9 +1070,6 @@ const FormEditStation = () => {
                 </View>
 
 
-                {/* nút thêm trạm sạc  */}
-
-
                 {/*  banr đồ  */}
                 <Modal transparent={true} visible={modalVisibleMap} animationType="slide">
                     <View style={styles.modalOverlay}>
@@ -1156,7 +1156,7 @@ const FormEditStation = () => {
                     <Text style={{ color: 'white', textAlign: 'center', fontSize: 18 }}>Cập nhật trạm sạc </Text>
                 </TouchableOpacity>
             </View>
-        </View>
+        </KeyboardAvoidingView>
 
     )
 }

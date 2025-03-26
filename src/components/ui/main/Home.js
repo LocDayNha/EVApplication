@@ -40,7 +40,7 @@ const Home = (props) => {
         Toast.show({
             type: type, // 'success', 'error', 'warning', 'info'
             text2: content,
-            position: 'center',
+            position: 'top',
             autoHide: 5000,
         });
     };
@@ -373,7 +373,7 @@ const Home = (props) => {
     useEffect(() => {
         if (myCar) {
             clearFormVehicle();
-            if (dataSelectedCar) {
+            if (dataSelectedCar && dataSelectedCar.vehicleCar === 'Ô tô điện') {
                 setCheckFilter(true);
                 if (dataSelectedCar.chargingCar && !selectedSocket.includes(dataSelectedCar.chargingCar._id)) {
                     setSelectedSocket(prev => [...prev, dataSelectedCar.chargingCar._id]);
@@ -381,14 +381,13 @@ const Home = (props) => {
                 if (dataSelectedCar.modelCar && !selectedBrandCar.includes(dataSelectedCar.modelCar.brand_id._id)) {
                     setSelectedBrandCar(prev => [...prev, dataSelectedCar.modelCar.brand_id._id]);
                 }
-                if (dataSelectedCar.modelCar && dataSelectedCar.modelCar === 'Xe máy điện') {
-                    setSelectedVehicle('67ad951438a923d416a25409');
-                }
-                else {
+                if (dataSelectedCar.vehicleCar && dataSelectedCar.vehicleCar === 'Ô tô điện') {
                     setSelectedVehicle('67d7e207a9b4d60d7f235249');
                 }
-
-            } else {
+            } else if (dataSelectedCar && dataSelectedCar.vehicleCar === 'Xe máy điện') {
+                setSelectedVehicle('67ad951438a923d416a25409');
+            }
+            else {
                 setCheckFilter(false);
             }
         } else {
@@ -426,14 +425,6 @@ const Home = (props) => {
     // const point2 = { latitude: 11.3495, longitude: 106.0640 };
     // const distance = haversine(point1, point2); // Khoảng cách tính bằng mét
     // console.log(distance / 1000 + " km")
-
-    // console.log(dataSelectedCar.vehicleCar);
-    // console.log(dataSelectedCar.chargingCar._id);
-    // console.log(dataSelectedCar.modelCar._id);
-    // console.log(dataSelectedCar)
-
-
-
 
     return (
         <View style={{ height: '100%', backgroundColor: 'white' }}>
@@ -491,6 +482,11 @@ const Home = (props) => {
                                             onPress={() => setSelectedBrand(selectedBrand.includes(item._id) ? [] : [item._id])}
                                         >
                                             <Image style={styles.iconListBrand} source={{ uri: item.image }} />
+                                            <View>
+                                                <Text>
+                                                    {item.name}
+                                                </Text>
+                                            </View>
                                         </TouchableOpacity>
                                         :
                                         null
@@ -717,8 +713,8 @@ const styles = StyleSheet.create({
 
     },
     iconListBrand: {
-        height: 35,
-        width: 35,
+        height: 17,
+        width: 17,
     },
     iconButton: {
         height: 20,

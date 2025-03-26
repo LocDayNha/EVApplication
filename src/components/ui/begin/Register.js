@@ -17,7 +17,7 @@ const Register = () => {
     Toast.show({
       type: type, // 'success', 'error', 'warning', 'info'
       text2: content,
-      position: 'center',
+      position: 'top',
       autoHide: false,
     });
   };

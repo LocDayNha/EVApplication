@@ -55,7 +55,7 @@ const MyCar = () => {
                     </TouchableOpacity>
                 </View>
                 <View style={styles.viewHeader}>
-                    <Text style={styles.textHeader}>Loại phương tiện của bạn</Text>
+                    <Text style={styles.textHeader}>Chọn phương tiện của bạn</Text>
                 </View>
                 <View style={styles.viewVehicle}>
                     <TouchableOpacity style={{ borderRadius: 10, backgroundColor: vehicle === 'Xe máy điện' ? '#D9D9D9' : 'white', }} onPress={() => setVehicle('Xe máy điện')}>

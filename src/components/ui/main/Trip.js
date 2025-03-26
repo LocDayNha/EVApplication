@@ -17,8 +17,9 @@ const Trip = () => {
     Toast.show({
       type: type, // 'success', 'error', 'warning', 'info'
       text2: content,
-      position: 'center',
+      position: 'top',
       autoHide: 5000,
+      
     });
   };
 
@@ -90,6 +91,7 @@ const Trip = () => {
               step={1}
               value={energy}
               onValuesChange={setEnergy}
+              selectedStyle={{ backgroundColor: '#33CC33' }}
               minimumTrackTintColor="#33CC33"  // Màu của thanh đã kéo
               maximumTrackTintColor="#EEEEEE"  // Màu của thanh chưa kéo
               thumbTintColor="#33CC33"  // Màu của núm kéo

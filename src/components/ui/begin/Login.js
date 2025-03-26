@@ -23,7 +23,7 @@ const Login = () => {
     Toast.show({
       type: type, // 'success', 'error', 'warning', 'info'
       text2: content,
-      position: 'center',
+      position: 'top',
       autoHide: false,
     });
   };
@@ -82,6 +82,11 @@ const Login = () => {
       behavior={Platform.OS === 'ios' ? "padding" : null}
     >
       <View style={styles.container} >
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Screen')}
+          style={{ justifyContent: 'flex-end', alignItems: 'flex-end', position: 'absolute', top: '2%', left: '90%' }} >
+          <Image source={require('../../../assets/icon/icons8-multiply-50.png')} style={{ width: 40, height: 40, }} />
+        </TouchableOpacity>
         <View style={{ width: '100%', height: '30%', justifyContent: 'center', alignItems: 'center' }} onTouchStart={() => Keyboard.dismiss()}>
           <Image source={require('../../../assets/images/Splash (2).png')} style={{ width: 200, height: 200, }} />
         </View>

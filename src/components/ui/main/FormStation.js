@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, Image, Modal, ToastAndroid, Switch, Alert, FlatList, TextInput, ActivityIndicator, TouchableOpacity, Button, Platform } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Image, Modal, ToastAndroid, Switch, Alert, FlatList, TextInput, ActivityIndicator, TouchableOpacity, Button, Platform, KeyboardAvoidingView } from 'react-native';
 import React, { useEffect, useRef, useState, useContext } from 'react';
 import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
@@ -714,7 +714,7 @@ const FormStation = () => {
 
 
     return (
-        <View >
+        <KeyboardAvoidingView  behavior={Platform.OS === 'ios' ? 'padding' : null}>
             <ScrollView style={{ backgroundColor: 'white', height: '90%' }} >
                 {/* hình ảnh */}
                 <View>
@@ -916,8 +916,8 @@ const FormStation = () => {
                     {dataBrandCar ? <ItemCheckBoxDP data={dataBrandCar} selectedValues={selectedBrandCar} setSelectedValues={setSelectedBrandCar} dropdownOpen={openDropdownBrandCar} setDropdownOpen={setOpenDropdownBrandCar} /> : null}
                 </View>
 
-
-                <View style={{ paddingHorizontal: 15, paddingVertical: 5, }}>
+                {/* ghi chú*/}
+                <View  style={{ paddingHorizontal: 15, paddingVertical: 5, }}>
                     <Text style={{ fontSize: SIZE.size16 }}>Ghi chú</Text>
                     <TextInput
                         style={{
@@ -1024,7 +1024,7 @@ const FormStation = () => {
                     <Text style={{ color: 'white', textAlign: 'center', fontSize: 18 }}>Thêm mới trạm sạc </Text>
                 </TouchableOpacity>
             </View>
-        </View>
+        </KeyboardAvoidingView>
 
     )
 }
