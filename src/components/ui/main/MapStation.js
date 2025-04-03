@@ -90,10 +90,10 @@ const MapStation = (props) => {
         <View style={styles.container}>
             <View style={styles.searchContainer}>
                 <TouchableOpacity onPress={focusOnLocation} style={styles.buttonContainer}>
-                    <Image style={{ width: 30, height: 30, }} source={require('../../../assets/icon/icons8-my-location-48.png')} />
+                    <Image style={{ width: 30, height: 30, tintColor:'black' }} source={require('../../../assets/icon/icons8-my-location-48.png')} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={getDataStation} style={styles.buttonContainer2}>
-                    <Image style={{ width: 30, height: 30, }} source={require('../../../assets/icon/icons8-return-100.png')} />
+                    <Image style={{ width: 30, height: 30, }} source={require('../../../assets/icon/map/reload.png')} />
                 </TouchableOpacity>
             </View>
 

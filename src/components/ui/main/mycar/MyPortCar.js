@@ -48,7 +48,7 @@ const MyPortCar = () => {
                 modelCar: idMyVehicleCar,
                 chargingCar: dataSelectedPortCar
             }]);
-            navigation.navigate('SplashSceen');
+            navigation.navigate('Screen');
         } else {
             showToast('Vui lòng chọn loại đầu sạc xe của bạn', 'error');
         }

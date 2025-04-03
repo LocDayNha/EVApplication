@@ -664,8 +664,9 @@ export function ItemListMyCar({ dataSelectedCar, setDataSelectedCar, data, }) {
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                             <View style={{ flexDirection: 'row' }}>
                                 {item.vehicleCar === 'Xe máy điện' ?
-                                    <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                                    <View style={{ justifyContent: 'center', alignItems: 'center', flexDirection:'row' }}>
                                         <Image source={require('../../assets/images/mycar/electric-bike.png')} style={{ width: 50, height: 50, marginLeft: '5%' }} />
+                                        <Text style={{ marginLeft: '3%', fontSize: SIZE.size14, fontWeight: 500 }}>{item.vehicleCar}</Text>
                                     </View>
                                     :
                                     null

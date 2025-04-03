@@ -58,7 +58,7 @@ const TabIcon = ({ focused, icon, label }) => (
                 source={icon}
             />
         </ImageBackground>
-        <Text style={{ color: focused ? COLOR.green3 : COLOR.black, fontSize: 13,}}>
+        <Text style={{ color: focused ? COLOR.green3 : COLOR.black, fontSize: 13, }}>
             {label}
         </Text>
     </View>
@@ -135,7 +135,12 @@ const Tabbar = () => {
 };
 const Screen = () => {
     return (
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Navigator
+            screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: 'white' }
+            }}
+        >
             <Stack.Screen name="Tabbar" component={Tabbar} />
         </Stack.Navigator>
     );

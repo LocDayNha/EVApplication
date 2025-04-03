@@ -483,7 +483,7 @@ const Home = (props) => {
                                         >
                                             <Image style={styles.iconListBrand} source={{ uri: item.image }} />
                                             <View>
-                                                <Text>
+                                                <Text style={{fontSize:10, fontWeight:'600'}}>
                                                     {item.name}
                                                 </Text>
                                             </View>

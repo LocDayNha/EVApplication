@@ -58,7 +58,7 @@ export function TextInputProfile({ label, defaultValue, onChangeText, placeholde
 export function CustomButton({ label, onPress }) {
   return (
     <LinearGradient colors={['#009558', '#5bdb5b',]} style={styles.container}>
-      <TouchableOpacity style={{ width: "100%", height: 50, justifyContent:'center', alignItems:'center' }} onPress={onPress}>
+      <TouchableOpacity style={{ width: "100%", height: 50, justifyContent: 'center', alignItems: 'center' }} onPress={onPress}>
         <Text style={styles.buttonText}>{label}</Text>
       </TouchableOpacity>
     </LinearGradient >
@@ -338,46 +338,28 @@ export function ItemStationMain(props) {
             <View style={styles.viewInfoStation}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Image style={{ width: 20, height: 20, marginRight: 5 }} source={require('../../assets/icon/icons8-time-48.png')} />
-                <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail'>{data.time}</Text>
+                <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode='tail'>{data.time} • {data.access}</Text>
               </View>
             </View>
 
             <View style={styles.viewInfoStation2}>
-              <View style={{ flexDirection: 'row' }}>
-                {(() => {
-                  const portTypes = data?.specification
-                    ?.map((item) => item?.specification_id?.port_id?.type)
-                    .filter((type) => type === "AC" || type === "DC"); // Lọc chỉ lấy AC hoặc DC
-                  const uniquePortTypes = [...new Set(portTypes)]; // Loại bỏ giá trị trùng lặp
-                  const displayText = uniquePortTypes.length === 2 ? "AC/DC:" : `${uniquePortTypes[0]}: ` || "N/A";
 
-                  return (
-                    <Text style={[styles.textItemLocation]} numberOfLines={1} ellipsizeMode="tail">
-                      {displayText}
+              <View style={{ width: 'auto' }}>
+                {data.specification.slice(0, 3).map((item, index) => (
+                  <View key={index} style={{ marginTop: '2%', borderWidth: 1, borderRadius: 4, borderColor: '#CCCCCC', padding: '1%', justifyContent: 'center', width:'auto' }}>
+                    <Text
+                      style={{ color: '#009558', fontSize: 13 }}
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
+                    >
+                      ✧ {item?.specification_id?.port_id?.name} {item?.specification_id?.kw}kw có {item?.specification_id?.slot} cổng
                     </Text>
-                  );
-                })()}
-
-                {(() => {
-                  const portTypes = data?.specification
-                    ?.map((item) => item?.specification_id?.port_id?.name);
-                  //.filter((type) => type === "AC" || type === "DC"); // Lọc chỉ lấy AC hoặc DC
-                  const uniquePortTypes = [...new Set(portTypes)];
-                  const limitedPortTypes = uniquePortTypes.slice(0, 3);
-                  const displayText =
-                    uniquePortTypes.length > 3
-                      ? `${limitedPortTypes.join(" - ")} ...`
-                      : limitedPortTypes.join(" - ") || "N/A";
-
-                  return (
-                    <Text style={styles.textItemLocation} numberOfLines={1} ellipsizeMode="tail">
-                      {displayText}
-                    </Text>
-                  );
-                })()}
+                  </View>
+                ))}
               </View>
+
               <TouchableOpacity onPress={openGoogleMaps}>
-                <LinearGradient colors={['#009558', '#5bdb5b',]} style={styles.viewButtonItem} >
+                <LinearGradient colors={['#009558', '#5bdb5b',]} style={[styles.viewButtonItem, { marginLeft: 6 }]} >
                   <Text style={{ color: 'white' }}>
                     {distance.toFixed(1)} Km
                   </Text>

@@ -50,18 +50,18 @@ const MyCar = () => {
         <View style={{ width: '100%', height: '100%', backgroundColor: 'white' }}>
             <View style={styles.container}>
                 <View style={{ width: '100%', height: '5%' }}>
-                    <TouchableOpacity style={styles.viewSkip} onPress={skip}>
-                        <Text style={styles.text}>Bỏ qua</Text>
+                    <TouchableOpacity style={styles.viewSkip}>
+                        <Text style={styles.text}></Text>
                     </TouchableOpacity>
                 </View>
                 <View style={styles.viewHeader}>
                     <Text style={styles.textHeader}>Chọn phương tiện của bạn</Text>
                 </View>
                 <View style={styles.viewVehicle}>
-                    <TouchableOpacity style={{ borderRadius: 10, backgroundColor: vehicle === 'Xe máy điện' ? '#D9D9D9' : 'white', }} onPress={() => setVehicle('Xe máy điện')}>
+                    <TouchableOpacity style={{ borderRadius: 10, borderWidth: 1, borderColor: '#DDDDDD', backgroundColor: vehicle === 'Xe máy điện' ? '#D9D9D9' : 'white', }} onPress={() => setVehicle('Xe máy điện')}>
                         <Image style={styles.imageVehicle} source={require('../../../../assets/images/mycar/electric-bike.png')} />
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => setVehicle('Ô tô điện')} style={{ borderRadius: 10, backgroundColor: vehicle === 'Ô tô điện' ? '#D9D9D9' : 'white', }} >
+                    <TouchableOpacity onPress={() => setVehicle('Ô tô điện')} style={{ borderRadius: 10, borderWidth: 1, borderColor: '#DDDDDD', backgroundColor: vehicle === 'Ô tô điện' ? '#D9D9D9' : 'white', }} >
                         <Image style={styles.imageVehicle} source={require('../../../../assets/images/mycar/electric-car.png')} />
                     </TouchableOpacity>
                 </View>
@@ -73,13 +73,24 @@ const MyCar = () => {
                 <View style={styles.viewPage}>
                     <Image source={require('../../../../assets/images/mycar/Frame1.png')} style={styles.imagePage} />
                 </View>
-                <View style={styles.viewButton}>
-                    <TouchableOpacity onPress={netPage} style={styles.button}>
-                        <LinearGradient colors={['#009558', '#5bdb5b',]} style={[styles.button, { width: '100%' }]}>
-                            <Text style={styles.textButton} >Tiếp tục</Text>
-                        </LinearGradient>
-                    </TouchableOpacity>
-                </View>
+
+                {vehicle ?
+                    <View style={styles.viewButton}>
+                        <TouchableOpacity onPress={netPage} style={styles.button}>
+                            <LinearGradient colors={['#009558', '#5bdb5b',]} style={[styles.button, { width: '100%' }]}>
+                                <Text style={styles.textButton} >Tiếp tục</Text>
+                            </LinearGradient>
+                        </TouchableOpacity>
+                    </View>
+                    :
+                    <View style={styles.viewButton}>
+                        <TouchableOpacity onPress={skip} style={styles.button}>
+                            <LinearGradient colors={['#009558', '#5bdb5b',]} style={[styles.button, { width: '100%' }]}>
+                                <Text style={styles.textButton} >Bỏ qua</Text>
+                            </LinearGradient>
+                        </TouchableOpacity>
+                    </View>
+                }
             </View>
         </View>
     )
