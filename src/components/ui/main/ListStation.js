@@ -47,17 +47,21 @@ const ListStation = (props) => {
     const [dataStation, setDataStation] = useState([]);
     const getDataStation = async () => {
         try {
+            setCheckLoad(true);
             const dataStation = await AxiosInstance().post('/station/getByIdUser', {
                 user_id: idUser, isActive: selectedStatus
             });
             if (dataStation.data && dataStation.data.length > 0) {
                 setDataStation(dataStation.data);
+                setCheckLoad(false);
             } else {
                 setDataStation(dataStation.data);
+                checkLoad(false);
                 console.log('Không tìm thấy dữ liệu từ /station/getByIdUser');
             }
         } catch (error) {
-            console.error('Lỗi khi lấy dữ liệu station:', error);
+            setCheckLoad(false);
+            console.log('Lỗi khi lấy dữ liệu station:', error);
         }
     };
 
@@ -131,12 +135,12 @@ const ListStation = (props) => {
                                         <View>
                                             {
                                                 selectedStatus === item.isActive ?
-                                                    (<ItemStationList 
-                                                        data={item} 
+                                                    (<ItemStationList
+                                                        data={item}
                                                         checkActive={checkEdit}
-                                                         setCheckStatus={setCheckModalStatus} 
-                                                         setIdStation={setIdStation} 
-                                                         setStatus={setStatus} />)
+                                                        setCheckStatus={setCheckModalStatus}
+                                                        setIdStation={setIdStation}
+                                                        setStatus={setStatus} />)
                                                     :
                                                     (null)
                                             }
