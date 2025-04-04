@@ -24,7 +24,7 @@ const Trip = () => {
   };
 
 
-  const [energy, setEnergy] = useState(50);
+  const [energy, setEnergy] = useState(10);
   const [addressStart, setAddressStart] = useState('Chọn điểm đi');
   const [addressEnd, setAddressEnd] = useState('Chọn điểm đến');
   const [selectedLocationStart, setSelectedLocationStart] = useState(null);
@@ -86,7 +86,7 @@ const Trip = () => {
           <View style={{ width: '100%', alignItems: 'center' }}>
             <MultiSlider
               style={{ width: '100%' }}
-              min={50}
+              min={10}
               max={500}
               step={1}
               value={energy}
@@ -101,7 +101,7 @@ const Trip = () => {
           </View>
 
           <View style={styles.viewTextLine}>
-            <Text style={styles.textLine}>50</Text>
+            <Text style={styles.textLine}>10</Text>
             <Text style={styles.textLine}>500</Text>
           </View>
         </View>
