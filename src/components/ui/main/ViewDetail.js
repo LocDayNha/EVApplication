@@ -7,6 +7,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import AxiosInstance from '../../axios/AxiosInstance';
 import { AppContext } from '../../axios/AppContext';
 import { COLOR, SIZE } from "../../../assets/Theme/Theme";
+import { ItemLoading } from '../../item/ItemList';
 
 
 const ViewDetail = () => {
@@ -22,6 +23,7 @@ const ViewDetail = () => {
     };
 
     const [modalVisible, setModalVisible] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     // lat lng
     const { myLat, myLng, idUser, infoUser } = useContext(AppContext);
@@ -46,14 +48,18 @@ const ViewDetail = () => {
     const [dataStation, setDataStation] = useState(null);
     const getDataStationById = async () => {
         try {
+            setIsLoading(true);
             const dataStation = await AxiosInstance().post('/station/getById', { id: id });
             if (dataStation.data) {
+                setIsLoading(false);
                 setDataStation(dataStation.data);
             } else {
+                setIsLoading(false);
                 console.log('Không tìm thấy dữ liệu từ /station/getById');
                 ToastAndroid.show('Không có thông tin trạm sạc', ToastAndroid.SHORT);
             }
         } catch (error) {
+            setIsLoading(false);
             console.error('Lỗi khi lấy dữ liệu station:', error);
             ToastAndroid.show('Không thể tải danh sách thông tin trạm sạc', ToastAndroid.SHORT);
         }
@@ -120,7 +126,7 @@ const ViewDetail = () => {
     }, []);
 
     return (
-        <View>
+        <View style={{backgroundColor: 'white',height:'100%'}} >
 
             <ScrollView style={[styles.container,]} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: '20%' }} >
 
@@ -233,7 +239,7 @@ const ViewDetail = () => {
                                 </View>
                                 :
                                 <View style={{ alignItems: 'center' }}>
-                                    <Text style={{ alignItems: 'center',fontSize:SIZE.size16 }} >Trạm sạc này không có dịch vụ</Text>
+                                    <Text style={{ alignItems: 'center', fontSize: SIZE.size16 }} >Trạm sạc này không có dịch vụ</Text>
                                 </View>
 
                             }
@@ -285,7 +291,7 @@ const ViewDetail = () => {
 
                 {/* đánh giá  */}
 
-                {dataRating && (
+                {dataRating && !isLoading ?
                     <>
                         <View>
                             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }} >
@@ -318,7 +324,8 @@ const ViewDetail = () => {
                             </View>
                         </View>
                     </>
-                )}
+                    : null
+                }
 
                 <Modal transparent={true} visible={modalVisible} animationType="slide">
                     <KeyboardAvoidingView
@@ -381,18 +388,22 @@ const ViewDetail = () => {
 
             </ScrollView>
             {/* Bottom tab */}
-            <View style={styles.containerBottom}>
-                <TouchableOpacity style={styles.buttonBottom} onPress={clickRating}>
-                    <Text style={[styles.textBottom, { color: COLOR.green3 }]} >Đánh giá</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={openGoogleMaps} style={[styles.buttonBottom, { backgroundColor: COLOR.green3 }]}>
-                    <Text style={[styles.textBottom, { color: 'white' }]}>Đến ngay</Text>
-                </TouchableOpacity>
-            </View>
+            {isLoading ? null :
+                <View style={styles.containerBottom}>
+                    <TouchableOpacity style={styles.buttonBottom} onPress={clickRating}>
+                        <Text style={[styles.textBottom, { color: COLOR.green3 }]} >Đánh giá</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={openGoogleMaps} style={[styles.buttonBottom, { backgroundColor: COLOR.green3 }]}>
+                        <Text style={[styles.textBottom, { color: 'white' }]}>Đến ngay</Text>
+                    </TouchableOpacity>
+                </View>
+            }
             {/* 
             <TouchableOpacity style={styles.buttonBack} onPress={() => navigation.goBack()} >
                 <Image style={styles.imgBack} source={require('../../../assets/icon/icons8-back-64 (2).png')} />
             </TouchableOpacity> */}
+
+            <ItemLoading checkValue={isLoading} />
 
         </View>
     )
