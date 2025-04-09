@@ -145,7 +145,17 @@ export function ItemTextInput2({ title, content, value, onChangeText, checkValue
     return (
         <View style={{ width: widthBody, paddingHorizontal: 15, paddingVertical: 5 }}>
             <View style={{ alignItems: center ? 'center' : null, }}>
-                {title ? <Text style={{ fontSize: SIZE.size16 }}>{title}</Text> : <Text style={{ fontSize: SIZE.size14 }}>{content}</Text>}
+                {title ?
+                    <View style={{ flexDirection: 'row' }}>
+                        <Text style={{ fontSize: SIZE.size16 }}>{title}</Text>
+                        <Text style={{ fontSize: SIZE.size16, color: '#ff2f68' }}>*</Text>
+                    </View>
+                    :
+                    <View style={{ flexDirection: 'row' }}>
+                        <Text style={{ fontSize: SIZE.size14 }}>{content}</Text>
+                        <Text style={{ fontSize: SIZE.size14, color: '#ff2f68' }}>*</Text>
+                    </View>
+                }
             </View>
 
             <TextInput
@@ -174,7 +184,10 @@ export function ItemTextInput2({ title, content, value, onChangeText, checkValue
 export function ItemText2({ title, value, setCheckModal, checkValue, placeholder, widthBody }) {
     return (
         <View style={{ width: widthBody, paddingHorizontal: 15, paddingVertical: 5, }}>
-            <Text style={{ fontSize: SIZE.size16 }}>{title}</Text>
+            <View style={{ flexDirection: 'row' }}>
+                <Text style={{ fontSize: SIZE.size16 }}>{title}</Text>
+                <Text style={{ fontSize: SIZE.size16, color: '#ff2f68' }}>*</Text>
+            </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                 <View
                     style={{
@@ -660,11 +673,11 @@ export function ItemListMyCar({ dataSelectedCar, setDataSelectedCar, data, }) {
                 data={data}
                 // keyExtractor={(item) => item._id}
                 renderItem={({ item }) => (
-                    <TouchableOpacity onPress={() => [setDataSelectedCar(dataSelectedCar === item ? null : item)]  } >
+                    <TouchableOpacity onPress={() => [setDataSelectedCar(dataSelectedCar === item ? null : item)]} >
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                             <View style={{ flexDirection: 'row' }}>
                                 {item.vehicleCar === 'Xe máy điện' ?
-                                    <View style={{ justifyContent: 'center', alignItems: 'center', flexDirection:'row' }}>
+                                    <View style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
                                         <Image source={require('../../assets/images/mycar/electric-bike.png')} style={{ width: 50, height: 50, marginLeft: '5%' }} />
                                         <Text style={{ marginLeft: '3%', fontSize: SIZE.size14, fontWeight: 500 }}>{item.vehicleCar}</Text>
                                     </View>

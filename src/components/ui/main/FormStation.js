@@ -714,12 +714,13 @@ const FormStation = () => {
 
 
     return (
-        <KeyboardAvoidingView  behavior={Platform.OS === 'ios' ? 'padding' : null}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : null}>
             <ScrollView style={{ backgroundColor: 'white', height: '90%' }} >
                 {/* hình ảnh */}
                 <View>
-                    <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
+                    <View style={{ paddingHorizontal: 15, paddingVertical: 5, flexDirection: 'row' }}>
                         <Text style={{ fontSize: SIZE.size16 }}>Hình ảnh</Text>
+                        <Text style={{ fontSize: SIZE.size16, color: '#ff2f68' }}>*</Text>
                     </View>
                     <View style={{ paddingHorizontal: 15, paddingVertical: 5, }}>
                         <View style={{ alignItems: 'center' }}>
@@ -753,22 +754,25 @@ const FormStation = () => {
                 <ItemText2 title={'Địa chỉ trạm sạc'} value={address} checkValue={false} setCheckModal={setModalVisibleMap} widthBody={'100%'} />
                 {/* Nơi đặt trụ sạc */}
                 <View>
-                    <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
+                    <View style={{ paddingHorizontal: 15, paddingVertical: 5, flexDirection:'row'}}>
                         <Text style={{ fontSize: SIZE.size16 }}>Nơi đặt trạm sạc</Text>
+                        <Text style={{ fontSize: SIZE.size16, color: '#ff2f68' }}>*</Text>
                     </View>
                     {dataPlace ? <ItemRadioDP data={dataPlace} dropdownOpen={openDropdownPlace} setDropdownOpen={setOpenDropdownBrandCar} selectedValue={selectedPlace} setSelectedValue={setSelectedPlace} /> : null}
                 </View>
                 {/* Hãng trụ sạc */}
                 <View>
-                    <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
+                <View style={{ paddingHorizontal: 15, paddingVertical: 5, flexDirection:'row'}}>
                         <Text style={{ fontSize: SIZE.size16 }}>Hãng trụ sạc</Text>
+                        <Text style={{ fontSize: SIZE.size16, color: '#ff2f68' }}>*</Text>
                     </View>
                     {dataBrand ? <ItemRadioDP data={dataBrand} selectedValue={selectedBrand} setSelectedValue={setSelectedBrand} dropdownOpen={openDropdownBrandStation} setDropdownOpen={setOpenDropdownBrandStation} /> : null}
                 </View>
                 {/* Thời gian  */}
                 <View>
-                    <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
+                    <View style={{ paddingHorizontal: 15, paddingVertical: 5, flexDirection:'row' }}>
                         <Text style={{ fontSize: SIZE.size16 }}>Thời gian</Text>
+                        <Text style={{ fontSize: SIZE.size16, color: '#ff2f68' }}>*</Text>
                     </View>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                         <View style={{ alignItems: 'center', paddingHorizontal: 15, paddingVertical: 5, }}>
@@ -784,8 +788,9 @@ const FormStation = () => {
                 </View>
                 {/* tru sac  */}
                 <View>
-                    <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
+                    <View style={{ paddingHorizontal: 15, paddingVertical: 5 , flexDirection:'row'}}>
                         <Text style={{ fontSize: SIZE.size16 }}>Trụ sạc</Text>
+                        <Text style={{ fontSize: SIZE.size16, color: '#ff2f68' }}>*</Text>
                     </View>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                         <ItemTextInput2 content={'Công suất'} placeholder={'Kw'} onChangeText={onChangeTextKw} value={valuePower} checkValue={checkKw} widthBody={'30%'} center={true} number={true} />
@@ -794,15 +799,17 @@ const FormStation = () => {
                     </View>
                     {/* Phuong tien  */}
                     <View>
-                        <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
+                        <View style={{ paddingHorizontal: 15, paddingVertical: 5, flexDirection:'row' }}>
                             <Text style={{ fontSize: SIZE.size14 }}>Phương tiện</Text>
+                            <Text style={{ fontSize: SIZE.size16, color: '#ff2f68' }}>*</Text>
                         </View>
                         {dataVehicle ? <ItemCheckBoxDP data={dataVehicle} dropdownOpen={openDropdownVehical} setDropdownOpen={setOpenDropdownVehical} selectedValues={selectedVehical} setSelectedValues={setSelectedVehical} /> : null}
                     </View>
                     {/* Loai sacj */}
                     <View>
-                        <View style={{ paddingHorizontal: 15, paddingVertical: 5 }}>
+                        <View style={{ paddingHorizontal: 15, paddingVertical: 5, flexDirection:'row' }}>
                             <Text style={{ fontSize: SIZE.size14 }}>Loại sạc</Text>
+                            <Text style={{ fontSize: SIZE.size16, color: '#ff2f68' }}>*</Text>
                         </View>
                         {dataPort ? <ItemRadioDP data={dataPort} dropdownOpen={openDropdownSocket} setDropdownOpen={setOpenDropdownSocket} selectedValue={selectedSocket} setSelectedValue={setSelectedSocket} /> : null}
                     </View>
@@ -917,7 +924,7 @@ const FormStation = () => {
                 </View>
 
                 {/* ghi chú*/}
-                <View  style={{ paddingHorizontal: 15, paddingVertical: 5, }}>
+                <View style={{ paddingHorizontal: 15, paddingVertical: 5, }}>
                     <Text style={{ fontSize: SIZE.size16 }}>Ghi chú</Text>
                     <TextInput
                         style={{
